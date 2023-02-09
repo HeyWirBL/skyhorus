@@ -6,7 +6,7 @@ import { Link } from '@inertiajs/vue3'
     <ul>
       <li><Link href="/">Home</Link></li>
       <li><Link href="/dashboard">Dashboard</Link></li>
-      <li><Link href="/logout" method="post">Log Out</Link></li>
+      <li><Link href="/logout" method="post" as="button">Log Out</Link></li>
     </ul>
   </nav>
 </template>
