@@ -1,12 +1,33 @@
 <script setup>
 import { Link } from '@inertiajs/vue3'
 </script>
+
 <template>
-  <nav>
-    <ul>
-      <li><Link href="/">Home</Link></li>
-      <li><Link href="/dashboard">Dashboard</Link></li>
-      <li><Link href="/logout" method="post" as="button">Log Out</Link></li>
-    </ul>
-  </nav>
+  <div>
+    <div class="mb-4">
+      <Link class="group flex items-center py-3" href="/dashboard">
+        <div class="text-yellow-300 group-hover:text-white">Dashboard</div>
+      </Link>
+    </div>
+    <div class="mb-4">
+      <Link class="group flex items-center py-3" href="/dashboard">
+        <div class="text-yellow-300 group-hover:text-white">Dashboard</div>
+      </Link>
+    </div>
+    <div class="mb-4">
+      <Link class="group flex items-center py-3" href="/dashboard">
+        <div class="text-yellow-300 group-hover:text-white">Dashboard</div>
+      </Link>
+    </div>
+    <div class="mb-4">
+      <Link class="group flex items-center py-3" href="/dashboard">
+        <div class="text-yellow-300 group-hover:text-white">Dashboard</div>
+      </Link>
+    </div>
+    <div class="mb-4">
+      <Link class="group flex items-center py-3" href="/dashboard">
+        <div class="text-yellow-300 group-hover:text-white">Dashboard</div>
+      </Link>
+    </div>
+  </div>
 </template>

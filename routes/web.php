@@ -23,7 +23,11 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+    return Inertia::render('Dashboard', [
+        'user' => [
+            'name' => 'Sam Hernandez'
+        ]
+    ]);
 });
 
 Route::post('/logout', function () {
