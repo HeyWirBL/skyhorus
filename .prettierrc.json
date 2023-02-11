@@ -1,8 +1,8 @@
 {
-    "printWidth": 100000,
-    "trailingComma": "all",
-    "tabWidth": 2,
-    "semi": false,
-    "singleQuote": true,
-    "htmlWhitespaceSensitivity": "css"
+  "printWidth": 100000,
+  "trailingComma": "all",
+  "tabWidth": 2,
+  "semi": false,
+  "singleQuote": true,
+  "htmlWhitespaceSensitivity": "css"
 }
