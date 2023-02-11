@@ -34,7 +34,7 @@ module.exports = {
         outline: '0 0 0 2px ' + theme('colors.indigo.500'),
       }),
       fontFamily: {
-        sans: ['Lato', ...defaultTheme.fontFamily.sans],
+        sans: ['Nunito', ...defaultTheme.fontFamily.sans],
       },
       fill: (theme) => theme('colors'),
     },
