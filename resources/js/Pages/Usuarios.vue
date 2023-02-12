@@ -1,7 +1,19 @@
 <script setup>
+import Pagination from '@/Components/Pagination.vue'
 import { Head, Link } from '@inertiajs/vue3'
+import { computed } from 'vue'
 
-defineProps({ usuarios: Array })
+const props = defineProps({ usuarios: Object })
+
+const roundedClasses = computed(() => {
+  if (props.usuarios.links === '&laquo; Previous') {
+    return 'block ml-0 rounded-l-lg'
+  } else if (props.usuarios.links === 'Next &raquo;') {
+    return 'text-blue-500'
+  } else {
+    return ''
+  }
+})
 </script>
 <template>
   <div>
@@ -77,7 +89,7 @@ defineProps({ usuarios: Array })
           </tr>
         </thead>
         <tbody>
-          <tr v-for="usuario in usuarios" :key="usuario.idUsuario" class="bg-white border-b">
+          <tr v-for="usuario in props.usuarios.data" :key="usuario.idUsuario" class="bg-white border-b">
             <td class="w-4 p-4">
               <div class="flex items-center">
                 <input id="checkbox-table-search-1" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" />
@@ -86,8 +98,8 @@ defineProps({ usuarios: Array })
             </td>
             <td class="px-6 py-4">{{ usuario.nombre }}</td>
             <td class="px-6 py-4">{{ usuario.apellidos }}</td>
-            <td class="px-6 py-4">Jesus.Manuel</td>
-            <td class="px-6 py-4">jesus@admin.com</td>
+            <td class="px-6 py-4">{{ usuario.user.username }}</td>
+            <td class="px-6 py-4">{{ usuario.user.email }}</td>
             <td class="px-6 py-4">{{ usuario.rol }}</td>
             <td class="px-6 py-4">
               <Link href="#" class="font-medium text-orange-600 hover:underline">Editar</Link>
@@ -95,6 +107,8 @@ defineProps({ usuarios: Array })
           </tr>
         </tbody>
       </table>
+      <!-- Paginator -->
+      <Pagination class="pt-4" :links="props.usuarios.links" :total="props.usuarios.total" />
     </div>
   </div>
 </template>

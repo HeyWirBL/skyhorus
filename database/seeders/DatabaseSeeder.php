@@ -15,17 +15,17 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $user = \App\Models\User::factory()->create([
-            'username' => 'Jesus.Mendez',
-            'email' => 'jesus@admin.com',
-            'password' => Hash::make('Desarrollo123#2023'),
-            'admin' => true,
-        ]);
-        \App\Models\Usuario::factory()->create([
-            'nombre' => 'Jesús Manuel',
-            'apellidos' => 'Méndez García',
-            'rol' => 'Administrador',
-            'user_id' => $user->id,
-        ]);
+        //$user = \App\Models\User::factory()->create([
+        //    'username' => 'Jesus.Mendez',
+        //    'email' => 'jesus@admin.com',
+        //    'password' => Hash::make('Desarrollo123#2023'),
+        //    'admin' => false,
+        //]);
+        //\App\Models\Usuario::factory()->create([
+        //    'nombre' => 'Jesús Manuel',
+        //    'apellidos' => 'Méndez García',
+        //    'rol' => 'Usuario',
+        //    'user_id' => $user->id,
+        //]);
     }
 }

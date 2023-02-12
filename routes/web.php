@@ -26,12 +26,15 @@ Route::get('/', function () {
 
 Route::get('/usuarios', function () {
     return Inertia::render('Usuarios', [
-        'usuarios' => Usuario::all()->map(fn($usuario) => [
-            'idUsuario' => $usuario->idUsuario,
-            'nombre' => $usuario->nombre,
-            'apellidos' => $usuario->apellidos,
-            'rol' => $usuario->rol,
-        ]),
+        'usuarios' => Usuario::paginate(10)
+                ->through(fn ($usuario) => [
+                    'idUsuario' => $usuario->idUsuario,
+                    'nombre' => $usuario->nombre,
+                    'apellidos' => $usuario->apellidos,
+                    'rol' => $usuario->rol,
+                    'deleted_at' => $usuario->deleted_at,
+                    'user' => $usuario->user ? $usuario->user->only('username', 'email') : null,
+                ]),    
     ]);
 });
 
