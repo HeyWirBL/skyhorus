@@ -1,3 +1,41 @@
+/* Reset */
 @tailwind base;
+/* Components */
 @tailwind components;
+/* Utilities */
 @tailwind utilities;
+
+@layer base {
+  input,
+  select,
+  textarea,
+  button,
+  div,
+  a {
+    outline: none;
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus,
+  button:focus,
+  div:focus,
+  a:focus {
+    outline: none;
+  }
+
+  input:active,
+  select:active,
+  textarea:active,
+  button:active,
+  div:active,
+  a:active {
+    outline: none;
+  }
+}
+
+@layer components {
+  .btn-yellow {
+    @apply px-6 py-3 rounded bg-yellow-500 text-white text-sm leading-4 font-bold whitespace-nowrap hover:bg-yellow-400 focus:bg-yellow-400;
+  }
+}
