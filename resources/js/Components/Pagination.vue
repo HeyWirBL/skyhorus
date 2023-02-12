@@ -5,7 +5,7 @@ defineProps({ links: Array, total: Number })
 </script>
 
 <template>
-  <div v-if="links.length > 1">
+  <div v-if="links.length > 3">
     <div class="flex items-center justify-between">
       <span class="text-sm font-normal text-gray-500">
         Mostrando <span class="font-semibold text-gray-900">1-{{ total }}</span> de <span class="font-semibold text-gray-900">{{ total }}</span>
