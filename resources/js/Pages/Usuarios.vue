@@ -10,7 +10,7 @@ defineProps({ usuarios: Array })
     <div class="relative overflow-x-auto">
       <div class="flex items-center justify-between pb-4">
         <div>
-          <button id="dropdownRadioButton" data-dropdown-toggle="dropdownRadio" class="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-3 py-1.5" type="button">
+          <button id="dropdownRadioButton" data-dropdown-toggle="dropdownRadio" class="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-4 py-1.5" type="button">
             <svg class="w-4 h-4 mr-2 text-gray-400" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" /></svg>
             Last 30 days
             <svg class="w-3 h-3 ml-2" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
@@ -59,42 +59,42 @@ defineProps({ usuarios: Array })
           <input id="table-search" type="text" class="block p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500" />
         </div>
       </div>
+      <table class="w-full text-sm text-left text-gray-500">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+          <tr>
+            <th scope="col" class="p-4">
+              <div class="flex items-center">
+                <input id="checkbox-all-search-users" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" />
+                <label for="checkbox-all-search-users" class="sr-only">checkbox</label>
+              </div>
+            </th>
+            <th scope="col" class="px-6 py-3">Nombre</th>
+            <th scope="col" class="px-6 py-3">Apellidos</th>
+            <th scope="col" class="px-6 py-3">Usuario</th>
+            <th scope="col" class="px-6 py-3">Email</th>
+            <th scope="col" class="px-6 py-3">Rol</th>
+            <th scope="col" class="px-6 py-3">Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="usuario in usuarios" :key="usuario.idUsuario" class="bg-white border-b">
+            <td class="w-4 p-4">
+              <div class="flex items-center">
+                <input id="checkbox-table-search-1" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" />
+                <label for="checkbox-table-search-1" class="sr-only">checkbox</label>
+              </div>
+            </td>
+            <td class="px-6 py-4">{{ usuario.nombre }}</td>
+            <td class="px-6 py-4">{{ usuario.apellidos }}</td>
+            <td class="px-6 py-4">Jesus.Manuel</td>
+            <td class="px-6 py-4">jesus@admin.com</td>
+            <td class="px-6 py-4">{{ usuario.rol }}</td>
+            <td class="px-6 py-4">
+              <Link href="#" class="font-medium text-orange-600 hover:underline">Editar</Link>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-    <table class="w-full text-sm text-left text-gray-500">
-      <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-        <tr>
-          <th scope="col" class="p-4">
-            <div class="flex items-center">
-              <input id="checkbox-all-search-users" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" />
-              <label for="checkbox-all-search-users" class="sr-only">checkbox</label>
-            </div>
-          </th>
-          <th scope="col" class="px-6 py-3">Nombre</th>
-          <th scope="col" class="px-6 py-3">Apellidos</th>
-          <th scope="col" class="px-6 py-3">Usuario</th>
-          <th scope="col" class="px-6 py-3">Email</th>
-          <th scope="col" class="px-6 py-3">Rol</th>
-          <th scope="col" class="px-6 py-3">Acción</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="usuario in usuarios" :key="usuario.idUsuario" class="bg-white border-b">
-          <td class="w-4 p-4">
-            <div class="flex items-center">
-              <input id="checkbox-table-search-1" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" />
-              <label for="checkbox-table-search-1" class="sr-only">checkbox</label>
-            </div>
-          </td>
-          <td class="px-6 py-4">{{ usuario.nombre }}</td>
-          <td class="px-6 py-4">{{ usuario.apellidos }}</td>
-          <td class="px-6 py-4">Jesus.Manuel</td>
-          <td class="px-6 py-4">jesus@admin.com</td>
-          <td class="px-6 py-4">{{ usuario.rol }}</td>
-          <td class="px-6 py-4">
-            <Link href="#" class="font-medium text-orange-600 hover:underline">Editar</Link>
-          </td>
-        </tr>
-      </tbody>
-    </table>
   </div>
 </template>
