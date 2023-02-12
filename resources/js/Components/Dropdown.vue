@@ -2,7 +2,7 @@
 import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { createPopper } from '@popperjs/core'
 
-const show = ref(false)
+const open = ref(false)
 const button = ref(null)
 const dropdown = ref(null)
 
@@ -18,9 +18,9 @@ const props = defineProps({
 })
 
 watch(
-  () => show.value,
-  (show) => {
-    if (show) {
+  () => open.value,
+  (open) => {
+    if (open) {
       nextTick(() => {
         return createPopper(button.value, dropdown.value, {
           placement: props.placement,
@@ -38,33 +38,26 @@ watch(
   },
 )
 
-const close = () => {
-  if (props.autoClose) {
-    show.value = false
-  }
-}
-
 const closeOnEscape = (e) => {
-  if (e.key === 'Escape' && show.value) {
-    close()
+  if (open.value && e.key === 'Escape') {
+    open.value = false
   }
 }
 
 onMounted(() => document.addEventListener('keydown', closeOnEscape))
-
 onUnmounted(() => {
   document.removeEventListener('keydown', closeOnEscape)
-  document.body.style.overflow = null
 })
 </script>
 
 <template>
-  <button ref="button" type="button" @click="show = true">
+  <button ref="button" type="button" @click="open = !open">
     <slot />
-    <teleport v-if="show" to="#dropdown">
+    <!-- Full Screen Dropdown Overlay -->
+    <teleport v-if="open" to="#dropdown">
       <div>
-        <div style="position: fixed; top: 0; right: 0; left: 0; bottom: 0; z-index: 99998; background: black; opacity: 0.2" @click="show = false" />
-        <div ref="dropdown" style="position: absolute; z-index: 99999" @click.stop="show = !autoClose">
+        <div style="position: fixed; top: 0; right: 0; left: 0; bottom: 0; z-index: 99998; background: black; opacity: 0.2" @click="open = false" />
+        <div ref="dropdown" style="position: absolute; z-index: 99999" @click.stop="open = !autoClose">
           <slot name="dropdown" />
         </div>
       </div>

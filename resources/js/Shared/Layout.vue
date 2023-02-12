@@ -11,7 +11,7 @@ import MainMenu from './MainMenu.vue'
       <div class="md:flex md:flex-shrink-0">
         <div class="flex items-center justify-between px-6 py-4 bg-zinc-900 md:flex-shrink-0 md:justify-center md:w-56">
           <Link class="text-white" href="/"> GestionDocumental </Link>
-          <Dropdown class="md:hidden" placement="bottom-end">
+          <Dropdown :auto-close="false" class="md:hidden" placement="bottom-end">
             <template #default>
               <svg class="w-6 h-6 fill-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" /></svg>
             </template>
