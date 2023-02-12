@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Usuario;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -20,6 +21,14 @@ Route::get('/', function () {
         'user' => [
             'name' => 'Sam Hernandez'
         ]
+    ]);
+});
+
+Route::get('/usuarios', function () {
+    return Inertia::render('Usuarios', [
+        'usuarios' => Usuario::all()->map(fn($usuario) => [
+            'nombre' => $usuario->nombre
+        ]),
     ]);
 });
 
