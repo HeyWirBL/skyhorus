@@ -72,6 +72,22 @@ Route::post('/usuarios', function () {
     // return redirect('/usuarios');
 });
 
+Route::get('/directorios', function () {
+    return Inertia::render('Directorios/Index');
+});
+
+Route::get('/meses', function () {
+    return Inertia::render('Meses/Index');
+});
+
+Route::get('/anos', function () {
+    return Inertia::render('Anos/Index');
+});
+
+Route::get('/pozos', function () {
+    return Inertia::render('Pozos/Index');
+});
+
 Route::post('/logout', function () {
     dd('loggin the user out');
 });
