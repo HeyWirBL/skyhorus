@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('directorios', function (Blueprint $table) {
             $table->id('idDirectorio');
-            $table->string('nombre_dir', 100);
+            $table->string('nombre_dir', 100)->unique();
             $table->date('fecha_dir');
             $table->timestamps();
             $table->softDeletes();

@@ -1,18 +1,36 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { Head, Link, router } from '@inertiajs/vue3'
+import debounce from 'lodash/debounce'
+import mapValues from 'lodash/mapValues'
+import pickBy from 'lodash/pickBy'
 import Icon from '@/Components/Icon.vue'
 import Pagination from '@/Components/Pagination.vue'
 import SearchFilter from '@/Components/SearchFilter.vue'
 
 const props = defineProps({
   usuarios: Object,
-  filters: Object,
+  filtros: Object,
 })
 
 const selected = ref([])
 const selectAll = ref(false)
-let search = ref(props.filters.search)
+
+const form = ref({
+  search: props.filtros.search,
+  role: props.filtros.role,
+  trashed: props.filtros.trashed,
+})
+
+watch(
+  () => form.value,
+  debounce(function () {
+    router.get('/usuarios', pickBy(form.value), { preserveState: true, replace: true })
+  }, 150),
+  {
+    deep: true,
+  },
+)
 
 const select = () => {
   selected.value = []
@@ -23,17 +41,9 @@ const select = () => {
   }
 }
 
-watch(search, (value) => {
-  // console.log('changed ' + value)
-  router.get(
-    '/usuarios',
-    { search: value },
-    {
-      preserveState: true,
-      replace: true,
-    },
-  )
-})
+const reset = () => {
+  form.value = mapValues(form.value, () => null)
+}
 </script>
 
 <template>
@@ -41,7 +51,7 @@ watch(search, (value) => {
     <Head title="Usuarios" />
     <h1 class="mb-8 text-3xl font-bold">Usuarios</h1>
     <div class="flex items-center justify-between mb-6">
-      <SearchFilter v-model="search" class="mr-4 w-full max-w-md">
+      <SearchFilter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
         <label class="block text-gray-700">Rol:</label>
         <select class="form-select mt-1 w-full">
           <option :value="null" />

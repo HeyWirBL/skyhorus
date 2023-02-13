@@ -35,6 +35,7 @@ defineExpose({ focus: () => input.value.focus() })
 <template>
   <div :class="$attrs.class">
     <label v-if="label" class="form-label" :for="id">{{ props.label }}</label>
-    <input :id="id" ref="input" v-bind="{ ...$attrs, class: null }" class="form-input" :type="props.type" :value="props.modelValue" @input="$emit('update:modelValue', $event.target.value)" />
+    <input :id="id" ref="input" v-bind="{ ...$attrs, class: null }" class="form-input" :class="{ error: error }" :type="props.type" :value="props.modelValue" @input="$emit('update:modelValue', $event.target.value)" />
+    <div v-if="error" class="form-error">{{ error }}</div>
   </div>
 </template>

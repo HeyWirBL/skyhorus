@@ -21,11 +21,16 @@ class DatabaseSeeder extends Seeder
         //    'password' => Hash::make('Desarrollo123#2023'),
         //    'admin' => false,
         //]);
+
         //\App\Models\Usuario::factory()->create([
         //    'nombre' => 'Jesús Manuel',
         //    'apellidos' => 'Méndez García',
         //    'rol' => 'Usuario',
         //    'user_id' => $user->id,
         //]);
+        //
+        //\App\Models\Directorio::factory(3)->create();
+
+        //\App\Models\Ano::factory(2)->create();
     }
 }

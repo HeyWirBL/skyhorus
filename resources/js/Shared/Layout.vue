@@ -3,6 +3,7 @@ import { Link } from '@inertiajs/vue3'
 import Dropdown from '@/Components/Dropdown.vue'
 import Icon from '@/Components/Icon.vue'
 import MainMenu from './MainMenu.vue'
+import FlashMessages from './FlashMessages.vue'
 </script>
 
 <template>
@@ -47,6 +48,7 @@ import MainMenu from './MainMenu.vue'
       <div class="md:flex md:flex-grow md:overflow-hidden">
         <MainMenu class="hidden flex-shrink-0 p-12 w-56 bg-zinc-800 overflow-y-auto md:block" />
         <div class="px-4 py-8 md:flex-1 md:p-12 md:overflow-y-auto" scroll-region>
+          <FlashMessages />
           <slot />
         </div>
       </div>
