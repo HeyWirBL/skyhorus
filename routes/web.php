@@ -1,9 +1,12 @@
 <?php
 
+use App\Models\User;
 use App\Models\Usuario;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 /*
@@ -26,7 +29,7 @@ Route::get('/', function () {
 });
 
 Route::get('/usuarios', function () {
-    return Inertia::render('Usuarios', [
+    return Inertia::render('Usuarios/Index', [
         'filters' => Request::only(['search']),
         'usuarios' => Usuario::query()
                 ->when(Request::input('search'), function ($query, $search) {
@@ -43,6 +46,30 @@ Route::get('/usuarios', function () {
                     'user' => $usuario->user ? $usuario->user->only('username', 'email') : null,
                 ]),                    
     ]);
+});
+
+Route::get('/usuarios/create', function () {
+    return Inertia::render('Usuarios/Create');
+});
+
+/* TODO: Fix Store One-to-One Method */
+Route::post('/usuarios', function () {
+
+    // $user = User::create([
+    //     'username' => Request::get('username'),
+    //     'email' => Request::get('email'),
+    //     'password' => Hash::make(Request::get('password')),
+    // ]);
+    // 
+    // Usuario::create([
+    //     'nombre' => Request::get('nombre'),
+    //     'apellidos' => Request::get('apellidos'),
+    //     'rol' => Request::get('rol'),
+    //     'user_id' => $user->id,
+    // ]);
+ 
+    // // redirect 
+    // return redirect('/usuarios');
 });
 
 Route::post('/logout', function () {
