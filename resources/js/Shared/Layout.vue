@@ -1,6 +1,7 @@
 <script setup>
 import { Link } from '@inertiajs/vue3'
 import Dropdown from '@/Components/Dropdown.vue'
+import Icon from '@/Components/Icon.vue'
 import MainMenu from './MainMenu.vue'
 </script>
 
@@ -13,7 +14,7 @@ import MainMenu from './MainMenu.vue'
           <Link class="text-white" href="/"> GestionDocumental </Link>
           <Dropdown :auto-close="false" class="md:hidden" placement="bottom-end">
             <template #default>
-              <svg class="w-6 h-6 fill-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" /></svg>
+              <Icon class="w-6 h-6 fill-gray-200 group-hover:fill-white focus:fill-white" name="bars-3" />
             </template>
             <template #dropdown>
               <div class="mt-2 px-8 py-4 bg-zinc-800 rounded shadow-lg">
@@ -31,9 +32,7 @@ import MainMenu from './MainMenu.vue'
                   <span>Bienvenido(a) Samuel</span>
                   <span class="hidden md:inline">&nbsp;Hernández</span>
                 </div>
-                <!-- Icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" class="w-5 h-5 fill-gray-200 group-hover:fill-white focus:fill-white"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
-                <!-- End Icon -->
+                <Icon class="w-5 h-5 fill-gray-200 group-hover:fill-white focus:fill-white" name="cheveron-down" />
               </div>
             </template>
             <template #dropdown>

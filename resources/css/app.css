@@ -50,13 +50,13 @@
   .form-input,
   .form-textarea,
   .form-select {
-    @apply p-2 leading-normal block w-full border text-gray-700 bg-white font-sans rounded text-left appearance-none relative focus:border-yellow-400 focus:ring;
+    @apply p-2 leading-normal block w-full border-gray-300 text-gray-700 bg-white font-sans rounded-md text-left appearance-none relative focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50;
   }
 
   .form-input::placeholder,
   .form-textarea::placeholder,
   .form-select::placeholder {
-    @apply text-gray-500 opacity-100;
+    @apply text-gray-500 opacity-50;
   }
 
   .form-select {

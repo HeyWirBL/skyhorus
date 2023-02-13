@@ -1,15 +1,18 @@
 <script setup>
-import { ref } from 'vue'
-import { Head, Link } from '@inertiajs/vue3'
+import { ref, watch } from 'vue'
+import { Head, Link, router } from '@inertiajs/vue3'
+import Icon from '@/Components/Icon.vue'
 import Pagination from '@/Components/Pagination.vue'
 import SearchFilter from '@/Components/SearchFilter.vue'
 
 const props = defineProps({
   usuarios: Object,
+  filters: Object,
 })
 
 const selected = ref([])
 const selectAll = ref(false)
+let search = ref(props.filters.search)
 
 const select = () => {
   selected.value = []
@@ -19,6 +22,18 @@ const select = () => {
     }
   }
 }
+
+watch(search, (value) => {
+  // console.log('changed ' + value)
+  router.get(
+    '/usuarios',
+    { search: value },
+    {
+      preserveState: true,
+      replace: true,
+    },
+  )
+})
 </script>
 
 <template>
@@ -26,7 +41,7 @@ const select = () => {
     <Head title="Usuarios" />
     <h1 class="mb-8 text-3xl font-bold">Usuarios</h1>
     <div class="flex items-center justify-between mb-6">
-      <SearchFilter class="mr-4 w-full max-w-md">
+      <SearchFilter v-model="search" class="mr-4 w-full max-w-md">
         <label class="block text-gray-700">Rol:</label>
         <select class="form-select mt-1 w-full">
           <option :value="null" />
@@ -97,7 +112,7 @@ const select = () => {
             </td>
             <td class="w-px">
               <Link class="flex items-center px-6" :href="`/usuarios/${usuario.idUsuario}/edit`" tabindex="-1">
-                <svg class="block w-6 h-6 fill-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><polygon points="12.95 10.707 13.657 10 8 4.343 6.586 5.757 10.828 10 6.586 14.243 8 15.657 12.95 10.707" /></svg>
+                <Icon class="block w-6 h-6 fill-gray-400" name="cheveron-right" />
               </Link>
             </td>
           </tr>

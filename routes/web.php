@@ -2,6 +2,7 @@
 
 use App\Models\Usuario;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -26,7 +27,13 @@ Route::get('/', function () {
 
 Route::get('/usuarios', function () {
     return Inertia::render('Usuarios', [
-        'usuarios' => Usuario::paginate(10)
+        'filters' => Request::only(['search']),
+        'usuarios' => Usuario::query()
+                ->when(Request::input('search'), function ($query, $search) {
+                    $query->where('nombre', 'like', "%{$search}%");
+                })
+                ->paginate(10)
+                ->withQueryString()
                 ->through(fn ($usuario) => [
                     'idUsuario' => $usuario->idUsuario,
                     'nombre' => $usuario->nombre,
@@ -34,7 +41,7 @@ Route::get('/usuarios', function () {
                     'rol' => $usuario->rol,
                     'deleted_at' => $usuario->deleted_at,
                     'user' => $usuario->user ? $usuario->user->only('username', 'email') : null,
-                ]),    
+                ]),                    
     ]);
 });
 

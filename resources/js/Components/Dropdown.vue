@@ -53,7 +53,6 @@ onUnmounted(() => {
 <template>
   <button ref="button" type="button" @click="open = !open">
     <slot />
-    <!-- Full Screen Dropdown Overlay -->
     <teleport v-if="open" to="#dropdown">
       <div>
         <div style="position: fixed; top: 0; right: 0; left: 0; bottom: 0; z-index: 99998; background: black; opacity: 0.2" @click="open = false" />
