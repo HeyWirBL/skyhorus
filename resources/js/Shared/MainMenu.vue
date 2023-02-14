@@ -164,9 +164,9 @@ const isUrl = (...urls) => {
 
     <!-- Charts Link -->
     <div class="mb-4">
-      <Link class="group flex text-base items-center p-2 rounded-md" :class="isUrl('/graficas') ? 'bg-yellow-500' : 'hover:bg-zinc-700'" href="/graficas">
-        <Icon class="w-5 h-5" :class="isUrl('/graficas') ? 'fill-white' : 'fill-zinc-300 group-hover:fill-white'" name="chart" />
-        <div class="ml-2" :class="isUrl('/graficas') ? 'text-white' : 'text-zinc-300 group-hover:text-white'">Gráficas</div>
+      <Link class="group flex text-base items-center p-2 rounded-md" :class="isUrl('graficas') ? 'bg-yellow-500' : 'hover:bg-zinc-700'" href="/graficas">
+        <Icon class="w-5 h-5" :class="isUrl('graficas') ? 'fill-white' : 'fill-zinc-300 group-hover:fill-white'" name="chart" />
+        <div class="ml-2" :class="isUrl('graficas') ? 'text-white' : 'text-zinc-300 group-hover:text-white'">Gráficas</div>
       </Link>
     </div>
     <!-- End Charts Link -->

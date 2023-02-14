@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DirectorioController;
+use App\Http\Controllers\GraficaController;
 use App\Http\Controllers\UsuarioController;
 use App\Models\Ano;
 use App\Models\Mes;
@@ -53,6 +54,9 @@ Route::get('/anos', function () {
 Route::get('/pozos', function () {
     return Inertia::render('Pozos/Index');
 });
+
+/* Gráficas */
+Route::get('/graficas', [GraficaController::class, 'index']);
 
 Route::post('/logout', function () {
     dd('loggin the user out');
