@@ -19,4 +19,27 @@ class Directorio extends Model
         'nombre_dir',
         'fecha_dir',
     ];
+
+    public function resolveRouteBinding($value, $field = null)
+    {
+        return $this->where($field ?? 'idDirectorio', $value)->withTrashed()->firstOrFail();
+    }
+
+    public function documentos()
+    {
+        return $this->hasMany(Documento::class);
+    }
+
+    public function scopeFilter($query, array $filters)
+    {
+        $query->when($filters['search'] ?? null, function ($query, $search) {
+            $query->where('nombre_dir', 'like', '%'.$search.'%');
+        })->when($filters['trashed'] ?? null, function ($query, $trashed) {
+            if ($trashed === 'with') {
+                $query->withTrashed();
+            } elseif ($trashed === 'only') {
+                $query->onlyTrashed();
+            }
+        });
+    }
 }

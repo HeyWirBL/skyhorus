@@ -20,7 +20,6 @@ const props = defineProps({
 
 defineEmits(['update:modelValue'])
 
-// const inheritAttrs = ref(false)
 const input = ref(null)
 
 onMounted(() => {

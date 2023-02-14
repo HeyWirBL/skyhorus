@@ -1,16 +1,14 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DirectorioController;
 use App\Models\Ano;
-use App\Models\Directorio;
 use App\Models\Mes;
 use App\Models\User;
 use App\Models\Usuario;
 use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 /*
@@ -24,13 +22,8 @@ use Inertia\Inertia;
 |
 */
 
-Route::get('/', function () {
-    return Inertia::render('Dashboard', [
-        'user' => [
-            'name' => 'Sam Hernandez'
-        ]
-    ]);
-});
+/* Dashboard Principal */
+Route::get('/', [DashboardController::class, 'index']);
 
 Route::get('/usuarios', function () {
     return Inertia::render('Usuarios/Index', [
@@ -76,39 +69,14 @@ Route::post('/usuarios', function () {
     // return redirect('/usuarios');
 });
 
-Route::get('/directorios', function () {
-    return Inertia::render('Directorios/Index', [
-        'filtros' => Request::only(['search']),
-        'directorios' => Directorio::query()
-                ->when(Request::input('search'), function ($query, $search) {
-                    $query->where('nombre_dir', 'like', "%{$search}%");
-                })
-                ->paginate(10)
-                ->withQueryString()
-                ->through(fn ($directorio) => [
-                    'idDirectorio' => $directorio->idDirectorio,
-                    'nombre_dir' => $directorio->nombre_dir,
-                    'fecha_dir' => $directorio->fecha_dir,
-                ]),        
-        
-    ]);
-});
+/* Catálogo de Directorios / Carpetas */
+Route::get('directorios/{directorio}/edit', [DirectorioController::class, 'edit'])
+    ->name('directorios.edit');
+    
+Route::resource('directorios', DirectorioController::class)
+    ->only(['index', 'create', 'store', 'update', 'destroy']);
 
-Route::get('/directorios/create', function () {
-    return Inertia::render('Directorios/Create');
-});
-
-Route::post('/directorios', function () {
-    $attributes = Request::validate([
-        'nombre_dir' => 'required',
-        'fecha_dir' => 'required',
-    ]);
-
-    Directorio::create($attributes);
-
-    return Redirect::route('directorios')->with('success', 'Carpeta creada.');
-});
-
+/* Catálogo de Meses / Meses Detalles */
 Route::get('/meses', function () {
     return Inertia::render('Meses/Index', [
         'meses' => Mes::all()->map(fn($mes) => [
@@ -117,6 +85,7 @@ Route::get('/meses', function () {
     ]);
 });
 
+/* Catálogo de Años */
 Route::get('/anos', function () {
     return Inertia::render('Anos/Index', [
         'anos' => Ano::all()->map(fn($ano) => [
@@ -126,6 +95,7 @@ Route::get('/anos', function () {
     ]);
 });
 
+/* Catálogo de Pozos */
 Route::get('/pozos', function () {
     return Inertia::render('Pozos/Index');
 });
