@@ -2,12 +2,9 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DirectorioController;
+use App\Http\Controllers\UsuarioController;
 use App\Models\Ano;
 use App\Models\Mes;
-use App\Models\User;
-use App\Models\Usuario;
-use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -25,56 +22,13 @@ use Inertia\Inertia;
 /* Dashboard Principal */
 Route::get('/', [DashboardController::class, 'index']);
 
-Route::get('/usuarios', function () {
-    return Inertia::render('Usuarios/Index', [
-        'filtros' => Request::only(['search']),
-        'usuarios' => Usuario::query()
-                ->when(Request::input('search'), function ($query, $search) {
-                    $query->where('nombre', 'like', "%{$search}%");
-                })
-                ->paginate(10)
-                ->withQueryString()
-                ->through(fn ($usuario) => [
-                    'idUsuario' => $usuario->idUsuario,
-                    'nombre' => $usuario->nombre,
-                    'apellidos' => $usuario->apellidos,
-                    'rol' => $usuario->rol,
-                    'deleted_at' => $usuario->deleted_at,
-                    'user' => $usuario->user ? $usuario->user->only('username', 'email') : null,
-                ]),                    
-    ]);
-});
-
-Route::get('/usuarios/create', function () {
-    return Inertia::render('Usuarios/Create');
-});
-
-/* TODO: Fix Store One-to-One Method */
-Route::post('/usuarios', function () {
-
-    // $user = User::create([
-    //     'username' => Request::get('username'),
-    //     'email' => Request::get('email'),
-    //     'password' => Hash::make(Request::get('password')),
-    // ]);
-    // 
-    // Usuario::create([
-    //     'nombre' => Request::get('nombre'),
-    //     'apellidos' => Request::get('apellidos'),
-    //     'rol' => Request::get('rol'),
-    //     'user_id' => $user->id,
-    // ]);
- 
-    // // redirect 
-    // return redirect('/usuarios');
-});
+/* Catálogo de Usuarios  */
+Route::resource('usuarios', UsuarioController::class)
+    ->only(['index', 'create', 'store']);
 
 /* Catálogo de Directorios / Carpetas */
-Route::get('directorios/{directorio}/edit', [DirectorioController::class, 'edit'])
-    ->name('directorios.edit');
-    
 Route::resource('directorios', DirectorioController::class)
-    ->only(['index', 'create', 'store', 'update', 'destroy']);
+    ->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
 
 /* Catálogo de Meses / Meses Detalles */
 Route::get('/meses', function () {

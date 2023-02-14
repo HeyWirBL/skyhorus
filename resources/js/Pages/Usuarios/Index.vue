@@ -10,16 +10,16 @@ import SearchFilter from '@/Components/SearchFilter.vue'
 
 const props = defineProps({
   usuarios: Object,
-  filtros: Object,
+  filters: Object,
 })
 
 const selected = ref([])
 const selectAll = ref(false)
 
 const form = ref({
-  search: props.filtros.search,
-  role: props.filtros.role,
-  trashed: props.filtros.trashed,
+  search: props.filters.search,
+  role: props.filters.role,
+  trashed: props.filters.trashed,
 })
 
 watch(
@@ -53,20 +53,23 @@ const reset = () => {
     <div class="flex items-center justify-between mb-6">
       <SearchFilter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
         <label class="block text-gray-700">Rol:</label>
-        <select class="form-select mt-1 w-full">
+        <select v-model="form.role" class="form-select mt-1 w-full">
           <option :value="null" />
           <option value="Usuario">Usuario</option>
           <option value="Administrador">Administrador</option>
+          <option value="Colaborador">Colaborador</option>
+          <option value="Consultor">Consultor</option>
+          <option value="Editor">Editor</option>
         </select>
         <label class="block mt-4 text-gray-700">Eliminado:</label>
-        <select class="form-select mt-1 w-full">
+        <select v-model="form.trashed" class="form-select mt-1 w-full">
           <option :value="null" />
           <option value="with">Con Modificación</option>
           <option value="only">Solo Eliminado</option>
         </select>
       </SearchFilter>
-      <Link class="btn-yellow" href="/usuarios/create">
-        <span>Añadir</span>
+      <Link class="btn-yellow" href="/usuarios/crear">
+        <span>Crear</span>
         <span class="hidden md:inline">&nbsp;Usuario</span>
       </Link>
     </div>

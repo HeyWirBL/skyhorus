@@ -8,13 +8,13 @@ const props = defineProps({
 })
 
 const form = useForm({
-  idDirectorio: props.directorio.idDirectorio,
   nombre_dir: props.directorio.nombre_dir,
+  idDirectorio: props.directorio.idDirectorio,
   fecha_dir: props.directorio.fecha_dir,
+  deleted_at: props.directorio.deleted_at,
 })
 
-// `/directorios/${props.directorio.idDirectorio}`
-const update = () => form.put(route('directorios.update', props.directorio.idDirectorio))
+const update = () => form.put(`/directorios/${props.directorio.idDirectorio}`)
 const destroy = () => form.delete(`/directorios/${props.directorio.idDirectorio}`)
 // const restore = () => form.put(`/directorios/${props.directorio.idDirectorio}/restore`)
 </script>

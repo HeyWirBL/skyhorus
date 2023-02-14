@@ -58,7 +58,7 @@ const reset = () => {
           <option value="only">Solo Eliminado</option>
         </select>
       </SearchFilter>
-      <Link class="btn-yellow" href="/directorios/create">
+      <Link class="btn-yellow" href="/directorios/crear">
         <span>Añadir</span>
         <span class="hidden md:inline">&nbsp;Directorio</span>
       </Link>
@@ -88,17 +88,17 @@ const reset = () => {
             </td>
             <td class="w-px">Archivos</td>
             <td>
-              <Link class="flex items-center px-6 py-4" :href="`/directorios/${directorio.idDirectorio}/edit`" tabindex="-1">
+              <Link class="flex items-center px-6 py-4" :href="`/directorios/${directorio.idDirectorio}/editar`" tabindex="-1">
                 {{ directorio.nombre_dir }}
               </Link>
             </td>
             <td>
-              <Link class="flex items-center px-6 py-4" :href="`/directorios/${directorio.idDirectorio}/edit`" tabindex="-1">
+              <Link class="flex items-center px-6 py-4" :href="`/directorios/${directorio.idDirectorio}/editar`" tabindex="-1">
                 {{ directorio.fecha_dir }}
               </Link>
             </td>
             <td class="w-px">
-              <Link class="flex items-center px-6" :href="`/directorios/${directorio.idDirectorio}/edit`" tabindex="-1">
+              <Link class="flex items-center px-6" :href="`/directorios/${directorio.idDirectorio}/editar`" tabindex="-1">
                 <Icon class="block w-6 h-6 fill-gray-400" name="cheveron-right" />
               </Link>
             </td>
