@@ -109,18 +109,18 @@ const isUrl = (...urls) => {
 
         <!-- Well Documents Catalog -->
         <div class="mb-2">
-          <Link class="group flex text-base items-center p-2 pl-11 rounded-md" :class="isUrl('usuarios') ? 'bg-yellow-500' : 'hover:bg-zinc-700'" href="/usuarios">
-            <Icon class="w-6 h-6" :class="isUrl('usuarios') ? 'fill-white' : 'fill-zinc-300 group-hover:fill-white'" name="documents" />
-            <div class="ml-2" :class="isUrl('usuarios') ? 'text-white' : 'text-zinc-300 group-hover:text-white'">Documentos</div>
+          <Link class="group flex text-base items-center p-2 pl-11 rounded-md" :class="isUrl('docpozos') ? 'bg-yellow-500' : 'hover:bg-zinc-700'" href="/docpozos">
+            <Icon class="w-6 h-6" :class="isUrl('docpozos') ? 'fill-white' : 'fill-zinc-300 group-hover:fill-white'" name="documents" />
+            <div class="ml-2" :class="isUrl('docpozos') ? 'text-white' : 'text-zinc-300 group-hover:text-white'">Documentos</div>
           </Link>
         </div>
         <!-- End Well Documents Catalog -->
 
         <!-- End Well Components Catalog -->
         <div>
-          <Link class="group flex text-base items-center p-2 pl-11 rounded-md" :class="isUrl('usuarios') ? 'bg-yellow-500' : 'hover:bg-zinc-700'" href="/usuarios">
-            <Icon class="w-6 h-6" :class="isUrl('usuarios') ? 'fill-white' : 'fill-zinc-300 group-hover:fill-white'" name="components" />
-            <div class="ml-2" :class="isUrl('usuarios') ? 'text-white' : 'text-zinc-300 group-hover:text-white'">Componentes</div>
+          <Link class="group flex text-base items-center p-2 pl-11 rounded-md" :class="isUrl('componentespozos') ? 'bg-yellow-500' : 'hover:bg-zinc-700'" href="/componentespozos">
+            <Icon class="w-6 h-6" :class="isUrl('componentespozos') ? 'fill-white' : 'fill-zinc-300 group-hover:fill-white'" name="components" />
+            <div class="ml-2" :class="isUrl('componentespozos') ? 'text-white' : 'text-zinc-300 group-hover:text-white'">Componentes</div>
           </Link>
         </div>
         <!-- End Well Components Catalog -->
@@ -141,23 +141,23 @@ const isUrl = (...urls) => {
       </button>
       <input id="chromatography-catalogs" class="peer hidden" type="checkbox" checked />
       <div class="peer-checked:hidden">
-        <!-- Well Details Catalog -->
+        <!-- Gas Chromatography Catalog -->
         <div class="mb-2">
-          <Link class="group flex text-base items-center p-2 pl-11 rounded-md" :class="isUrl('pozos') ? 'bg-yellow-500' : 'hover:bg-zinc-700'" href="/pozos">
-            <Icon class="w-5 h-5" :class="isUrl('pozos') ? 'fill-white' : 'fill-zinc-300 group-hover:fill-white'" name="fire" />
-            <div class="ml-2" :class="isUrl('pozos') ? 'text-white' : 'text-zinc-300 group-hover:text-white'">Gas</div>
+          <Link class="group flex text-base items-center p-2 pl-11 rounded-md" :class="isUrl('cromatografiagas') ? 'bg-yellow-500' : 'hover:bg-zinc-700'" href="/cromatografiagas">
+            <Icon class="w-5 h-5" :class="isUrl('cromatografiagas') ? 'fill-white' : 'fill-zinc-300 group-hover:fill-white'" name="fire" />
+            <div class="ml-2" :class="isUrl('cromatografiagas') ? 'text-white' : 'text-zinc-300 group-hover:text-white'">Gas</div>
           </Link>
         </div>
-        <!-- End Well Details Catalog -->
+        <!-- Gas Chromatography Catalog -->
 
-        <!-- Well Documents Catalog -->
+        <!-- Liquid Chromatography Catalog -->
         <div>
-          <Link class="group flex text-base items-center p-2 pl-11 rounded-md" :class="isUrl('usuarios') ? 'bg-yellow-500' : 'hover:bg-zinc-700'" href="/usuarios">
-            <Icon class="w-6 h-6" :class="isUrl('usuarios') ? 'fill-white' : 'fill-zinc-300 group-hover:fill-white'" name="liquid" />
-            <div class="ml-2" :class="isUrl('usuarios') ? 'text-white' : 'text-zinc-300 group-hover:text-white'">Liquída</div>
+          <Link class="group flex text-base items-center p-2 pl-11 rounded-md" :class="isUrl('cromatografialiquida') ? 'bg-yellow-500' : 'hover:bg-zinc-700'" href="/cromatografialiquida">
+            <Icon class="w-6 h-6" :class="isUrl('cromatografialiquida') ? 'fill-white' : 'fill-zinc-300 group-hover:fill-white'" name="liquid" />
+            <div class="ml-2" :class="isUrl('cromatografialiquida') ? 'text-white' : 'text-zinc-300 group-hover:text-white'">Liquída</div>
           </Link>
         </div>
-        <!-- End Well Documents Catalog -->
+        <!-- Liquid Chromatography Catalog -->
       </div>
     </div>
     <!-- End Chromatography Catalogs Links -->

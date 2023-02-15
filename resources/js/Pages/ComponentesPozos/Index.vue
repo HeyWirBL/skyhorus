@@ -1,12 +1,11 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3'
-import Icon from '@/Components/Icon.vue'
 import SearchFilter from '@/Components/SearchFilter.vue'
 </script>
 
 <template>
-  <Head title="Pozos" />
-  <h1 class="mb-8 text-3xl font-bold">Pozos</h1>
+  <Head title="Componentes de Pozos" />
+  <h1 class="mb-8 text-3xl font-bold">Componentes de Pozos</h1>
   <div class="flex items-center justify-between mb-6">
     <SearchFilter class="mr-4 w-full max-w-md">
       <label class="block mt-4 text-gray-700">Eliminado:</label>
@@ -16,14 +15,9 @@ import SearchFilter from '@/Components/SearchFilter.vue'
         <option value="only">Solo Eliminado</option>
       </select>
     </SearchFilter>
-    <div>
-      <Link class="btn-yellow mr-4" href="/pozos/crear">
-        <span>Crear</span>
-        <span class="hidden md:inline">&nbsp;Pozo</span>
-      </Link>
-      <button type="button">
-        <Icon class="w-6 h-6" name="three-dots" />
-      </button>
-    </div>
+    <Link class="btn-yellow mr-4" href="/pozos/crear">
+      <span>Subir</span>
+      <span class="hidden md:inline">&nbsp;Documentos</span>
+    </Link>
   </div>
 </template>

@@ -1,13 +1,16 @@
 <?php
 
+use App\Http\Controllers\AnoController;
+use App\Http\Controllers\ComponentesPozoController;
+use App\Http\Controllers\CromatografiaGasController;
+use App\Http\Controllers\CromatografiaLiquidaController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DirectorioController;
+use App\Http\Controllers\DocPozoController;
 use App\Http\Controllers\GraficaController;
+use App\Http\Controllers\PozoController;
 use App\Http\Controllers\UsuarioController;
-use App\Models\Ano;
-use App\Models\Mes;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,33 +34,34 @@ Route::resource('usuarios', UsuarioController::class)
 Route::resource('directorios', DirectorioController::class)
     ->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
 
-/* Catálogo de Meses / Meses Detalles */
-Route::get('/meses', function () {
-    return Inertia::render('Meses/Index', [
-        'meses' => Mes::all()->map(fn($mes) => [
-            ''
-        ]),
-    ]);
-});
-
 /* Catálogo de Años */
-Route::get('/anos', function () {
-    return Inertia::render('Anos/Index', [
-        'anos' => Ano::all()->map(fn($ano) => [
-            'idAno' => $ano->idAno,
-            'ano' => $ano->ano,
-        ]),
-    ]);
-});
+Route::resource('anos', AnoController::class)
+    ->only(['index']);
 
 /* Catálogo de Pozos */
-Route::get('/pozos', function () {
-    return Inertia::render('Pozos/Index');
-});
+Route::resource('pozos', PozoController::class)
+    ->only(['index']);
 
-/* Gráficas */
+/* Catálogo de Pozos: Documentos */
+Route::resource('docpozos', DocPozoController::class)
+    ->only(['index']);
+
+/* Catálogo de Pozos: Componentes */
+Route::resource('componentespozos', ComponentesPozoController::class)
+    ->only(['index']);
+
+/* Cromatografías: Gas */
+Route::resource('cromatografiagas', CromatografiaGasController::class)
+    ->only(['index']);
+
+/* Cromatografías: Liquída */
+Route::resource('cromatografialiquida', CromatografiaLiquidaController::class)
+    ->only(['index']);
+
+/* Gráficas Generales */
 Route::get('/graficas', [GraficaController::class, 'index']);
 
+/* Autenticación */
 Route::post('/logout', function () {
     dd('loggin the user out');
 });
