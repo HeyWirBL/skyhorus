@@ -93,4 +93,18 @@ class UsersController extends Controller
 
         return Redirect::back()->with('success', 'Usuario actualizado.');
     }
+
+    public function destroy(User $user)
+    {
+        $user->delete();
+
+        return Redirect::back()->with('success', 'Usuario eliminado.');
+    }
+
+    public function restore(User $user)
+    {
+        $user->restore();
+
+        return Redirect::back()->with('success', 'Usuario restablecido.');
+    }
 }
