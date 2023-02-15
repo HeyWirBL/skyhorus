@@ -48,7 +48,7 @@ import FlashMessages from './FlashMessages.vue'
       <div class="md:flex md:flex-grow md:overflow-hidden">
         <MainMenu class="hidden flex-shrink-0 py-12 px-3 w-56 bg-zinc-800 overflow-y-auto md:block" />
         <div class="px-4 py-8 md:flex-1 md:p-12 md:overflow-y-auto" scroll-region>
-          <!-- <FlashMessages /> -->
+          <FlashMessages />
           <slot />
         </div>
       </div>

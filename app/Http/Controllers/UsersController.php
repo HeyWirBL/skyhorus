@@ -56,7 +56,7 @@ class UsersController extends Controller
             'rol' => Request::get('rol'),
         ]);
 
-        return redirect(route('usuarios.index'))->with('success', 'Usuario creado.');
+        return redirect(route('users.index'))->with('success', 'Usuario creado.');
     }
 
     public function edit(User $user)
@@ -72,5 +72,25 @@ class UsersController extends Controller
                 'deleted_at' => $user->deleted_at,
             ],    
         ]);
+    }
+
+    public function update(User $user)
+    {
+        Request::validate([
+            'nombre' => 'required|string|max:50',
+            'apellidos' => 'required|string|max:100',
+            'usuario' => ['required', 'max:50', Rule::unique('users')->ignore($user->id)],
+            'email' => ['required', 'string', 'email', 'max:50', Rule::unique('users')->ignore($user->id)],
+            'password' => ['nullable'],
+            'rol' => 'required',
+        ]);
+
+        $user->update(Request::only('nombre', 'apellidos', 'usuario', 'email', 'rol'));
+
+        if (Request::get('password')) {
+            $user->update(['password' => Request::get('password')]);
+        }
+
+        return Redirect::back()->with('success', 'Usuario actualizado.');
     }
 }

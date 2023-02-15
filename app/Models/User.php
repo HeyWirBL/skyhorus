@@ -88,15 +88,15 @@ class User extends Authenticatable
                       ->orWhere('apellidos', 'like', '%'.$search.'%')
                       ->orWhere('usuario', 'like', '%'.$search.'%')
                       ->orWhere('email', 'like', '%'.$search.'%');
-            })->when($filters['role'] ?? null, function ($query, $role) {
-                $query->whereRole($role);
-            })->when($filters['trashed'] ?? null, function ($query, $trashed) {
-                if ($trashed === 'with') {
-                    $query->withTrashed();
-                } elseif ($trashed === 'only') {
-                    $query->onlyTrashed();
-                }
             });
+        })->when($filters['role'] ?? null, function ($query, $role) {
+            $query->whereRole($role);
+        })->when($filters['trashed'] ?? null, function ($query, $trashed) {
+            if ($trashed === 'with') {
+                $query->withTrashed();
+            } elseif ($trashed === 'only') {
+                $query->onlyTrashed();
+            }
         });
     }
 }

@@ -27,8 +27,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [DashboardController::class, 'index']);
 
 /* Catálogo de Usuarios  */
-Route::resource('usuarios', UsersController::class)
-    ->only(['index', 'create', 'store', 'edit']);
+Route::resource('users', UsersController::class)
+    ->only(['index', 'create', 'store', 'edit', 'update']);
 
 /* Catálogo de Directorios / Carpetas */
 Route::resource('directorios', DirectorioController::class)

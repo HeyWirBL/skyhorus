@@ -19,7 +19,7 @@ const form = useForm({
   rol: '',
 })
 
-const store = () => form.post('/usuarios')
+const store = () => form.post('/users')
 
 const passwordIconName = computed(() => (hidePassword.value ? 'eye' : 'eye-slash'))
 const passwordFieldType = computed(() => (hidePassword.value ? 'password' : 'text'))
@@ -29,7 +29,7 @@ const passwordFieldType = computed(() => (hidePassword.value ? 'password' : 'tex
   <div>
     <Head title="Crear Usuario" />
     <h1 class="mb-8 text-3xl font-bold">
-      <Link class="text-yellow-400 hover:text-yellow-600" href="/usuarios">Usuarios</Link>
+      <Link class="text-yellow-400 hover:text-yellow-600" href="/users">Usuarios</Link>
       <span class="text-yellow-400 font-medium">&nbsp;/</span> Crear
     </h1>
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">

@@ -25,7 +25,7 @@ const form = ref({
 watch(
   () => form.value,
   debounce(function () {
-    router.get('/usuarios', pickBy(form.value), { preserveState: true, replace: true })
+    router.get('/users', pickBy(form.value), { preserveState: true, replace: true })
   }, 300),
   {
     deep: true,
@@ -69,7 +69,7 @@ const reset = () => {
           usuarios
         </select>
       </SearchFilter>
-      <Link class="btn-yellow" href="/usuarios/crear">
+      <Link class="btn-yellow" href="/users/crear">
         <span>Crear</span>
         <span class="hidden md:inline">&nbsp;Usuario</span>
       </Link>
@@ -100,32 +100,32 @@ const reset = () => {
               </div>
             </td>
             <td>
-              <Link class="flex items-center px-6 py-4" :href="`/usuarios/${user.id}/editar`" tabindex="-1">
+              <Link class="flex items-center px-6 py-4" :href="`/users/${user.id}/editar`" tabindex="-1">
                 {{ user.nombre }}
               </Link>
             </td>
             <td>
-              <Link class="flex items-center px-6 py-4" :href="`/usuarios/${user.id}/editar`" tabindex="-1">
+              <Link class="flex items-center px-6 py-4" :href="`/users/${user.id}/editar`" tabindex="-1">
                 {{ user.apellidos }}
               </Link>
             </td>
             <td>
-              <Link class="flex items-center px-6 py-4" :href="`/usuarios/${user.id}/editar`" tabindex="-1">
+              <Link class="flex items-center px-6 py-4" :href="`/users/${user.id}/editar`" tabindex="-1">
                 {{ user.usuario }}
               </Link>
             </td>
             <td>
-              <Link class="flex items-center px-6 py-4" :href="`/usuarios/${user.id}/editar`" tabindex="-1">
+              <Link class="flex items-center px-6 py-4" :href="`/users/${user.id}/editar`" tabindex="-1">
                 {{ user.email }}
               </Link>
             </td>
             <td>
-              <Link class="flex items-center px-6 py-4" :href="`/usuarios/${user.id}/editar`" tabindex="-1">
+              <Link class="flex items-center px-6 py-4" :href="`/users/${user.id}/editar`" tabindex="-1">
                 {{ user.rol }}
               </Link>
             </td>
             <td class="w-px">
-              <Link class="flex items-center px-6" :href="`/usuarios/${user.id}/editar`" tabindex="-1">
+              <Link class="flex items-center px-6" :href="`/users/${user.id}/editar`" tabindex="-1">
                 <Icon class="block w-6 h-6 fill-gray-400" name="cheveron-right" />
               </Link>
             </td>

@@ -25,7 +25,7 @@ const form = useForm({
 })
 
 const update = () =>
-  form.post(`/usuarios/${props.user.id}`, {
+  form.post(`/users/${props.user.id}`, {
     onSuccess: () => form.reset('password'),
   })
 
@@ -37,7 +37,7 @@ const passwordFieldType = computed(() => (hidePassword.value ? 'password' : 'tex
   <div>
     <Head :title="`${form.nombre} ${form.apellidos}`" />
     <h1 class="mb-8 text-3xl font-bold">
-      <Link class="text-yellow-400 hover:text-yellow-600" href="/usuarios">Usuarios</Link>
+      <Link class="text-yellow-400 hover:text-yellow-600" href="/users">Usuarios</Link>
       <span class="text-yellow-400 font-medium">&nbsp;/</span> {{ form.nombre }} {{ form.apellidos }}
     </h1>
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
