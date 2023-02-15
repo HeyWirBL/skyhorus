@@ -18,7 +18,7 @@ class DirectorioController extends Controller
     public function index(): Response
     {
         return Inertia::render('Directorios/Index', [
-            'filtros' => Request::all('search', 'trashed'),
+            'filters' => Request::all('search', 'trashed'),
             'directorios' => Directorio::query()
                 ->filter(Request::only('search', 'trashed'))
                 ->paginate(10)
@@ -27,6 +27,7 @@ class DirectorioController extends Controller
                     'idDirectorio' => $directorio->idDirectorio,
                     'nombre_dir' => $directorio->nombre_dir,
                     'fecha_dir' => $directorio->fecha_dir,
+                    'deleted_at' => $directorio->deleted_at,
                 ]),
         ]);
     }

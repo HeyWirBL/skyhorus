@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ComponentePozo extends Model
+class ComponentesPozo extends Model
 {
     use HasFactory;
 }

@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('temp_F', 150);
             $table->string('volumen_cm3', 150);
             $table->string('volumen_lts', 150);
-            $table->string('observaciones', 150);
+            $table->string('observaciones', 150)->nullable();
             $table->string('nombre_pozo', 150);
             $table->timestamps();
             $table->softDeletes();

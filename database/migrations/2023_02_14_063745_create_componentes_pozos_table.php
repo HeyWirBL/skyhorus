@@ -13,8 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('componentes_pozo', function (Blueprint $table) {
-            $table->id('idCompozo');
+        Schema::create('componentes_pozos', function (Blueprint $table) {
+            $table->id('idCompozos');
             $table->string('dioxido_carbono', 50);
             $table->string('pe_dioxido_carbono', 50);
             $table->string('mo_dioxido_carbono', 50);
@@ -66,7 +66,7 @@ return new class extends Migration
             $table->date('fecha_analisis');
             $table->string('no_determinacion', 100);
             $table->string('equipo_utilizado', 100);
-            $table->string('met_laboratorio', 100);
+            $table->string('met_laboratorio');
             $table->text('observaciones')->nullable();
             $table->string('nombre_componente', 100);
             $table->date('fecha_muestreo')->nullable();
@@ -82,6 +82,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('componentes_pozo');
+        Schema::dropIfExists('componentes_pozos');
     }
 };

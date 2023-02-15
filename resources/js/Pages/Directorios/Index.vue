@@ -10,15 +10,16 @@ import SearchFilter from '@/Components/SearchFilter.vue'
 
 const props = defineProps({
   directorios: Object,
-  filtros: Object,
+  filters: Object,
 })
 
 const selected = ref([])
 const selectAll = ref(false)
+const isSelected = ref(false)
 
 const form = ref({
-  search: props.filtros.search,
-  trashed: props.filtros.trashed,
+  search: props.filters.search,
+  trashed: props.filters.trashed,
 })
 
 watch(
@@ -52,7 +53,7 @@ const reset = () => {
     <div class="flex items-center justify-between mb-6">
       <SearchFilter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
         <label class="block mt-4 text-gray-700">Eliminado:</label>
-        <select class="form-select mt-1 w-full">
+        <select v-model="form.trashed" class="form-select mt-1 w-full">
           <option :value="null" />
           <option value="with">Con Modificación</option>
           <option value="only">Solo Eliminado</option>
@@ -62,6 +63,9 @@ const reset = () => {
         <span>Añadir</span>
         <span class="hidden md:inline">&nbsp;Directorio</span>
       </Link>
+    </div>
+    <div v-if="selectAll || isSelected" class="flex mb-6">
+      <button class="text-red-600 hover:underline" type="button">Borrar elementos seleccionados</button>
     </div>
     <div class="bg-white rounded-md shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
@@ -86,7 +90,9 @@ const reset = () => {
                 <label :for="`checkbox-user-${directorio.idDirectorio}`" class="sr-only">checkbox</label>
               </div>
             </td>
-            <td class="w-px">Archivos</td>
+            <td>
+              <Link class="flex items-center px-6 py-4" href="#" tabindex="-1">Archivos</Link>
+            </td>
             <td>
               <Link class="flex items-center px-6 py-4" :href="`/directorios/${directorio.idDirectorio}/editar`" tabindex="-1">
                 {{ directorio.nombre_dir }}
