@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
@@ -11,7 +12,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -19,9 +20,14 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'username',
+        'nombre',
+        'apellidos',
+        'usuario',
         'email',
         'password',
+        'telefono',
+        'direccion',
+        'rol',
     ];
 
     /**
@@ -43,13 +49,54 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function usuario()
+    public function resolveRouteBinding($value, $field = null)
     {
-        return $this->hasOne(Usuario::class);
+        return $this->where($field ?? 'id', $value)->withTrashed()->firstOrFail();
+    }
+
+    public function getNameAttribute()
+    {
+        return $this->nombre.' '.$this->apellidos;
     }
 
     public function setPasswordAttribute($password)
     {
         $this->attributes['password'] = Hash::needsRehash($password) ? Hash::make($password) : $password;
+    }
+
+    public function scopeOrderByName($query)
+    {
+        $query->orderBy('apellidos')->orderBy('nombre');
+    }
+
+    public function scopeWhereRole($query, $role)
+    {
+        switch ($role) {
+            case 'Usuario': return $query->where('Usuario');
+            case 'Administrador': return $query->where('Administrador');
+            case 'Colaborador': return $query->where('Colaborador');
+            case 'Consultor': return $query->where('Consultor');
+            case 'Editor': return $query->where('Editor');
+        }
+    }
+
+    public function scopeFilter($query, array $filters)
+    {
+        $query->when($filters['search'] ?? null, function ($query, $search) {
+            $query->where(function ($query) use ($search) {
+                $query->where('nombre', 'like', '%'.$search.'%')
+                      ->orWhere('apellidos', 'like', '%'.$search.'%')
+                      ->orWhere('usuario', 'like', '%'.$search.'%')
+                      ->orWhere('email', 'like', '%'.$search.'%');
+            })->when($filters['role'] ?? null, function ($query, $role) {
+                $query->whereRole($role);
+            })->when($filters['trashed'] ?? null, function ($query, $trashed) {
+                if ($trashed === 'with') {
+                    $query->withTrashed();
+                } elseif ($trashed === 'only') {
+                    $query->onlyTrashed();
+                }
+            });
+        });
     }
 }

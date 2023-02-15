@@ -9,8 +9,8 @@ import Pagination from '@/Components/Pagination.vue'
 import SearchFilter from '@/Components/SearchFilter.vue'
 
 const props = defineProps({
-  usuarios: Object,
   filters: Object,
+  users: Object,
 })
 
 const selected = ref([])
@@ -26,7 +26,7 @@ watch(
   () => form.value,
   debounce(function () {
     router.get('/usuarios', pickBy(form.value), { preserveState: true, replace: true })
-  }, 150),
+  }, 300),
   {
     deep: true,
   },
@@ -35,8 +35,8 @@ watch(
 const select = () => {
   selected.value = []
   if (!selectAll.value) {
-    for (let i in props.usuarios.data) {
-      selected.value.push(props.usuarios.data[i].idUsuario)
+    for (let i in props.users.data) {
+      selected.value.push(props.users.data[i].id)
     }
   }
 }
@@ -66,6 +66,7 @@ const reset = () => {
           <option :value="null" />
           <option value="with">Con Modificación</option>
           <option value="only">Solo Eliminado</option>
+          usuarios
         </select>
       </SearchFilter>
       <Link class="btn-yellow" href="/usuarios/crear">
@@ -91,51 +92,51 @@ const reset = () => {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="usuario in props.usuarios.data" :key="usuario.idUsuario" class="bg-white hover:bg-gray-100 focus-within:bg-gray-100 border-b">
+          <tr v-for="user in props.users.data" :key="user.id" class="bg-white hover:bg-gray-100 focus-within:bg-gray-100 border-b">
             <td class="w-4 p-4">
               <div class="flex items-center">
-                <input :id="`checkbox-user-${usuario.idUsuario}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="usuario.idUsuario" />
-                <label :for="`checkbox-user-${usuario.idUsuario}`" class="sr-only">checkbox</label>
+                <input :id="`checkbox-user-${user.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="user.id" />
+                <label :for="`checkbox-user-${user.id}`" class="sr-only">checkbox</label>
               </div>
             </td>
             <td>
-              <Link class="flex items-center px-6 py-4" :href="`/usuarios/${usuario.idUsuario}/edit`" tabindex="-1">
-                {{ usuario.nombre }}
+              <Link class="flex items-center px-6 py-4" :href="`/usuarios/${user.id}/editar`" tabindex="-1">
+                {{ user.nombre }}
               </Link>
             </td>
             <td>
-              <Link class="flex items-center px-6 py-4" :href="`/usuarios/${usuario.idUsuario}/edit`" tabindex="-1">
-                {{ usuario.apellidos }}
+              <Link class="flex items-center px-6 py-4" :href="`/usuarios/${user.id}/editar`" tabindex="-1">
+                {{ user.apellidos }}
               </Link>
             </td>
             <td>
-              <Link class="flex items-center px-6 py-4" :href="`/usuarios/${usuario.idUsuario}/edit`" tabindex="-1">
-                {{ usuario.user.username }}
+              <Link class="flex items-center px-6 py-4" :href="`/usuarios/${user.id}/editar`" tabindex="-1">
+                {{ user.usuario }}
               </Link>
             </td>
             <td>
-              <Link class="flex items-center px-6 py-4" :href="`/usuarios/${usuario.idUsuario}/edit`" tabindex="-1">
-                {{ usuario.user.email }}
+              <Link class="flex items-center px-6 py-4" :href="`/usuarios/${user.id}/editar`" tabindex="-1">
+                {{ user.email }}
               </Link>
             </td>
             <td>
-              <Link class="flex items-center px-6 py-4" :href="`/usuarios/${usuario.idUsuario}/edit`" tabindex="-1">
-                {{ usuario.rol }}
+              <Link class="flex items-center px-6 py-4" :href="`/usuarios/${user.id}/editar`" tabindex="-1">
+                {{ user.rol }}
               </Link>
             </td>
             <td class="w-px">
-              <Link class="flex items-center px-6" :href="`/usuarios/${usuario.idUsuario}/edit`" tabindex="-1">
+              <Link class="flex items-center px-6" :href="`/usuarios/${user.id}/editar`" tabindex="-1">
                 <Icon class="block w-6 h-6 fill-gray-400" name="cheveron-right" />
               </Link>
             </td>
           </tr>
-          <tr v-if="props.usuarios.data.length === 0">
+          <tr v-if="props.users.data.length === 0">
             <td class="px-6 py-4">No se encontraron usuarios registrados.</td>
           </tr>
         </tbody>
       </table>
     </div>
     <!-- Paginator -->
-    <Pagination class="pt-4" :links="props.usuarios.links" :total="props.usuarios.total" />
+    <Pagination class="pt-4" :links="props.users.links" :total="props.users.total" />
   </div>
 </template>

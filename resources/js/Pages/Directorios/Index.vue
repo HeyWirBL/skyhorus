@@ -91,7 +91,7 @@ const reset = () => {
               </div>
             </td>
             <td>
-              <Link class="flex items-center px-6 py-4" href="#" tabindex="-1">Archivos</Link>
+              <Link class="text-yellow-400 hover:underline px-6 py-4" href="#" tabindex="-1">Archivos</Link>
             </td>
             <td>
               <Link class="flex items-center px-6 py-4" :href="`/directorios/${directorio.idDirectorio}/editar`" tabindex="-1">

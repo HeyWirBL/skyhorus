@@ -20,6 +20,7 @@ class DirectorioController extends Controller
         return Inertia::render('Directorios/Index', [
             'filters' => Request::all('search', 'trashed'),
             'directorios' => Directorio::query()
+                ->latest()
                 ->filter(Request::only('search', 'trashed'))
                 ->paginate(10)
                 ->withQueryString()

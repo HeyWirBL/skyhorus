@@ -102,7 +102,7 @@ const isUrl = (...urls) => {
         <div class="mb-2">
           <Link class="group flex text-base items-center p-2 pl-11 rounded-md" :class="isUrl('pozos') ? 'bg-yellow-500' : 'hover:bg-zinc-700'" href="/pozos">
             <Icon class="w-5 h-5" :class="isUrl('pozos') ? 'fill-white' : 'fill-zinc-300 group-hover:fill-white'" name="printer" />
-            <div class="ml-2" :class="isUrl('pozos') ? 'text-white' : 'text-zinc-300 group-hover:text-white'">Reportes</div>
+            <div class="ml-2" :class="isUrl('pozos') ? 'text-white' : 'text-zinc-300 group-hover:text-white'">Pozos</div>
           </Link>
         </div>
         <!-- End Well Details Catalog -->

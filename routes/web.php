@@ -9,7 +9,7 @@ use App\Http\Controllers\DirectorioController;
 use App\Http\Controllers\DocPozoController;
 use App\Http\Controllers\GraficaController;
 use App\Http\Controllers\PozoController;
-use App\Http\Controllers\UsuarioController;
+use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -27,8 +27,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [DashboardController::class, 'index']);
 
 /* Catálogo de Usuarios  */
-Route::resource('usuarios', UsuarioController::class)
-    ->only(['index', 'create', 'store']);
+Route::resource('usuarios', UsersController::class)
+    ->only(['index', 'create', 'store', 'edit']);
 
 /* Catálogo de Directorios / Carpetas */
 Route::resource('directorios', DirectorioController::class)

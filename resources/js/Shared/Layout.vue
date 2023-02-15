@@ -38,7 +38,7 @@ import FlashMessages from './FlashMessages.vue'
             </template>
             <template #dropdown>
               <div class="mt-2 py-2 text-sm bg-white rounded shadow-xl">
-                <Link class="block px-6 py-2 hover:text-white hover:bg-yellow-500" href="/users/1">Perfil del Usuario</Link>
+                <Link class="block px-6 py-2 hover:text-white hover:bg-yellow-500" href="usuarios/1/editar">Perfil del Usuario</Link>
                 <Link class="block px-6 py-2 w-full text-left hover:text-white hover:bg-yellow-500" href="/logout" method="post" as="button">Desconectarse</Link>
               </div>
             </template>

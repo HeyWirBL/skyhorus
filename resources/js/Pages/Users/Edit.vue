@@ -6,28 +6,28 @@ import LoadingButton from '@/Components/LoadingButton.vue'
 import SelectInput from '@/Components/SelectInput.vue'
 import TextInput from '@/Components/TextInput.vue'
 
-const hidePassword = ref(true)
-
-const roles = [
-  { value: 'Administrador', type: String },
-  { value: 'Usuario', type: String },
-  { value: 'Colaborador', type: String },
-  { value: 'Consultor', type: String },
-  { value: 'Editor', type: String },
-]
-
-const form = useForm({
-  nombre: '',
-  apellidos: '',
-  username: '',
-  email: '',
-  password: '',
-  telefono: null,
-  direccion: null,
-  rol: '',
+const props = defineProps({
+  user: Object,
 })
 
-const store = () => form.post('/usuarios')
+const hidePassword = ref(true)
+
+const form = useForm({
+  _method: 'put',
+  nombre: props.user.nombre,
+  apellidos: props.user.apellidos,
+  usuario: props.user.usuario,
+  email: props.user.email,
+  password: '',
+  telefono: props.user.telefono,
+  direccion: props.user.direccion,
+  rol: props.user.rol,
+})
+
+const update = () =>
+  form.post(`/usuarios/${props.user.id}`, {
+    onSuccess: () => form.reset('password'),
+  })
 
 const passwordIconName = computed(() => (hidePassword.value ? 'eye' : 'eye-slash'))
 const passwordFieldType = computed(() => (hidePassword.value ? 'password' : 'text'))
@@ -35,17 +35,17 @@ const passwordFieldType = computed(() => (hidePassword.value ? 'password' : 'tex
 
 <template>
   <div>
-    <Head title="Crear Usuario" />
+    <Head :title="`${form.nombre} ${form.apellidos}`" />
     <h1 class="mb-8 text-3xl font-bold">
       <Link class="text-yellow-400 hover:text-yellow-600" href="/usuarios">Usuarios</Link>
-      <span class="text-yellow-400 font-medium">&nbsp;/</span> Crear
+      <span class="text-yellow-400 font-medium">&nbsp;/</span> {{ form.nombre }} {{ form.apellidos }}
     </h1>
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
-      <form @submit.prevent="store">
+      <form @submit.prevent="update">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
           <TextInput v-model="form.nombre" :error="form.errors.nombre" class="pb-8 pr-6 w-full lg:w-1/2" label="Nombre" />
           <TextInput v-model="form.apellidos" :error="form.errors.apellidos" class="pb-8 pr-6 w-full lg:w-1/2" label="Apellidos" />
-          <TextInput v-model="form.username" :error="form.errors.username" class="pb-8 pr-6 w-full lg:w-1/2" label="Usuario" />
+          <TextInput v-model="form.usuario" :error="form.errors.usuario" class="pb-8 pr-6 w-full lg:w-1/2" label="Usuario" />
           <TextInput v-model="form.email" :error="form.errors.email" class="pb-8 pr-6 w-full lg:w-1/2" label="Correo electrónico" />
           <div class="relative w-full lg:w-1/2">
             <TextInput v-model="form.password" :error="form.errors.password" class="pb-8 pr-6 w-full" :type="passwordFieldType" autocomplete="new-password" label="Contraseña" />
@@ -59,11 +59,15 @@ const passwordFieldType = computed(() => (hidePassword.value ? 'password' : 'tex
           <TextInput v-model="form.direccion" :error="form.errors.telefono" class="pb-8 pr-6 w-full lg:w-1/2" label="Dirección" />
           <SelectInput v-model="form.rol" :error="form.errors.rol" class="pb-8 pr-6 w-full lg:w-1/2" label="Rol">
             <option value="">Por favor seleccione</option>
-            <option v-for="rol in roles" :key="rol.value" :value="rol.value">{{ rol.value }}</option>
+            <option value="Administrador">Administrador</option>
+            <option value="Usuario">Usuario</option>
+            <option value="Colaborador">Colaborador</option>
+            <option value="Consultor">Consultor</option>
+            <option value="Editor">Editor</option>
           </SelectInput>
         </div>
         <div class="flex items-center justify-end px-8 py-4 bg-gray-50 border-t border-gray-100">
-          <LoadingButton :loading="form.processing" :disabled="form.processing" class="btn-yellow" type="submit">Guardar</LoadingButton>
+          <LoadingButton :loading="form.processing" class="btn-yellow" type="submit">Actualizar</LoadingButton>
         </div>
       </form>
     </div>
