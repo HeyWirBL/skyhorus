@@ -27,7 +27,7 @@ class PozoFactory extends Factory
             'temp_F' => $this->faker->randomFloat(1, 20, 30),
             'volumen_cm3' => $this->faker->randomFloat(1),
             'volumen_lts' => $this->faker->randomFloat(1),
-            'nombre_pozo' => $this->faker->sentence(3),
+            'nombre_pozo' => fake()->unique()->sentence(3),
         ];
     }
 }

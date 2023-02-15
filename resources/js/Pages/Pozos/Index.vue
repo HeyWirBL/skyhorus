@@ -1,12 +1,48 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3'
+import { ref, watch } from 'vue'
+import { Head, Link, router } from '@inertiajs/vue3'
+import debounce from 'lodash/debounce'
+import mapValues from 'lodash/mapValues'
+import pickBy from 'lodash/pickBy'
 import Icon from '@/Components/Icon.vue'
 import SearchFilter from '@/Components/SearchFilter.vue'
+import Pagination from '@/Components/Pagination.vue'
 
 const props = defineProps({
   filters: Object,
   pozos: Object,
 })
+
+const selected = ref([])
+const selectAll = ref(false)
+
+const form = ref({
+  search: props.filters.search,
+  trashed: props.filters.trashed,
+})
+
+watch(
+  () => form.value,
+  debounce(function () {
+    router.get('/pozos', pickBy(form.value), { preserveState: true, replace: true })
+  }, 300),
+  {
+    deep: true,
+  },
+)
+
+const select = () => {
+  selected.value = []
+  if (!selectAll.value) {
+    for (let i in props.pozos.data) {
+      selected.value.push(props.pozos.data[i].id)
+    }
+  }
+}
+
+const reset = () => {
+  form.value = mapValues(form.value, () => null)
+}
 </script>
 
 <template>
@@ -14,9 +50,9 @@ const props = defineProps({
     <Head title="Pozos" />
     <h1 class="mb-8 text-3xl font-bold">Pozos</h1>
     <div class="flex items-center justify-between mb-6">
-      <SearchFilter class="mr-4 w-full max-w-md">
+      <SearchFilter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
         <label class="block mt-4 text-gray-700">Eliminado:</label>
-        <select class="form-select mt-1 w-full">
+        <select v-model="form.trashed" class="form-select mt-1 w-full">
           <option :value="null" />
           <option value="with">Con Modificación</option>
           <option value="only">Solo Eliminado</option>
@@ -27,24 +63,69 @@ const props = defineProps({
           <span>Crear</span>
           <span class="hidden md:inline">&nbsp;Pozo</span>
         </Link>
-        <button type="button">
-          <Icon class="w-6 h-6" name="three-dots" />
-        </button>
       </div>
     </div>
     <div class="bg-white rounded-md shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
-        <thead>
-          <tr class="text-left fond-bold">
-            <th class="pb-4 pt-6 px-6">Punto Muestreo</th>
+        <thead class="text-sm text-left font-bold uppercase bg-white border-b">
+          <tr>
+            <th scope="col" class="p-4">
+              <div class="flex items-center">
+                <input id="checkbox-all-pozos" v-model="selectAll" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="select" />
+                <label for="checkbox-all-pozos" class="sr-only">checkbox</label>
+              </div>
+            </th>
+            <th scope="col" class="px-6 py-3">No.</th>
+            <th scope="col" class="px-6 py-3">Pozo/Instalación</th>
+            <th scope="col" class="px-6 py-3">Identificador</th>
+            <th scope="col" class="px-6 py-3">Fecha del Muestreo</th>
+            <th scope="col" class="px-6 py-3" colspan="2">Acciones</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="pozo in pozos.data" :key="pozo.idPozo" class="hover:bg-gray-100 focus-within:bg-gray-100">
-            weef
+          <tr v-for="pozo in props.pozos.data" :key="pozo.id" class="bg-white hover:bg-gray-100 focus-within:bg-gray-100 border-b">
+            <td class="w-4 p-4">
+              <div class="flex items-center">
+                <input :id="`checkbox-pozo-${pozo.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="pozo.id" />
+                <label :for="`checkbox-pozo-${pozo.id}`" class="sr-only">checkbox</label>
+              </div>
+            </td>
+            <td>
+              <Link class="flex items-center px-6 py-4" :href="`/pozos/${pozo.id}`">
+                {{ pozo.id }}
+              </Link>
+            </td>
+            <td>
+              <Link class="flex items-center px-6 py-4 focus:text-yellow-500" :href="`/pozos/${pozo.id}`" tabindex="-1">
+                {{ pozo.nombre_pozo }}
+              </Link>
+            </td>
+            <td>
+              <Link class="flex items-center px-6 py-4" :href="`/pozos/${pozo.id}`" tabindex="-1">
+                {{ pozo.identificador }}
+              </Link>
+            </td>
+            <td>
+              <Link class="flex items-center px-6 py-4" :href="`/pozos/${pozo.id}`" tabindex="-1">
+                {{ pozo.fecha_hora }}
+              </Link>
+            </td>
+            <td>
+              <Link class="flex items-center px-6 py-4 text-yellow-600 hover:underline focus:text-yellow-500" :href="`/pozos/${pozo.id}/editar`" tabindex="-1"> Editar </Link>
+            </td>
+            <td class="w-px">
+              <Link class="flex items-center px-6" :href="`/pozos/${pozo.id}`" tabindex="-1">
+                <Icon class="block w-6 h-6 fill-gray-400" name="cheveron-right" />
+              </Link>
+            </td>
+          </tr>
+          <tr v-if="props.pozos.data.length === 0">
+            <td class="px-6 py-4 border-t" colspan="5">No se encontraron pozos registrados.</td>
           </tr>
         </tbody>
       </table>
     </div>
+    <!-- Paginator -->
+    <Pagination class="mt-4" :links="props.pozos.links" :total="props.pozos.total" />
   </div>
 </template>

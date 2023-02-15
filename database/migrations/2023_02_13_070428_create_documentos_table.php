@@ -14,16 +14,16 @@ return new class extends Migration
     public function up()
     {
         Schema::create('documentos', function (Blueprint $table) {
-            $table->id('idDocumento');
+            $table->id();
             $table->string('Nombre', 50);
             $table->mediumText('documento');
-            $table->foreignId('idDirectorio')
+            $table->foreignId('directorio_id')
                   ->constrained()
                   ->cascadeOnDelete();
-            $table->foreignId('idAno')
+            $table->foreignId('ano_id')
                   ->constrained()
                   ->cascadeOnDelete();     
-            $table->foreignId('idMesdet')
+            $table->foreignId('mesesdetalle_id')
                   ->constrained()
                   ->cascadeOnDelete();
             $table->timestamps();

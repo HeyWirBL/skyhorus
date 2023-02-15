@@ -10,9 +10,28 @@ class Pozo extends Model
 {
     use HasFactory, SoftDeletes;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'punto_muestreo',
+        'fecha_hora',
+        'identificador',
+        'presion_kgcm2',
+        'presion_psi',
+        'temp_C',
+        'temp_F',
+        'volumen_cm3',
+        'volumen_lts',
+        'observaciones',
+        'nombre_pozo',
+    ];
+
     public function resolveRouteBinding($value, $field = null)
     {
-        return $this->where($field ?? 'idPozo', $value)->withTrashed()->firstOrFail();
+        return $this->where($field ?? 'id', $value)->withTrashed()->firstOrFail();
     }
 
     public function scopeFilter($query, array $filters)

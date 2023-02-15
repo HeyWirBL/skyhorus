@@ -131,12 +131,12 @@ const reset = () => {
             </td>
           </tr>
           <tr v-if="props.users.data.length === 0">
-            <td class="px-6 py-4">No se encontraron usuarios registrados.</td>
+            <td class="px-6 py-4" colspan="7">No se encontraron usuarios registrados.</td>
           </tr>
         </tbody>
       </table>
     </div>
     <!-- Paginator -->
-    <Pagination class="pt-4" :links="props.users.links" :total="props.users.total" />
+    <Pagination class="mt-4" :links="props.users.links" :total="props.users.total" />
   </div>
 </template>

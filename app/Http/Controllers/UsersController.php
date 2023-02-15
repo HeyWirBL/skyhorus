@@ -44,6 +44,8 @@ class UsersController extends Controller
             'usuario' => ['required', 'max:50', Rule::unique('users')],
             'email' => ['required', 'string', 'email', 'max:50', Rule::unique('users')],
             'password' => 'required',
+            'telefono' => 'nullable',
+            'direccion' => 'nullable',
             'rol' => 'required',
         ]);
 
@@ -53,10 +55,17 @@ class UsersController extends Controller
             'usuario' => Request::get('usuario'),
             'email' => Request::get('email'),
             'password' => Request::get('password'),
+            'telefono' => Request::get('telefono'),
+            'direccion' => Request::get('direccion'),
             'rol' => Request::get('rol'),
         ]);
 
         return redirect(route('users.index'))->with('success', 'Usuario creado.');
+    }
+
+    public function show(User $user)
+    {
+        //
     }
 
     public function edit(User $user)
@@ -69,6 +78,8 @@ class UsersController extends Controller
                 'usuario' => $user->usuario,
                 'email' => $user->email,
                 'rol' => $user->rol,
+                'telefono' => $user->telefono,
+                'direccion' => $user->direccion,
                 'deleted_at' => $user->deleted_at,
             ],    
         ]);
@@ -81,7 +92,9 @@ class UsersController extends Controller
             'apellidos' => 'required|string|max:100',
             'usuario' => ['required', 'max:50', Rule::unique('users')->ignore($user->id)],
             'email' => ['required', 'string', 'email', 'max:50', Rule::unique('users')->ignore($user->id)],
-            'password' => ['nullable'],
+            'password' => 'nullable',
+            'telefono' => 'nullable',
+            'direccion' => 'nullable',
             'rol' => 'required',
         ]);
 
@@ -89,6 +102,14 @@ class UsersController extends Controller
 
         if (Request::get('password')) {
             $user->update(['password' => Request::get('password')]);
+        }
+
+        if (Request::get('telefono')) {
+            $user->update(['telefono' => Request::get('telefono')]);
+        }
+
+        if (Request::get('direccion')) {
+            $user->update(['direccion' => Request::get('direccion')]);
         }
 
         return Redirect::back()->with('success', 'Usuario actualizado.');

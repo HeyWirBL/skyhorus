@@ -14,9 +14,9 @@ return new class extends Migration
     public function up()
     {
         Schema::create('doc_pozos', function (Blueprint $table) {
-            $table->id('idDocpozos');
+            $table->id();
             $table->mediumText('documento');
-            $table->foreignId('idPozo')
+            $table->foreignId('pozo_id')
                   ->constrained()
                   ->cascadeOnDelete();
             $table->date('fecha_hora');

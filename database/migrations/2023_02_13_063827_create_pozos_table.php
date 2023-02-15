@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('pozos', function (Blueprint $table) {
-            $table->id('idPozo');
+            $table->id();
             $table->string('punto_muestreo', 150);
             $table->date('fecha_hora');
             $table->string('identificador', 150);
@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('volumen_cm3', 150);
             $table->string('volumen_lts', 150);
             $table->string('observaciones', 150)->nullable();
-            $table->string('nombre_pozo', 150);
+            $table->string('nombre_pozo', 150)->unique();
             $table->timestamps();
             $table->softDeletes();
         });

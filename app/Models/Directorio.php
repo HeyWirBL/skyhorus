@@ -22,7 +22,7 @@ class Directorio extends Model
 
     public function resolveRouteBinding($value, $field = null)
     {
-        return $this->where($field ?? 'idDirectorio', $value)->withTrashed()->firstOrFail();
+        return $this->where($field ?? 'id', $value)->withTrashed()->firstOrFail();
     }
 
     public function documentos()

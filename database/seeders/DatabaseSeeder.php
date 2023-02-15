@@ -86,7 +86,7 @@ class DatabaseSeeder extends Seeder
             'pe_n_exano' => '0.1745',
             'mo_n_exano' => '0.039',
             'den_n_exano' => '0.0036',
-            'idPozo' => $pozo->id,
+            'pozo_id' => $pozo->id,
             'fecha_recep' => '2022-12-06',
             'fecha_analisis' => '2022-12-06',
             'no_determinacion' => '10',

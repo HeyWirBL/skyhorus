@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('componentes_pozos', function (Blueprint $table) {
-            $table->id('idCompozos');
+            $table->id();
             $table->string('dioxido_carbono', 50);
             $table->string('pe_dioxido_carbono', 50);
             $table->string('mo_dioxido_carbono', 50);
@@ -59,7 +59,7 @@ return new class extends Migration
             $table->string('pe_n_exano', 50);
             $table->string('mo_n_exano', 50);
             $table->string('den_n_exano', 50);
-            $table->foreignId('idPozo')
+            $table->foreignId('pozo_id')
                   ->constrained()
                   ->cascadeOnDelete();
             $table->date('fecha_recep');

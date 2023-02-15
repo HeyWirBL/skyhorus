@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('directorios', function (Blueprint $table) {
-            $table->id('idDirectorio');
+            $table->id();
             $table->string('nombre_dir', 100)->unique();
             $table->date('fecha_dir');
             $table->timestamps();
