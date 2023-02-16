@@ -35,30 +35,27 @@ Route::resource('directorios', DirectoriosController::class)->only([
 ]);
 
 /* Catálogo de Años */
-Route::resource('anos', AnosController::class)
-    ->only(['index']);
+Route::resource('anos', AnosController::class)->only([
+    'index', 'create', 'store', 'edit', 'update', 'destroy', 'restore'
+]);
 
 /* Catálogo de Pozos */
 Route::resource('pozos', PozosController::class);
 
 /* Catálogo de Pozos: Documentos */
-Route::resource('docpozos', DocPozoController::class)
-    ->only(['index']);
+Route::resource('docpozos', DocPozoController::class)->only(['index']);
 
 /* Catálogo de Pozos: Componentes */
-Route::resource('componentespozos', ComponentesPozoController::class)
-    ->only(['index']);
+Route::resource('componentespozos', ComponentesPozoController::class)->only(['index']);
 
 /* Cromatografías: Gas */
-Route::resource('cromatografiagas', CromatografiaGasController::class)
-    ->only(['index']);
+Route::resource('cromatografiagas', CromatografiaGasController::class)->only(['index']);
 
 /* Cromatografías: Liquída */
-Route::resource('cromatografialiquida', CromatografiaLiquidaController::class)
-    ->only(['index']);
+Route::resource('cromatografialiquida', CromatografiaLiquidaController::class)->only(['index']);
 
 /* Gráficas Generales */
-Route::get('/graficas', [GraficaController::class, 'index']);
+Route::resource('graficas', GraficaController::class)->only(['index']);
 
 /* Autenticación */
 Route::post('/logout', function () {
