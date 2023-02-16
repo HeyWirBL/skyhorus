@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\AnoController;
+use App\Http\Controllers\AnosController;
 use App\Http\Controllers\ComponentesPozoController;
 use App\Http\Controllers\CromatografiaGasController;
 use App\Http\Controllers\CromatografiaLiquidaController;
@@ -35,7 +35,7 @@ Route::resource('directorios', DirectoriosController::class)->only([
 ]);
 
 /* Catálogo de Años */
-Route::resource('anos', AnoController::class)
+Route::resource('anos', AnosController::class)
     ->only(['index']);
 
 /* Catálogo de Pozos */

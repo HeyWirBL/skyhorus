@@ -59,7 +59,7 @@ const reset = () => {
         </select>
       </SearchFilter>
       <div>
-        <Link class="btn-yellow mr-4" href="/pozos/crear">
+        <Link class="btn-yellow" href="/pozos/crear">
           <span>Crear</span>
           <span class="hidden md:inline">&nbsp;Pozo</span>
         </Link>
@@ -120,7 +120,7 @@ const reset = () => {
             </td>
           </tr>
           <tr v-if="props.pozos.data.length === 0">
-            <td class="px-6 py-4 border-t" colspan="5">No se encontraron pozos registrados.</td>
+            <td class="px-6 py-4" colspan="5">No se encontraron pozos registrados.</td>
           </tr>
         </tbody>
       </table>

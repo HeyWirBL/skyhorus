@@ -29,7 +29,7 @@ class DatabaseSeeder extends Seeder
         \App\Models\Ano::factory(2)->create();
 
         $pozo = \App\Models\Pozo::factory()->create([
-            'punto_muestreo' => 'SALIDA DE LÍNENA DE GAS',
+            'punto_muestreo' => 'SALIDA DE LÍNEA DE GAS',
             'fecha_hora' => '2021-03-18',
             'identificador' => 'E-GGSOL-2021-0081',
             'presion_kgcm2' => '16.7',

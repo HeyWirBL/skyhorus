@@ -18,8 +18,9 @@ return new class extends Migration
             $table->foreignId('mes_id')
                   ->constrained()
                   ->cascadeOnDelete();
-            $table->string('nombre', 50);
+            $table->string('nombre', 50)->unique();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
