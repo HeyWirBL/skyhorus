@@ -30,8 +30,8 @@ import FlashMessages from './FlashMessages.vue'
             <template #default>
               <div class="group flex items-center cursor-pointer select-none">
                 <div class="mr-1 text-gray-200 group-hover:text-white focus:text-white whitespace-nowrap">
-                  <span>Bienvenido(a) Samuel</span>
-                  <span class="hidden md:inline">&nbsp;Hernández</span>
+                  <span>Bienvenido(a) {{ $page.props.auth.user.nombre }}</span>
+                  <span class="hidden md:inline">&nbsp;{{ $page.props.auth.user.apellidos }}</span>
                 </div>
                 <Icon class="w-5 h-5 fill-gray-200 group-hover:fill-white focus:fill-white" name="cheveron-down" />
               </div>
