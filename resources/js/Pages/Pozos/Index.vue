@@ -58,12 +58,10 @@ const reset = () => {
           <option value="only">Solo Eliminado</option>
         </select>
       </SearchFilter>
-      <div>
-        <Link class="btn-yellow" href="/pozos/crear">
-          <span>Crear</span>
-          <span class="hidden md:inline">&nbsp;Pozo</span>
-        </Link>
-      </div>
+      <Link class="btn-yellow" href="/pozos/crear">
+        <span>Crear</span>
+        <span class="hidden md:inline">&nbsp;Pozo</span>
+      </Link>
     </div>
     <div class="bg-white rounded-md shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">

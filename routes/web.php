@@ -7,6 +7,7 @@ use App\Http\Controllers\CromatografiaLiquidaController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DirectoriosController;
 use App\Http\Controllers\DocPozoController;
+use App\Http\Controllers\DocumentosController;
 use App\Http\Controllers\GraficaController;
 use App\Http\Controllers\MesesDetallesController;
 use App\Http\Controllers\PozosController;
@@ -44,6 +45,11 @@ Route::middleware('auth')->group(function () {
     /* Catálogo de Años */
     Route::resource('anos', AnosController::class)->only([
         'index', 'create', 'store', 'edit', 'update', 'destroy', 'restore'
+    ]);
+
+    /* Catálogo de Documentos */
+    Route::resource('documentos', DocumentosController::class)->only([
+        'index', 'create'
     ]);
 
     /* Catálogo de Pozos */
