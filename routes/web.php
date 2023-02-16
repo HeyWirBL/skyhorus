@@ -8,6 +8,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DirectoriosController;
 use App\Http\Controllers\DocPozoController;
 use App\Http\Controllers\GraficaController;
+use App\Http\Controllers\MesesDetallesController;
 use App\Http\Controllers\PozosController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Route;
@@ -32,6 +33,11 @@ Route::resource('users', UsersController::class);
 /* Catálogo de Directorios / Carpetas */
 Route::resource('directorios', DirectoriosController::class)->only([
     'index', 'create', 'store', 'edit', 'update', 'destroy'
+]);
+
+/* Catálogo de Meses */
+Route::resource('meses', MesesDetallesController::class)->only([
+    'index'
 ]);
 
 /* Catálogo de Años */

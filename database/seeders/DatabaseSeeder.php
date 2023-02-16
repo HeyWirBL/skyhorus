@@ -28,7 +28,14 @@ class DatabaseSeeder extends Seeder
 
         \App\Models\Ano::factory(2)->create();
 
-        $pozo = \App\Models\Pozo::factory()->create([
+        $mes = \App\Models\Mes::create(['mes' => 1]);
+
+        \App\Models\MesesDetalle::create([
+            'mes_id' => $mes->id,
+            'nombre' => 'Enero',
+        ]);
+
+        $pozo = \App\Models\Pozo::create([
             'punto_muestreo' => 'SALIDA DE LÍNEA DE GAS',
             'fecha_hora' => '2021-03-18',
             'identificador' => 'E-GGSOL-2021-0081',
@@ -41,7 +48,7 @@ class DatabaseSeeder extends Seeder
             'nombre_pozo' => 'ÉBANO 1063 H',
         ]);
 
-        \App\Models\ComponentesPozo::factory()->create([
+        \App\Models\ComponentesPozo::create([
             'dioxido_carbono' => '44.01',
             'pe_dioxido_carbono' => '2.0165',
             'mo_dioxido_carbono' => '0.8604',
