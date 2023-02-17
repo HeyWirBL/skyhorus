@@ -105,9 +105,6 @@ const reset = () => {
             <td>
               <Link class="flex items-center px-6 py-4" :href="`/documentos/${documento.id}`" tabindex="-1">{{ documento.mes.nombre }} </Link>
             </td>
-            <td>
-              <Link class="flex items-center px-6 py-4 text-yellow-600 hover:underline focus:text-yellow-500" :href="`/documentos/${documento.id}/editar`" tabindex="-1"> Editar </Link>
-            </td>
             <td class="w-px">
               <Link class="flex items-center px-6" :href="`/documentos/${documento.id}`" tabindex="-1">
                 <Icon class="block w-6 h-6 fill-gray-400" name="cheveron-right" />
