@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class ComponentesPozoController extends Controller
+class ComponentesPozosController extends Controller
 {
     public function index(): Response
     {
