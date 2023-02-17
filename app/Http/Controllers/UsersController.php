@@ -3,20 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rules;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class UsersController extends Controller
 {
-    public function index()
+    /**
+     * Display a listing of users.
+     */
+    public function index(Request $request): Response
     {
         return Inertia::render('Users/Index', [
-            'filters' => Request::all('search', 'role', 'trashed'),
-            'users' => User::query()
+            'filters' => $request->all('search', 'role', 'trashed'),
+            'users' => $request->user()->query()
                 ->orderByName()
-                ->filter(Request::only('search', 'role', 'trashed'))
+                ->filter($request->only('search', 'role', 'trashed'))
                 ->paginate(10)
                 ->withQueryString()
                 ->through(fn ($user) => [
@@ -27,48 +33,53 @@ class UsersController extends Controller
                     'email' => $user->email,
                     'rol' => $user->rol,
                     'deleted_at' => $user->deleted_at,
-                ]),    
+                ]),
         ]); 
     }
 
-    public function create()
+    /**
+     * Show the form for creating a new user.
+     */
+    public function create(): Response
     {
         return Inertia::render('Users/Create');
     }
 
-    public function store()
+    /**
+     * Store a newly created user in database.
+     * 
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function store(Request $request): RedirectResponse
     {
-        Request::validate([
+        $validated = $request->validate([
             'nombre' => 'required|string|max:50',
             'apellidos' => 'required|string|max:100',
-            'usuario' => ['required', 'max:50', Rule::unique('users')],
-            'email' => ['required', 'string', 'email', 'max:50', Rule::unique('users')],
-            'password' => 'required',
+            'usuario' => 'required|string|max:50|unique:'.User::class,
+            'email' => 'required|string|email|max:50|unique:'.User::class,
+            'password' => ['required', Rules\Password::defaults()],
             'telefono' => 'nullable',
             'direccion' => 'nullable',
-            'rol' => 'required',
+            'rol' => 'required|string',
         ]);
 
-        User::create([
-            'nombre' => Request::get('nombre'),
-            'apellidos' => Request::get('apellidos'),
-            'usuario' => Request::get('usuario'),
-            'email' => Request::get('email'),
-            'password' => Request::get('password'),
-            'telefono' => Request::get('telefono'),
-            'direccion' => Request::get('direccion'),
-            'rol' => Request::get('rol'),
-        ]);
+        $request->user()->create($validated);
 
-        return redirect(route('users.index'))->with('success', 'Usuario creado.');
+        return redirect(route('users'))->with('success', 'Usuario creado.');
     }
 
+    /**
+     * Display the information for specific user.
+     */
     public function show(User $user)
     {
         //
     }
 
-    public function edit(User $user)
+    /**
+     * Show the form for editing an specific user.
+     */
+    public function edit(User $user): Response
     {
         return Inertia::render('Users/Edit', [
             'user' => [
@@ -85,44 +96,49 @@ class UsersController extends Controller
         ]);
     }
 
-    public function update(User $user)
+    /**
+     * Update the user's information.
+     * 
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function update(Request $request, User $user): RedirectResponse
     {
-        Request::validate([
-            'nombre' => 'required|string|max:50',
-            'apellidos' => 'required|string|max:100',
-            'usuario' => ['required', 'max:50', Rule::unique('users')->ignore($user->id)],
-            'email' => ['required', 'string', 'email', 'max:50', Rule::unique('users')->ignore($user->id)],
-            'password' => 'nullable',
-            'telefono' => 'nullable',
-            'direccion' => 'nullable',
-            'rol' => 'required',
+        $request->validate([
+            'nombre' => ['required', 'string', 'max:50'],
+            'apellidos' => ['required', 'string', 'max:100'],
+            'usuario' => ['string', 'max:50', Rule::unique('users')->ignore($user->id)],
+            'email' => ['email', 'max:50', Rule::unique('users')->ignore($user->id)],
+            'password' => ['nullable', Rules\Password::defaults()],
+            'telefono' => ['nullable', 'max:50'],
+            'direccion' => ['nullable'],
+            'rol' => ['required', 'string'],
         ]);
 
-        $user->update(Request::only('nombre', 'apellidos', 'usuario', 'email', 'rol'));
+        $user->update($request->only(
+            'nombre', 'apellidos', 'usuario', 'email', 'telefono', 'direccion', 'rol'
+        ));
 
-        if (Request::get('password')) {
-            $user->update(['password' => Request::get('password')]);
-        }
-
-        if (Request::get('telefono')) {
-            $user->update(['telefono' => Request::get('telefono')]);
-        }
-
-        if (Request::get('direccion')) {
-            $user->update(['direccion' => Request::get('direccion')]);
+        if ($request->get('password')) {
+            $user->update(['password' => $request->get('password')]);
         }
 
         return Redirect::back()->with('success', 'Usuario actualizado.');
     }
 
-    public function destroy(User $user)
+    /**
+     * Delete temporary an specific user.
+     */
+    public function destroy(User $user): RedirectResponse
     {
         $user->delete();
 
         return Redirect::back()->with('success', 'Usuario eliminado.');
     }
 
-    public function restore(User $user)
+    /**
+     * Restore the user's account.
+     */
+    public function restore(User $user): RedirectResponse
     {
         $user->restore();
 

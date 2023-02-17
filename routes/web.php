@@ -30,7 +30,27 @@ Route::middleware('auth')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     /* Catálogo de Usuarios  */
-    Route::resource('users', UsersController::class);
+    //Route::resource('users', UsersController::class);}
+    Route::get('users', [UsersController::class, 'index'])
+        ->name('users');
+
+    Route::get('users/crear', [UsersController::class, 'create'])
+        ->name('users.create');
+
+    Route::get('users/{user}/editar', [UsersController::class, 'edit'])
+        ->name('users.edit');
+
+    Route::post('users', [UsersController::class, 'store'])
+        ->name('users.store');
+
+    Route::put('users/{user}', [UsersController::class, 'update'])
+        ->name('users.update');
+
+    Route::put('users/{user}/restore', [UsersController::class, 'restore'])
+        ->name('users.restore');
+
+    Route::delete('users/{user}', [UsersController::class, 'destroy'])
+        ->name('users.destroy');
 
     /* Catálogo de Directorios / Carpetas */
     Route::resource('directorios', DirectoriosController::class)->only([
