@@ -2,51 +2,74 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\Directorio;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class DirectoriosController extends Controller
 {
-    public function index()
+    /**
+     * Display a listing of folders.
+     */
+    public function index(Request $request, Directorio $directorio): Response
     {
         return Inertia::render('Directorios/Index', [
-            'filters' => Request::all('search', 'trashed'),
-            'directorios' => Directorio::query()
+            'filters' => $request->all('search', 'trashed'),
+            'directorios' => $directorio->query()
                 ->latest()
-                ->filter(Request::only('search', 'trashed'))
+                ->filter($request->only('search', 'trashed'))
                 ->paginate(10)
                 ->withQueryString()
-                ->through(fn ($directorio) => [
-                    'id' => $directorio->id,
-                    'nombre_dir' => $directorio->nombre_dir,
-                    'fecha_dir' => $directorio->fecha_dir,
-                    'deleted_at' => $directorio->deleted_at,
+                ->through(fn ($dir) => [
+                    'id' => $dir->id,
+                    'nombre_dir' => $dir->nombre_dir,
+                    'fecha_dir' => $dir->fecha_dir,
+                    'deleted_at' => $dir->deleted_at,
                 ]),
         ]);
     }
 
-    public function create()
+    /**
+     * Show the form for creating a new folder.
+     */
+    public function create(): Response
     {
         return Inertia::render('Directorios/Create');
     }
 
-    public function store()
+    /**
+     * Store a newly created folder in database.
+     * 
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function store(Request $request, Directorio $directorio): RedirectResponse
     {
-        $validated = Request::validate([
-            'nombre_dir' => 'required|unique:directorios|max:100',
+        $validated = $request->validate([
+            'nombre_dir' => 'required|string|max:100|unique:'.Directorio::class,
             'fecha_dir' => 'required|date',
         ]);
 
-        Directorio::create($validated);
-    
-        return Redirect::route('directorios.index')->with('success', 'Carpeta creada.');
+        $directorio->create($validated);
+
+        return redirect(route('directorios'))->with('success', 'Carpeta creada.');
     }
 
-    public function edit(Directorio $directorio)
+    /**
+     * Display the information for specific folder.
+     */
+    public function show(Directorio $directorio)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing an specific folder.
+     */
+    public function edit(Directorio $directorio): Response
     {
         return Inertia::render('Directorios/Edit', [
             'directorio' => [
@@ -58,15 +81,40 @@ class DirectoriosController extends Controller
         ]);
     }
 
-    public function update(Directorio $directorio)
+    /**
+     * Update the folder's information.
+     * 
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function update(Request $request, Directorio $directorio): RedirectResponse
     {
         $directorio->update(
-            Request::validate([
-                'nombre_dir' => ['required', 'max:100', Rule::unique('directorios')->ignore($directorio->id)],
-                'fecha_dir' => 'required|date',
+            $request->validate([
+                'nombre_dir' => ['required', 'string', 'max:100', Rule::unique('directorios')->ignore($directorio->id)],
+                'fecha_dir' => ['required', 'date'],
             ]),
         );
 
         return Redirect::back()->with('success', 'Carpeta Actualizada.');
+    }
+
+    /**
+     * Delete temporary an specific folder.
+     */
+    public function destroy(Directorio $directorio): RedirectResponse
+    {
+        $directorio->delete();
+
+        return Redirect::back()->with('success', 'Carpeta eliminada.');
+    }
+
+    /**
+     * Restore the user's account.
+     */
+    public function restore(Directorio $directorio): RedirectResponse
+    {
+        $directorio->restore();
+
+        return Redirect::back()->with('success', 'Carpeta restablecida.');
     }
 }

@@ -102,6 +102,7 @@ const reset = () => {
             <td>
               <Link class="flex items-center px-6 py-4" :href="`/users/${user.id}/editar`" tabindex="-1">
                 {{ user.nombre }}
+                <Icon v-if="user.deleted_at" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" name="trash" />
               </Link>
             </td>
             <td>

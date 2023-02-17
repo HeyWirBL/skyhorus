@@ -17,6 +17,16 @@ class Mes extends Model
      */
     protected $table = 'meses';
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'mes',
+        'nombre',
+    ];
+
     public function documentos()
     {
         return $this->hasMany(Documento::class);

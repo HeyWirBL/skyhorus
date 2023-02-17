@@ -3,20 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ano;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class AnosController extends Controller
 {
-    public function index()
+    /**
+     * Display a listing of years.
+     */
+    public function index(Request $request, Ano $ano): Response
     {
         return Inertia::render('Anos/Index', [
-            'filters' => Request::all('search', 'trashed'),
-            'anos' => Ano::query()
+            'filters' => $request->all('search', 'trashed'),
+            'anos' => $ano->query()
                 ->latest()
-                ->filter(Request::only('search', 'trashed'))
+                ->filter($request->only('search', 'trashed'))
                 ->paginate(10)
                 ->withQueryString()
                 ->through(fn ($ano) => [
@@ -27,50 +32,78 @@ class AnosController extends Controller
         ]);
     }
 
-    public function create()
+    /**
+     * Show the form for creating a new year.
+     */
+    public function create(): Response
     {
         return Inertia::render('Anos/Create');
     }
 
-    public function store()
+    /**
+     * Store a newly created month in database.
+     * 
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function store(Request $request, Ano $ano): RedirectResponse
     {
-        Request::validate([
-            'ano' => ['required', 'max:50', Rule::unique('anos')],
+        $validated = $request->validate([
+            'ano' => 'required|max:50|unique:'.Ano::class,
         ]);
 
-        Ano::create([
-            'ano' => Request::get('ano'),
-        ]);
+        $ano->create($validated);
 
-        return redirect(route('anos.index'))->with('success', 'Año creado.');
+        return redirect(route('anos'))->with('success', 'Año creado.');
     }
 
-    public function edit(Ano $ano)
+    /**
+     * Display the information for specific year.
+     */
+    public function show(Ano $ano)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing an specific year.
+     */
+    public function edit(Ano $ano): Response
     {
         return Inertia::render('Anos/Edit', [
             'ano' => $ano,    
         ]);
     }
 
-    public function update(Ano $ano)
+    /**
+     * Update the year's information.
+     * 
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function update(Request $request, Ano $ano): RedirectResponse
     {
-        Request::validate([
-            'ano' => ['required', 'max:50', Rule::unique('anos')->ignore($ano->id)],
-        ]);
-
-        $ano->update(Request::only('ano'));
+        $ano->update(
+            $request->validate([
+                'ano' => ['required', 'max:50', Rule::unique('anos')->ignore($ano->id)],
+            ]),
+        );
 
         return Redirect::back()->with('success', 'Año actualizado.');
     }
 
-    public function destroy(Ano $ano)
+    /**
+     * Delete temporary an specific year.
+     */
+    public function destroy(Ano $ano): RedirectResponse
     {
         $ano->delete();
 
         return Redirect::back()->with('success', 'Año eliminado.');
     }
 
-    public function restore(Ano $ano)
+    /**
+     * Restore the year.
+     */
+    public function restore(Ano $ano): RedirectResponse
     {
         $ano->restore();
 

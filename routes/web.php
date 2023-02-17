@@ -53,19 +53,80 @@ Route::middleware('auth')->group(function () {
         ->name('users.destroy');
 
     /* Catálogo de Directorios / Carpetas */
-    Route::resource('directorios', DirectoriosController::class)->only([
+    /*Route::resource('directorios', DirectoriosController::class)->only([
         'index', 'create', 'store', 'edit', 'update', 'destroy'
-    ]);
+    ]);*/
+    Route::get('directorios', [DirectoriosController::class, 'index'])
+        ->name('directorios');
+
+    Route::get('directorios/crear', [DirectoriosController::class, 'create'])
+        ->name('directorios.create');
+
+    Route::get('directorios/{directorio}/editar', [DirectoriosController::class, 'edit'])
+        ->name('directorios.edit');
+
+    Route::post('directorios', [DirectoriosController::class, 'store'])
+        ->name('directorios.store');
+        
+    Route::put('directorios/{directorio}', [DirectoriosController::class, 'update'])
+        ->name('directorios.update');
+
+    Route::put('directorios/{directorio}/restore', [DirectoriosController::class, 'restore'])
+        ->name('directorios.restore');
+
+    Route::delete('directorios/{directorio}', [DirectoriosController::class, 'destroy'])
+        ->name('directorios.destroy');
 
     /* Catálogo de Meses */
-    Route::resource('meses', MesesController::class)->only([
+    /*Route::resource('meses', MesesController::class)->only([
         'index'
-    ]);
+    ]);*/
+    Route::get('meses', [MesesController::class, 'index'])
+        ->name('meses');
+
+    Route::get('meses/crear', [MesesController::class, 'create'])
+        ->name('meses.create');
+
+    Route::get('meses/{mes}/editar', [MesesController::class, 'edit'])
+        ->name('meses.edit');
+
+    Route::post('meses', [MesesController::class, 'store'])
+        ->name('directorios.store');
+        
+    Route::put('meses/{mes}', [MesesController::class, 'update'])
+        ->name('meses.update');
+
+    Route::put('meses/{mes}/restore', [MesesController::class, 'restore'])
+        ->name('meses.restore');
+
+    Route::delete('meses/{mes}', [MesesController::class, 'destroy'])
+        ->name('meses.destroy');
 
     /* Catálogo de Años */
-    Route::resource('anos', AnosController::class)->only([
+    /*Route::resource('anos', AnosController::class)->only([
         'index', 'create', 'store', 'edit', 'update', 'destroy', 'restore'
-    ]);
+    ]);*/
+
+    Route::get('anos', [AnosController::class, 'index'])
+        ->name('anos');
+
+    Route::get('anos/crear', [AnosController::class, 'create'])
+        ->name('anos.create');
+
+    Route::get('anos/{ano}/editar', [AnosController::class, 'edit'])
+        ->name('anos.edit');
+
+    Route::post('anos', [AnosController::class, 'store'])
+        ->name('anos.store');
+        
+    Route::put('anos/{ano}', [AnosController::class, 'update'])
+        ->name('anos.update');
+
+    Route::put('anos/{ano}/restore', [AnosController::class, 'restore'])
+        ->name('anos.restore');
+
+    Route::delete('anos/{ano}', [AnosController::class, 'destroy'])
+        ->name('anos.destroy');
 
     /* Catálogo de Documentos */
     Route::resource('documentos', DocumentosController::class)->only([

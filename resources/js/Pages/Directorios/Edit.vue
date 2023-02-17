@@ -2,21 +2,32 @@
 import { Head, Link, useForm } from '@inertiajs/vue3'
 import LoadingButton from '@/Components/LoadingButton.vue'
 import TextInput from '@/Components/TextInput.vue'
+import TrashedMessage from '@/Shared/TrashedMessage.vue'
 
 const props = defineProps({
   directorio: Object,
 })
 
 const form = useForm({
+  _method: 'put',
   nombre_dir: props.directorio.nombre_dir,
-  idDirectorio: props.directorio.idDirectorio,
   fecha_dir: props.directorio.fecha_dir,
   deleted_at: props.directorio.deleted_at,
 })
 
-const update = () => form.put(`/directorios/${props.directorio.idDirectorio}`)
-const destroy = () => form.delete(`/directorios/${props.directorio.idDirectorio}`)
-// const restore = () => form.put(`/directorios/${props.directorio.idDirectorio}/restore`)
+const update = () => form.put(`/directorios/${props.directorio.id}`)
+
+const destroy = () => {
+  if (confirm('¿Estás seguro de querer eliminar esta carpeta?')) {
+    form.delete(`/directorios/${props.directorio.id}`)
+  }
+}
+
+const restore = () => {
+  if (confirm('¿Estás seguro de querer restablecer esta carpeta?')) {
+    form.put(`/directorios/${props.directorio.id}/restore`)
+  }
+}
 </script>
 
 <template>
@@ -26,6 +37,7 @@ const destroy = () => form.delete(`/directorios/${props.directorio.idDirectorio}
       <Link class="text-yellow-400 hover:text-yellow-600" href="/directorios">Carpetas</Link>
       <span class="text-yellow-400 font-medium">&nbsp;/</span> {{ form.nombre_dir }}
     </h1>
+    <TrashedMessage v-if="props.directorio.deleted_at" class="mb-6" @restore="restore">Esta carpeta ha sido eliminada.</TrashedMessage>
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
       <form @submit.prevent="update">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">

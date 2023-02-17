@@ -15,25 +15,27 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        \App\Models\User::factory()->create([
+        /*\App\Models\User::factory()->create([
             'nombre' => 'Jesús Manuel',
             'apellidos' => 'Méndez García',
             'usuario' => 'Jesus.Mendez',
             'email' => 'jesus@admin.com',
             'password' => Hash::make('Desarrollo123#2023'),
             'rol' => 'Administrador',
-        ]);
+        ]);*/
 
-        \App\Models\Directorio::factory(3)->create();
+        \App\Models\User::factory(99)->create();
+
+        /*\App\Models\Directorio::factory(3)->create();
 
         \App\Models\Ano::factory(2)->create();
 
         \App\Models\Mes::create([
             'mes' => 1,
             'nombre' => 'Enero',
-        ]);
+        ]);*/
 
-        $pozo = \App\Models\Pozo::create([
+        /*$pozo = \App\Models\Pozo::create([
             'punto_muestreo' => 'SALIDA DE LÍNEA DE GAS',
             'fecha_hora' => '2021-03-18',
             'identificador' => 'E-GGSOL-2021-0081',
@@ -44,9 +46,9 @@ class DatabaseSeeder extends Seeder
             'volumen_cm3' => '300',
             'volumen_lts' => '0.3',
             'nombre_pozo' => 'ÉBANO 1063 H',
-        ]);
+        ]);*/
 
-        \App\Models\ComponentesPozo::create([
+        /*\App\Models\ComponentesPozo::create([
             'dioxido_carbono' => '44.01',
             'pe_dioxido_carbono' => '2.0165',
             'mo_dioxido_carbono' => '0.8604',
@@ -100,6 +102,6 @@ class DatabaseSeeder extends Seeder
             'observaciones' => '* DATOS CALCULADOS. ** EL PESO MOLECULAR DEL PSEUDOCOMPONENTE C6 ESTA REFERENCIADO DE LA TABLA DE KATZ Y FIROOZABADI DEL LIBRO PHASE BEHAVIOR pag 71.',
             'nombre_componente' => 'Nom Componente',
             'fecha_muestreo' => '2021-07-04',
-        ]);
+        ]);*/
     }
 }

@@ -3,25 +3,59 @@
 namespace App\Http\Controllers;
 
 use App\Models\Mes;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class MesesController extends Controller
 {
-    public function index()
+     /**
+     * Display a listing of months.
+     */
+    public function index(Request $request, Mes $mes): Response
     {
         return Inertia::render('Meses/Index', [
-            'filters' => Request::all('search', 'trashed'),
-            'meses' => Mes::query()
-                ->filter(Request::only('search', 'trashed'))
+            'filters' => $request->all('search', 'trashed'),
+            'meses' => $mes->query()
+                ->filter($request->only('search', 'trashed'))
                 ->paginate(10)
                 ->withQueryString()
-                ->through(fn ($mes) => [
-                    'id' => $mes->id,
-                    'mes' => $mes->mes,
-                    'nombre' => $mes->nombre,
-                    'deleted_at' => $mes->deleted_at,
+                ->through(fn ($m) => [
+                    'id' => $m->id,
+                    'mes' => $m->mes,
+                    'nombre' => $m->nombre,
+                    'deleted_at' => $m->deleted_at,
                 ]),
         ]);
+    }
+
+    /**
+     * Show the form for creating a new month.
+     */
+    public function create(Mes $mes): Response
+    {
+        return Inertia::render('Meses/Create', [
+            'meses' => $mes->get()
+                ->map
+                ->only('mes', 'nombre'),
+        ]);
+    }
+
+    /**
+     * Store a newly created month in database.
+     * 
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function store(Request $request, Mes $mes): RedirectResponse
+    {
+        $validated = $request->validate([
+            'mes' => 'required|number',
+            'nombre' => 'required|max:50|unique:'.Mes::class,
+        ]);
+
+        $mes->create($validated);
+
+        return redirect(route('meses'))->with('success', 'Mes creado.');
     }
 }

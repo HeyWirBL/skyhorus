@@ -41,5 +41,6 @@ defineExpose({ focus: () => select.value.focus() })
     <select :id="id" ref="select" v-model="selected" v-bind="{ ...$attrs, class: null }" class="form-select">
       <slot />
     </select>
+    <div v-if="error" class="form-error">{{ error }}</div>
   </div>
 </template>

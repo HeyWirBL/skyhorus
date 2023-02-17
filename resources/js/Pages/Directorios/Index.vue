@@ -15,7 +15,6 @@ const props = defineProps({
 
 const selected = ref([])
 const selectAll = ref(false)
-const isSelected = ref(false)
 
 const form = ref({
   search: props.filters.search,
@@ -36,7 +35,7 @@ const select = () => {
   selected.value = []
   if (!selectAll.value) {
     for (let i in props.directorios.data) {
-      selected.value.push(props.directorios.data[i].idDirectorio)
+      selected.value.push(props.directorios.data[i].id)
     }
   }
 }
@@ -60,12 +59,9 @@ const reset = () => {
         </select>
       </SearchFilter>
       <Link class="btn-yellow" href="/directorios/crear">
-        <span>Añadir</span>
+        <span>Crear</span>
         <span class="hidden md:inline">&nbsp;Directorio</span>
       </Link>
-    </div>
-    <div v-if="selectAll || isSelected" class="flex mb-6">
-      <button class="text-red-600 hover:underline" type="button">Borrar elementos seleccionados</button>
     </div>
     <div class="bg-white rounded-md shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
@@ -73,44 +69,45 @@ const reset = () => {
           <tr>
             <th scope="col" class="p-4">
               <div class="flex items-center">
-                <input id="checkbox-all-users" v-model="selectAll" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="select" />
-                <label for="checkbox-all-users" class="sr-only">checkbox</label>
+                <input id="checkbox-all-directorios" v-model="selectAll" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="select" />
+                <label for="checkbox-all-directorios" class="sr-only">checkbox</label>
               </div>
             </th>
             <th scope="col" class="px-6 py-3">&nbsp;</th>
             <th scope="col" class="px-6 py-3">Nombre de carpeta</th>
-            <th scope="col" colspan="2" class="px-6 py-3">Fecha de creación</th>
+            <th scope="col" class="px-6 py-3" colspan="2">Fecha de creación</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="directorio in props.directorios.data" :key="directorio.idDirectorio" class="bg-white hover:bg-gray-100 focus-within:bg-gray-100 border-b">
+          <tr v-for="dir in props.directorios.data" :key="dir.id" class="bg-white hover:bg-gray-100 focus-within:bg-gray-100 border-b">
             <td class="w-4 p-4">
               <div class="flex items-center">
-                <input :id="`checkbox-user-${directorio.idDirectorio}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="directorio.idDirectorio" />
-                <label :for="`checkbox-user-${directorio.idDirectorio}`" class="sr-only">checkbox</label>
+                <input :id="`checkbox-directorio-${dir.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="dir.id" />
+                <label :for="`checkbox-directorio-${dir.id}`" class="sr-only">checkbox</label>
               </div>
             </td>
-            <td>
-              <Link class="text-yellow-400 hover:underline px-6 py-4" href="#" tabindex="-1">Archivos</Link>
+            <td class="flex items-center">
+              <Link class="px-6 py-4 text-yellow-500 hover:underline focus:text-yellow-500" :href="`/directorios/${dir.id}`"> Archivos ({{ 0 }}) </Link>
             </td>
             <td>
-              <Link class="flex items-center px-6 py-4" :href="`/directorios/${directorio.idDirectorio}/editar`" tabindex="-1">
-                {{ directorio.nombre_dir }}
+              <Link class="flex items-center px-6 py-4 focus:text-yellow-500" :href="`/directorios/${dir.id}/editar`" tabindex="-1">
+                {{ dir.nombre_dir }}
+                <Icon v-if="dir.deleted_at" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" name="trash" />
               </Link>
             </td>
             <td>
-              <Link class="flex items-center px-6 py-4" :href="`/directorios/${directorio.idDirectorio}/editar`" tabindex="-1">
-                {{ directorio.fecha_dir }}
+              <Link class="flex items-center px-6 py-4" :href="`/directorios/${dir.id}/editar`" tabindex="-1">
+                {{ dir.fecha_dir }}
               </Link>
             </td>
             <td class="w-px">
-              <Link class="flex items-center px-6" :href="`/directorios/${directorio.idDirectorio}/editar`" tabindex="-1">
+              <Link class="flex items-center px-6" :href="`/directorios/${dir.id}/editar`" tabindex="-1">
                 <Icon class="block w-6 h-6 fill-gray-400" name="cheveron-right" />
               </Link>
             </td>
           </tr>
           <tr v-if="props.directorios.data.length === 0">
-            <td class="px-6 py-4">No se encontraron carpetas registradas.</td>
+            <td class="px-6 py-4" colspan="5">No se encontraron directorios registrados.</td>
           </tr>
         </tbody>
       </table>
