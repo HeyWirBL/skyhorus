@@ -30,6 +30,11 @@ class Documento extends Model
         return $this->belongsTo(Mes::class);
     }
 
+    public function scopeOrderByName($query)
+    {
+        $query->orderBy('')->orderBy('');
+    }
+
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {

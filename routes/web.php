@@ -129,9 +129,32 @@ Route::middleware('auth')->group(function () {
         ->name('anos.destroy');
 
     /* Catálogo de Documentos */
-    Route::resource('documentos', DocumentosController::class)->only([
+    /*Route::resource('documentos', DocumentosController::class)->only([
         'index', 'create'
-    ]);
+    ]);*/
+    Route::get('documentos', [DocumentosController::class, 'index'])
+        ->name('documentos');
+
+    Route::get('documentos/crear', [DocumentosController::class, 'create'])
+        ->name('documentos.create');
+
+    Route::get('documentos/{pozo}', [DocumentosController::class, 'show'])
+        ->name('documentos.show');
+
+    Route::get('documentos/{pozo}/editar', [DocumentosController::class, 'edit'])
+        ->name('documentos.edit');
+
+    Route::post('documentos', [DocumentosController::class, 'store'])
+        ->name('documentos.store');
+
+    Route::put('documentos/{pozo}', [DocumentosController::class, 'update'])
+        ->name('documentos.update');
+
+    Route::put('documentos/{pozo}/restore', [DocumentosController::class, 'restore'])
+        ->name('documentos.restore');
+
+    Route::delete('documentos/{pozo}', [DocumentosController::class, 'destroy'])
+        ->name('documentos.destroy');
 
     /* Catálogo de Pozos */
     //Route::resource('pozos', PozosController::class);

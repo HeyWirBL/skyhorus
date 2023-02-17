@@ -23,7 +23,6 @@ class Mes extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'mes',
         'nombre',
     ];
 

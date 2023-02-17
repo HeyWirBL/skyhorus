@@ -23,7 +23,6 @@ class MesesController extends Controller
                 ->withQueryString()
                 ->through(fn ($m) => [
                     'id' => $m->id,
-                    'mes' => $m->mes,
                     'nombre' => $m->nombre,
                     'deleted_at' => $m->deleted_at,
                 ]),
@@ -38,7 +37,7 @@ class MesesController extends Controller
         return Inertia::render('Meses/Create', [
             'meses' => $mes->get()
                 ->map
-                ->only('mes', 'nombre'),
+                ->only('nombre'),
         ]);
     }
 
@@ -50,7 +49,6 @@ class MesesController extends Controller
     public function store(Request $request, Mes $mes): RedirectResponse
     {
         $validated = $request->validate([
-            'mes' => 'required|number',
             'nombre' => 'required|max:50|unique:'.Mes::class,
         ]);
 
