@@ -24,15 +24,21 @@ class DatabaseSeeder extends Seeder
             'rol' => 'Administrador',
         ]);*/
 
-        \App\Models\User::factory(99)->create();
+        //\App\Models\User::factory(99)->create();
 
-        /*\App\Models\Directorio::factory(3)->create();
+        //\App\Models\Directorio::factory(1)->create();
 
-        \App\Models\Ano::factory(2)->create();
+        //\App\Models\Ano::factory(1)->create();
 
-        \App\Models\Mes::create([
-            'mes' => 1,
-            'nombre' => 'Enero',
+        //\App\Models\Mes::create([
+        //    'nombre' => 'Enero',
+        //]);
+
+        /*\App\Models\Documento::create([
+            'documento' => '[{"name":"files\/CRONOGRAMA TERMINACION REV. 01_luigts7l.xlsx","usrName":"CRONOGRAMA TERMINACION REV. 01.xlsx","size":26454,"type":"application\/vnd.openxmlformats-officedocument.spreadsheetml.sheet","searchStr":"CRONOGRAMA TERMINACION REV. 01.xlsx,!:sStrEnd"}]',
+            'directorio_id' => '1',
+            'ano_id' => '1',
+            'mes_id' => '1',
         ]);*/
 
         /*$pozo = \App\Models\Pozo::create([
@@ -46,9 +52,9 @@ class DatabaseSeeder extends Seeder
             'volumen_cm3' => '300',
             'volumen_lts' => '0.3',
             'nombre_pozo' => 'ÉBANO 1063 H',
-        ]);*/
+        ]);
 
-        /*\App\Models\ComponentesPozo::create([
+        \App\Models\ComponentesPozo::create([
             'dioxido_carbono' => '44.01',
             'pe_dioxido_carbono' => '2.0165',
             'mo_dioxido_carbono' => '0.8604',

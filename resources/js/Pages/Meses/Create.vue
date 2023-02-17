@@ -8,7 +8,6 @@ defineProps({
 })
 
 const form = useForm({
-  mes: '',
   nombre: '',
 })
 
@@ -25,11 +24,9 @@ const store = () => form.post('/meses')
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
       <form @submit.prevent="store">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
-          <input v-model="form.mes" type="hidden" />
-          <div v-if="error" class="form-error">{{ error }}</div>
           <SelectInput v-model="form.nombre" :error="form.errors.nombre" class="pb-8 pr-6 w-full" label="Mes">
             <option value="">Por favor seleccione</option>
-            <option v-for="mes in meses" :key="mes.id" :value="mes.mes">{{ mes.nombre }}</option>
+            <option v-for="mes in meses" :key="mes.id" :value="mes.id">{{ mes.nombre }}</option>
           </SelectInput>
         </div>
         <div class="flex items-center justify-end px-8 py-4 bg-gray-50 border-t border-gray-100">

@@ -15,7 +15,6 @@ return new class extends Migration
     {
         Schema::create('meses', function (Blueprint $table) {
             $table->id();
-            $table->integer('mes');
             $table->string('nombre', 50)->unique();
             $table->timestamps();
             $table->softDeletes();
