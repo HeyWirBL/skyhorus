@@ -96,6 +96,7 @@ const reset = () => {
             <td>
               <Link class="flex items-center px-6 py-4 focus:text-yellow-500" :href="`/pozos/${pozo.id}`" tabindex="-1">
                 {{ pozo.nombre_pozo }}
+                <Icon v-if="pozo.deleted_at" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" name="trash" />
               </Link>
             </td>
             <td>

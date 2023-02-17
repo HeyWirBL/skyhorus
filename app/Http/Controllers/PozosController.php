@@ -3,40 +3,53 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pozo;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class PozosController extends Controller
 {
-    public function index()
+    /**
+     * Display a listing of wells.
+     */
+    public function index(Request $request, Pozo $pozo): Response
     {
         return Inertia::render('Pozos/Index', [
-            'filters' => Request::all('search', 'trashed'),
-            'pozos' => Pozo::query()
-                ->filter(Request::only('search', 'trashed'))
+            'filters' => $request->all('search','trashed'),
+            'pozos' => $pozo->query()
+                ->filter($request->only('search', 'trashed'))
                 ->paginate(10)
                 ->withQueryString()
-                ->through(fn ($pozo) => [
-                    'id' => $pozo->id,
-                    'fecha_hora' => $pozo->fecha_hora,
-                    'identificador' => $pozo->identificador,
-                    'nombre_pozo' => $pozo->nombre_pozo,
-                    'deleted_at' => $pozo->deleted_at,
+                ->through(fn ($p) => [
+                    'id' => $p->id,
+                    'fecha_hora' => $p->fecha_hora,
+                    'identificador' => $p->identificador,
+                    'nombre_pozo' => $p->nombre_pozo,
+                    'deleted_at' => $p->deleted_at,
                 ]),
         ]);
     }
 
-    public function create()
+    /**
+     * Show the form for creating a new well.
+     */
+    public function create(): Response
     {
         return Inertia::render('Pozos/Create');
     }
 
-    public function store()
+    /**
+     * Store a newly created well in database.
+     * 
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function store(Request $request, Pozo $pozo): RedirectResponse
     {
-        Request::validate([
-            'punto_muestreo' => 'required|string|max:150',
+        $validated = $request->validate([
+            'punto_muestreo' => 'required|max:150',
             'fecha_hora' => 'required|date',
             'identificador' => 'required|max:150',
             'presion_kgcm2' => 'required|max:150',
@@ -46,57 +59,56 @@ class PozosController extends Controller
             'volumen_cm3' => 'required|max:150',
             'volumen_lts' => 'required|max:150',
             'observaciones' => 'nullable',
-            'nombre_pozo' => ['required', 'max:150', Rule::unique('pozos')]
+            'nombre_pozo' => 'required|max:150|unique:'.Pozo::class,
         ]);
+        
+        $pozo->create($validated);
 
-        Pozo::create([
-            'punto_muestreo' => Request::get('punto_muestreo'),
-            'fecha_hora' => Request::get('fecha_hora'),
-            'identificador' => Request::get('identificador'),
-            'presion_kgcm2' => Request::get('presion_kgcm2'),
-            'presion_psi' => Request::get('presion_psi'),
-            'temp_C' => Request::get('temp_C'),
-            'temp_F' => Request::get('temp_F'),
-            'volumen_cm3' => Request::get('volumen_cm3'),
-            'volumen_lts' => Request::get('volumen_lts'),
-            'observaciones' => Request::get('observaciones'),
-            'nombre_pozo' => Request::get('nombre_pozo'),
-        ]);
-
-        return redirect(route('pozos.index'))->with('success', 'Pozo creado.');
+        return redirect(route('pozos'))->with('success', 'Pozo creado.');
     }
 
-    public function show(Pozo $pozo)
+    /**
+     * Display the information for specific well.
+     */
+    public function show(Pozo $pozo): Response
     {
         return Inertia::render('Pozos/Show', [
             'pozo' => $pozo,
         ]);
     }
 
-    public function edit(Pozo $pozo)
+    /**
+     * Show the form for editing an specific well.
+     */
+    public function edit(Pozo $pozo): Response
     {
         return Inertia::render('Pozos/Edit', [
             'pozo' => $pozo,    
         ]);
     }
 
-    public function update(Pozo $pozo)
+    /**
+     * Update the well's information.
+     * 
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function update(Request $request, Pozo $pozo): RedirectResponse
     {
-        Request::validate([
-            'punto_muestreo' => 'required|string|max:150',
-            'fecha_hora' => 'required|date',
-            'identificador' => 'required|max:150',
-            'presion_kgcm2' => 'required|max:150',
-            'presion_psi' => 'required|max:150',
-            'temp_C' => 'required|max:150',
+        $request->validate([
+            'punto_muestreo' => ['required', 'max:150'],
+            'fecha_hora' => ['required', 'date'],
+            'identificador' => ['required', 'max:150'],
+            'presion_kgcm2' => ['required', 'max:150'],
+            'presion_psi' => ['required', 'max:150'],
+            'temp_C' => ['required', 'max:150'],
             'temp_F' => 'required|max:150',
-            'volumen_cm3' => 'required|max:150',
-            'volumen_lts' => 'required|max:150',
-            'observaciones' => 'nullable',
+            'volumen_cm3' => ['required', 'max:150'],
+            'volumen_lts' => ['required', 'max:150'],
+            'observaciones' => ['nullable'],
             'nombre_pozo' => ['required', 'max:150', Rule::unique('pozos')->ignore($pozo->id)],
         ]);
 
-        $pozo->update(Request::only(
+        $pozo->update($request->only(
             'punto_muestreo', 
             'fecha_hora', 
             'identificador', 
@@ -109,21 +121,27 @@ class PozosController extends Controller
             'nombre_pozo',
         ));
 
-        if (Request::get('observaciones')) {
-            $pozo->update(['observaciones' => Request::get('observaciones')]);
+        if ($request->get('observaciones')) {
+            $pozo->update(['observaciones' => $request->get('observaciones')]);
         }
 
         return Redirect::back()->with('success', 'Pozo actualizado.');
     }
 
-    public function destroy(Pozo $pozo)
+    /**
+     * Delete temporary an specific well.
+     */
+    public function destroy(Pozo $pozo): RedirectResponse
     {
         $pozo->delete();
 
         return Redirect::back()->with('success', 'Pozo eliminado.');
     }
 
-    public function restore(Pozo $pozo)
+    /**
+     * Restore the well.
+     */
+    public function restore(Pozo $pozo): RedirectResponse
     {
         $pozo->restore();
 

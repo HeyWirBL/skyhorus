@@ -134,7 +134,30 @@ Route::middleware('auth')->group(function () {
     ]);
 
     /* Catálogo de Pozos */
-    Route::resource('pozos', PozosController::class);
+    //Route::resource('pozos', PozosController::class);
+    Route::get('pozos', [PozosController::class, 'index'])
+        ->name('pozos');
+
+    Route::get('pozos/crear', [PozosController::class, 'create'])
+        ->name('pozos.create');
+
+    Route::get('pozos/{pozo}', [PozosController::class, 'show'])
+        ->name('pozos.show');
+
+    Route::get('pozos/{pozo}/editar', [PozosController::class, 'edit'])
+        ->name('pozos.edit');
+
+    Route::post('pozos', [PozosController::class, 'store'])
+        ->name('pozos.store');
+
+    Route::put('pozos/{pozo}', [PozosController::class, 'update'])
+        ->name('pozos.update');
+
+    Route::put('pozos/{pozo}/restore', [PozosController::class, 'restore'])
+        ->name('pozos.restore');
+
+    Route::delete('pozos/{pozo}', [PozosController::class, 'destroy'])
+        ->name('pozos.destroy');
 
     /* Catálogo de Pozos: Documentos */
     Route::resource('docpozos', DocPozoController::class)->only(['index']);

@@ -60,7 +60,7 @@ const reset = () => {
       </SearchFilter>
       <Link class="btn-yellow" href="/anos/crear">
         <span>Crear</span>
-        <span class="hidden md:inline">Año</span>
+        <span class="hidden md:inline">&nbsp;Año</span>
       </Link>
     </div>
     <div class="bg-white rounded-md shadow overflow-x-auto">
