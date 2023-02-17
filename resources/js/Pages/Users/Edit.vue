@@ -15,6 +15,7 @@ const hidePassword = ref(true)
 
 const form = useForm({
   _method: 'put',
+  id: props.user.id,
   nombre: props.user.nombre,
   apellidos: props.user.apellidos,
   usuario: props.user.usuario,
@@ -62,7 +63,7 @@ const passwordFieldType = computed(() => (hidePassword.value ? 'password' : 'tex
           <TextInput v-model="form.apellidos" :error="form.errors.apellidos" class="pb-8 pr-6 w-full lg:w-1/2" label="Apellidos" />
           <TextInput v-model="form.usuario" :error="form.errors.usuario" class="pb-8 pr-6 w-full lg:w-1/2" label="Usuario" />
           <TextInput v-model="form.email" :error="form.errors.email" class="pb-8 pr-6 w-full lg:w-1/2" label="Correo electrónico" />
-          <div class="relative w-full lg:w-1/2">
+          <div v-if="$page.props.auth.user.id === form.id" class="relative w-full lg:w-1/2">
             <TextInput v-model="form.password" :error="form.errors.password" class="pb-8 pr-6 w-full" :type="passwordFieldType" autocomplete="new-password" label="Contraseña" />
             <div class="absolute right-0 z-30 inset-y-1 flex items-center px-6 pb-2">
               <button class="z-30" type="button" @click="hidePassword = !hidePassword">
