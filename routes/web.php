@@ -9,7 +9,7 @@ use App\Http\Controllers\DirectoriosController;
 use App\Http\Controllers\DocPozoController;
 use App\Http\Controllers\DocumentosController;
 use App\Http\Controllers\GraficaController;
-use App\Http\Controllers\MesesDetallesController;
+use App\Http\Controllers\MesesController;
 use App\Http\Controllers\PozosController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Route;
@@ -38,7 +38,7 @@ Route::middleware('auth')->group(function () {
     ]);
 
     /* Catálogo de Meses */
-    Route::resource('meses', MesesDetallesController::class)->only([
+    Route::resource('meses', MesesController::class)->only([
         'index'
     ]);
 

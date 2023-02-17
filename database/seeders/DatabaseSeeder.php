@@ -28,10 +28,8 @@ class DatabaseSeeder extends Seeder
 
         \App\Models\Ano::factory(2)->create();
 
-        $mes = \App\Models\Mes::create(['mes' => 1]);
-
-        \App\Models\MesesDetalle::create([
-            'mes_id' => $mes->id,
+        \App\Models\Mes::create([
+            'mes' => 1,
             'nombre' => 'Enero',
         ]);
 

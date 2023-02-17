@@ -13,11 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('meses_detalles', function (Blueprint $table) {
+        Schema::create('meses', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('mes_id')
-                  ->constrained()
-                  ->cascadeOnDelete();
+            $table->integer('mes');
             $table->string('nombre', 50)->unique();
             $table->timestamps();
             $table->softDeletes();
@@ -31,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('meses_detalles');
+        Schema::dropIfExists('meses');
     }
 };
