@@ -1,7 +1,8 @@
 <script setup>
-import { reactive, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import { Head, useForm } from '@inertiajs/vue3'
 import Checkbox from '@/Components/Checkbox.vue'
+import Icon from '@/Components/Icon.vue'
 import Logo from '@/Shared/Logo.vue'
 import LoadingButton from '@/Components/LoadingButton.vue'
 import TextInput from '@/Components/TextInput.vue'
@@ -11,6 +12,7 @@ defineProps({
 })
 
 const imageUrl = ref('https://documental.dadsite.com.mx/background/background-hd.png')
+const hidePassword = ref(true)
 
 const form = useForm({
   usuario: '',
@@ -22,6 +24,10 @@ const backgroundImage = reactive({
   backgroundImage: 'url(' + imageUrl.value + ')',
   backgroundSize: 'cover',
 })
+
+const passwordIconName = computed(() => (hidePassword.value ? 'eye' : 'eye-slash'))
+
+const passwordFieldType = computed(() => (hidePassword.value ? 'password' : 'text'))
 
 const login = () => {
   form.post('/login', {
@@ -39,7 +45,12 @@ const login = () => {
           <Logo class="block mx-auto w-full fill-white" style="height: 200px; max-width: 15rem" />
           <div class="mt-0.5 mx-auto w-24 border-b" />
           <TextInput v-model="form.usuario" :error="form.errors.usuario" class="mt-10" label="Nombre de usuario" autofocus autocapitalize="off" />
-          <TextInput v-model="form.password" :error="form.errors.password" class="mt-6" label="Contraseña" type="password" />
+          <div class="relative mt-6">
+            <TextInput v-model="form.password" :error="form.errors.password" :type="passwordFieldType" label="Contraseña" />
+            <button type="button" class="flex items-center absolute right-0 inset-y-1 z-30 mt-6 mr-2" @click="hidePassword = !hidePassword">
+              <Icon class="w-5 h-5 fill-zinc-500" :name="passwordIconName" />
+            </button>
+          </div>
           <label class="flex items-center mt-6 select-none" for="remember">
             <Checkbox id="remember" v-model:checked="form.remember" name="remember" />
             <span class="ml-2 text-sm text-gray-600">Recuerdáme</span>
