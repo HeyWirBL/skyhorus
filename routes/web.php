@@ -194,6 +194,9 @@ Route::middleware('auth')->group(function () {
     Route::get('componente-pozos/{componentePozo}', [ComponentePozoController::class, 'show'])
         ->name('componente-pozos.show');
 
+    Route::get('componente-pozos/export/{componentePozo}', [ComponentePozoController::class, 'export'])
+        ->name('componente-pozos.export');
+
     /* Cromatografías: Gas */
     Route::resource('cromatografiagas', CromatografiaGasController::class)->only(['index']);
 

@@ -1,14 +1,33 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3'
 import Icon from '@/Components/Icon.vue'
+import { computed } from 'vue'
 
-defineProps({
+const props = defineProps({
   componentePozo: Object,
 })
+
+const total = computed(() => {
+  let total = []
+  Object.entries(props.componentePozo).forEach(([key, val]) => {
+    total.push(parseFloat(val.dioxido_carbono))
+  })
+  return total.reduce(function (total, num) {
+    return total + num
+  }, 0)
+})
+
+const download = () => {
+  return window.open('/componente-pozos/export/' + props.componentePozo.id, '_blank')
+}
 </script>
 
 <template>
   <div>
+    <pre>
+       total
+    </pre>
+
     <Head :title="`${componentePozo.nombre_componente}`" />
     <div class="flex items-center justify-start mb-8 w-full">
       <h1 class="text-3xl font-bold">
@@ -286,7 +305,7 @@ defineProps({
                     <span class="ml-2 w-0 flex-1 truncate">Documento PDF</span>
                   </div>
                   <div class="ml-4 flex-shrink-0">
-                    <Link href="#" class="font-medium text-yellow-600 hover:text-yellow-500">Descargar</Link>
+                    <Link href="" class="font-medium text-yellow-600 hover:text-yellow-500" type="button" @click.prevent="download">Descargar</Link>
                   </div>
                 </li>
                 <li class="flex items-center justify-between py-3 pl-3 pr-4 text-base">

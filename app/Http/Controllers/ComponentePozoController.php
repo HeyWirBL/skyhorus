@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ComponentePozosExport;
 use App\Models\ComponentePozo;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ComponentePozoController extends Controller
 {
@@ -39,6 +41,7 @@ class ComponentePozoController extends Controller
     {
         return Inertia::render('ComponentePozos/Show', [
             'componentePozo' => [
+                'id' => $componentePozo->id,
                 'dioxido_carbono' => $componentePozo->dioxido_carbono,
                 'pe_dioxido_carbono' => $componentePozo->pe_dioxido_carbono,
                 'mo_dioxido_carbono' => $componentePozo->mo_dioxido_carbono,
@@ -94,5 +97,18 @@ class ComponentePozoController extends Controller
                 'pozo' => $componentePozo->pozo->only('id', 'nombre_pozo'),
             ]
         ]);
+    }
+
+    /**
+     * Export data for component well as xlsx.
+     */
+    public function export(Request $request)
+    {
+        $export = new ComponentePozosExport([
+            [1, 2, 3],
+            [4, 5, 6]
+        ]);
+        
+        return Excel::download($export, 'componente_pozos.xlsx', \Maatwebsite\Excel\Excel::XLSX);
     }
 }
