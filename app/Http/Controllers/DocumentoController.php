@@ -13,7 +13,7 @@ use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class DocumentosController extends Controller
+class DocumentoController extends Controller
 {
     /**
      * Display a listing of documents.

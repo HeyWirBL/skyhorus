@@ -10,7 +10,7 @@ use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class AnosController extends Controller
+class AnoController extends Controller
 {
     /**
      * Display a listing of years.

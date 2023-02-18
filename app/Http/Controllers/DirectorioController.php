@@ -10,7 +10,7 @@ use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class DirectoriosController extends Controller
+class DirectorioController extends Controller
 {
     /**
      * Display a listing of folders.

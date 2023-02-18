@@ -11,7 +11,7 @@ use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class UsersController extends Controller
+class UserController extends Controller
 {
     /**
      * Display a listing of users.

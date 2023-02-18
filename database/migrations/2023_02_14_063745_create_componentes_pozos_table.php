@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('componentes_pozos', function (Blueprint $table) {
+        Schema::create('componente_pozos', function (Blueprint $table) {
             $table->id();
             $table->string('dioxido_carbono', 50);
             $table->string('pe_dioxido_carbono', 50);
@@ -82,6 +82,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('componentes_pozos');
+        Schema::dropIfExists('componente_pozos');
     }
 };

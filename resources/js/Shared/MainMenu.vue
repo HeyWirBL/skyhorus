@@ -118,9 +118,9 @@ const isUrl = (...urls) => {
 
         <!-- End Well Components Catalog -->
         <div>
-          <Link class="group flex text-base items-center p-2 pl-11 rounded-md" :class="isUrl('componentespozos') ? 'bg-yellow-500' : 'hover:bg-zinc-700'" href="/componentespozos">
-            <Icon class="w-6 h-6" :class="isUrl('componentespozos') ? 'fill-white' : 'fill-zinc-300 group-hover:fill-white'" name="components" />
-            <div class="ml-2" :class="isUrl('componentespozos') ? 'text-white' : 'text-zinc-300 group-hover:text-white'">Componentes</div>
+          <Link class="group flex text-base items-center p-2 pl-11 rounded-md" :class="isUrl('componente-pozos') ? 'bg-yellow-500' : 'hover:bg-zinc-700'" href="/componente-pozos">
+            <Icon class="w-6 h-6" :class="isUrl('componente-pozos') ? 'fill-white' : 'fill-zinc-300 group-hover:fill-white'" name="components" />
+            <div class="ml-2" :class="isUrl('componente-pozos') ? 'text-white' : 'text-zinc-300 group-hover:text-white'">Componentes</div>
           </Link>
         </div>
         <!-- End Well Components Catalog -->

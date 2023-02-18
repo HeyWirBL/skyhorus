@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class MesesController extends Controller
+class MesController extends Controller
 {
      /**
      * Display a listing of months.

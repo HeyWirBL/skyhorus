@@ -10,7 +10,7 @@ use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class PozosController extends Controller
+class PozoController extends Controller
 {
     /**
      * Display a listing of wells.

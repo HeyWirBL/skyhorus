@@ -54,7 +54,7 @@ class DatabaseSeeder extends Seeder
             'nombre_pozo' => 'ÉBANO 1063 H',
         ]);
 
-        \App\Models\ComponentesPozo::create([
+        \App\Models\ComponentePozo::create([
             'dioxido_carbono' => '44.01',
             'pe_dioxido_carbono' => '2.0165',
             'mo_dioxido_carbono' => '0.8604',
