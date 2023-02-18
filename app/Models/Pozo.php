@@ -34,6 +34,16 @@ class Pozo extends Model
         return $this->where($field ?? 'id', $value)->withTrashed()->firstOrFail();
     }
 
+    public function docPozos()
+    {
+        return $this->hasMany(DocPozo::class);
+    }
+
+    public function componentePozos()
+    {
+        return $this->hasMany(ComponentePozo::class);
+    }
+
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {

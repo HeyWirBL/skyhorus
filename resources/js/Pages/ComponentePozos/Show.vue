@@ -28,7 +28,7 @@ defineProps({
         <dl>
           <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt class="text-base font-medium text-gray-500">Pozo/Instalación</dt>
-            <dd class="mt-1 text-base text-gray-900 sm:col-span-2 sm:mt-0">wefwf</dd>
+            <dd class="mt-1 text-base text-gray-900 sm:col-span-2 sm:mt-0">{{ componentePozo.pozo.nombre_pozo }}</dd>
           </div>
           <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt class="text-base font-medium text-gray-500">Nombre del grupo</dt>
@@ -286,7 +286,7 @@ defineProps({
                     <span class="ml-2 w-0 flex-1 truncate">Documento PDF</span>
                   </div>
                   <div class="ml-4 flex-shrink-0">
-                    <Link href="#" class="font-medium text-yellow-600 hover:text-yellow-500">Generar</Link>
+                    <Link href="#" class="font-medium text-yellow-600 hover:text-yellow-500">Descargar</Link>
                   </div>
                 </li>
                 <li class="flex items-center justify-between py-3 pl-3 pr-4 text-base">

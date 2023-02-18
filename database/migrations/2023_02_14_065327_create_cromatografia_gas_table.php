@@ -21,6 +21,7 @@ return new class extends Migration
                   ->cascadeOnDelete();
             $table->date('fecha_hora');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

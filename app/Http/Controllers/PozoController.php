@@ -73,7 +73,28 @@ class PozoController extends Controller
     public function show(Pozo $pozo): Response
     {
         return Inertia::render('Pozos/Show', [
-            'pozo' => $pozo,
+            'pozo' => [
+                'id' => $pozo->id,
+                'punto_muestreo' => $pozo->punto_muestreo,
+                'fecha_hora' => $pozo->fecha_hora,
+                'identificador' => $pozo->identificador,
+                'presion_kgcm2' => $pozo->presion_kgcm2,
+                'presion_psi' => $pozo->presion_psi,
+                'temp_C' => $pozo->temp_C,
+                'temp_F' => $pozo->temp_F,
+                'volumen_cm3' => $pozo->volumen_cm3,
+                'volumen_lts' => $pozo->volumen_lts,
+                'observaciones' => $pozo->observaciones,
+                'nombre_pozo' => $pozo->nombre_pozo, 
+                'docPozos' => $pozo->docPozos()
+                    ->get()
+                    ->map
+                    ->only('id', 'documento', 'fecha_hora'),
+                'componentePozos' => $pozo->componentePozos()
+                    ->get()
+                    ->map
+                    ->only('id', 'equipo_utilizado', 'nombre_componente', 'fecha_recep'),
+            ],
         ]);
     }
 
@@ -83,7 +104,20 @@ class PozoController extends Controller
     public function edit(Pozo $pozo): Response
     {
         return Inertia::render('Pozos/Edit', [
-            'pozo' => $pozo,    
+            'pozo' => [
+                'id' => $pozo->id,
+                'punto_muestreo' => $pozo->punto_muestreo,
+                'fecha_hora' => $pozo->fecha_hora,
+                'identificador' => $pozo->identificador,
+                'presion_kgcm2' => $pozo->presion_kgcm2,
+                'presion_psi' => $pozo->presion_psi,
+                'temp_C' => $pozo->temp_C,
+                'temp_F' => $pozo->temp_F,
+                'volumen_cm3' => $pozo->volumen_cm3,
+                'volumen_lts' => $pozo->volumen_lts,
+                'observaciones' => $pozo->observaciones,
+                'nombre_pozo' => $pozo->nombre_pozo,                
+            ],    
         ]);
     }
 
@@ -94,7 +128,7 @@ class PozoController extends Controller
      */
     public function update(Request $request, Pozo $pozo): RedirectResponse
     {
-        $request->validate([
+        $validated = $request->validate([
             'punto_muestreo' => ['required', 'max:150'],
             'fecha_hora' => ['required', 'date'],
             'identificador' => ['required', 'max:150'],
@@ -108,22 +142,7 @@ class PozoController extends Controller
             'nombre_pozo' => ['required', 'max:150', Rule::unique('pozos')->ignore($pozo->id)],
         ]);
 
-        $pozo->update($request->only(
-            'punto_muestreo', 
-            'fecha_hora', 
-            'identificador', 
-            'presion_kgcm2', 
-            'presion_psi',
-            'temp_C',
-            'temp_F',
-            'volumen_cm3',
-            'volumen_lts',
-            'nombre_pozo',
-        ));
-
-        if ($request->get('observaciones')) {
-            $pozo->update(['observaciones' => $request->get('observaciones')]);
-        }
+        $pozo->update($validated);
 
         return Redirect::back()->with('success', 'Pozo actualizado.');
     }

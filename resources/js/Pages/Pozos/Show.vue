@@ -1,10 +1,33 @@
 <script setup>
+import { ref } from 'vue'
 import { Head, Link } from '@inertiajs/vue3'
 import Icon from '@/Components/Icon.vue'
 
-defineProps({
+const props = defineProps({
   pozo: Object,
 })
+
+const selected = ref([])
+const selectAllDocPozos = ref(false)
+const selectAllComponentePozos = ref(false)
+
+const selectDocPozos = () => {
+  selected.value = []
+  if (!selectAllDocPozos.value) {
+    for (let i in props.pozo.docPozos) {
+      selected.value.push(props.pozo.docPozos[i].id)
+    }
+  }
+}
+
+const selectComponentePozos = () => {
+  selected.value = []
+  if (!selectAllComponentePozos.value) {
+    for (let i in props.pozo.componentePozos) {
+      selected.value.push(props.pozo.componentePozos[i].id)
+    }
+  }
+}
 </script>
 
 <template>
@@ -87,7 +110,7 @@ defineProps({
                 </li>
                 <li class="flex items-center justify-between py-3 pl-3 pr-4 text-base">
                   <div class="flex w-0 flex-1 items-center">
-                    <Icon class="h-5 w-5 flex-shrink-0 text-gray-500" name="paper-clip" aria-hidden="true" />
+                    <Icon class="h-5 w-5 flex-shrink-0 text-gray-500" name="document-plus" aria-hidden="true" />
                     <span class="ml-2 w-0 flex-1 truncate">Cromatografía de Gas</span>
                   </div>
                   <div class="ml-4 flex-shrink-0">
@@ -96,7 +119,7 @@ defineProps({
                 </li>
                 <li class="flex items-center justify-between py-3 pl-3 pr-4 text-base">
                   <div class="flex w-0 flex-1 items-center">
-                    <Icon class="h-5 w-5 flex-shrink-0 text-gray-500" name="paper-clip" aria-hidden="true" />
+                    <Icon class="h-5 w-5 flex-shrink-0 text-gray-500" name="document-plus" aria-hidden="true" />
                     <span class="ml-2 w-0 flex-1 truncate">Cromatografía Líquida</span>
                   </div>
                   <div class="ml-4 flex-shrink-0">
@@ -108,6 +131,107 @@ defineProps({
           </div>
         </dl>
       </div>
+    </div>
+    <h2 class="mt-12 text-2xl font-bold">Documentos del Pozo</h2>
+    <div class="mt-6 bg-white rounded shadow overflow-x-auto">
+      <table class="w-full whitespace-nowrap">
+        <thead class="text-sm text-left font-bold uppercase bg-white border-b">
+          <tr>
+            <th scope="col" class="p-4">
+              <div class="flex items-center">
+                <input id="checkbox-all-docpozos" v-model="selectAllDocPozos" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="selectDocPozos" />
+                <label for="checkbox-all-docpozos" class="sr-only">checkbox</label>
+              </div>
+            </th>
+            <th scope="col" class="px-6 py-3">Documento</th>
+            <th scope="col" class="px-6 py-3" colspan="2">Fecha</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="docPozo in pozo.docPozos" :key="docPozo.id" class="bg-white hover:bg-gray-100 focus-within:bg-gray-100 border-b">
+            <td class="w-4 p-4">
+              <div class="flex items-center">
+                <input :id="`checkbox-docpozo-${docPozo.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="docPozo.id" />
+                <label :for="`checkbox-docpozo-${docPozo.id}`" class="sr-only">checkbox</label>
+              </div>
+            </td>
+            <td>
+              <Link class="flex items-center px-6 py-4" :href="`/docpozos/${docPozo.id}`">
+                {{ docPozo.documento }}
+              </Link>
+            </td>
+            <td>
+              <Link class="flex items-center px-6 py-4" :href="`/docpozos/${docPozo.id}`" tabindex="-1">{{ docPozo.fecha_hora }} </Link>
+            </td>
+            <td class="w-px">
+              <Link class="flex items-center px-6" :href="`/docpozos/${docPozo.id}`" tabindex="-1">
+                <Icon class="block w-6 h-6 fill-gray-400" name="cheveron-right" />
+              </Link>
+            </td>
+          </tr>
+          <tr v-if="pozo.docPozos.length === 0">
+            <td class="px-6 py-4" colspan="5">No se encontraron documentos del pozo registrados.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- Componentes de Pozo -->
+    <h2 class="mt-12 text-2xl font-bold">Componentes del Pozo</h2>
+    <div class="mt-6 bg-white rounded-md shadow overflow-x-auto">
+      <table class="w-full whitespace-nowrap">
+        <thead class="text-sm text-left font-bold uppercase bg-white border-b">
+          <tr>
+            <th scope="col" class="p-4">
+              <div class="flex items-center">
+                <input id="checkbox-all-componentepozos" v-model="selectAllComponentePozos" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="selectComponentePozos" />
+                <label for="checkbox-all-componentepozos" class="sr-only">checkbox</label>
+              </div>
+            </th>
+            <th scope="col" class="px-6 py-3">No.</th>
+            <th scope="col" class="px-6 py-3">Nombre del Componente</th>
+            <th scope="col" class="px-6 py-3">Equipo Utilizado</th>
+            <th scope="col" class="px-6 py-3" colspan="2">Fecha de Recepción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="componentePozo in pozo.componentePozos" :key="componentePozo.id" class="bg-white hover:bg-gray-100 focus-within:bg-gray-100 border-b">
+            <td class="w-4 p-4">
+              <div class="flex items-center">
+                <input :id="`checkbox-componentespozo-${componentePozo.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="componentePozo.id" />
+                <label :for="`checkbox-componentespozo-${componentePozo.id}`" class="sr-only">checkbox</label>
+              </div>
+            </td>
+            <td>
+              <Link class="flex items-center px-6 py-4" :href="`/componente-pozos/${componentePozo.id}`">
+                {{ componentePozo.id }}
+              </Link>
+            </td>
+            <td>
+              <Link class="flex items-center px-6 py-4 focus:text-yellow-500" :href="`/componente-pozos/${componentePozo.id}`" tabindex="-1">
+                {{ componentePozo.nombre_componente }}
+              </Link>
+            </td>
+            <td>
+              <Link class="flex items-center px-6 py-4" :href="`/componente-pozos/${componentePozo.id}`" tabindex="-1">
+                {{ componentePozo.equipo_utilizado }}
+              </Link>
+            </td>
+            <td>
+              <Link class="flex items-center px-6 py-4" :href="`/componente-pozos/${componentePozo.id}`" tabindex="-1">
+                {{ componentePozo.fecha_recep }}
+              </Link>
+            </td>
+            <td class="w-px">
+              <Link class="flex items-center px-6" :href="`/componente-pozos/${componentePozo.id}`" tabindex="-1">
+                <Icon class="block w-6 h-6 fill-gray-400" name="cheveron-right" />
+              </Link>
+            </td>
+          </tr>
+          <tr v-if="pozo.componentePozos.length === 0">
+            <td class="px-6 py-4" colspan="5">No se encontraron componentes del pozo registrados.</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </template>
