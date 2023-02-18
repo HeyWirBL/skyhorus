@@ -15,33 +15,33 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        /*\App\Models\User::factory()->create([
+        \App\Models\User::factory()->create([
             'nombre' => 'Jesús Manuel',
             'apellidos' => 'Méndez García',
             'usuario' => 'Jesus.Mendez',
             'email' => 'jesus@admin.com',
             'password' => Hash::make('Desarrollo123#2023'),
             'rol' => 'Administrador',
-        ]);*/
+        ]);
 
-        //\App\Models\User::factory(99)->create();
+        \App\Models\User::factory(99)->create();
 
-        //\App\Models\Directorio::factory(1)->create();
+        \App\Models\Directorio::factory(1)->create();
 
-        //\App\Models\Ano::factory(1)->create();
+        \App\Models\Ano::factory(1)->create();
 
-        //\App\Models\Mes::create([
-        //    'nombre' => 'Enero',
-        //]);
+        \App\Models\Mes::create([
+            'nombre' => 'Enero',
+        ]);
 
-        /*\App\Models\Documento::create([
+        \App\Models\Documento::create([
             'documento' => '[{"name":"files\/CRONOGRAMA TERMINACION REV. 01_luigts7l.xlsx","usrName":"CRONOGRAMA TERMINACION REV. 01.xlsx","size":26454,"type":"application\/vnd.openxmlformats-officedocument.spreadsheetml.sheet","searchStr":"CRONOGRAMA TERMINACION REV. 01.xlsx,!:sStrEnd"}]',
             'directorio_id' => '1',
             'ano_id' => '1',
             'mes_id' => '1',
-        ]);*/
+        ]);
 
-        /*$pozo = \App\Models\Pozo::create([
+        $pozo = \App\Models\Pozo::create([
             'punto_muestreo' => 'SALIDA DE LÍNEA DE GAS',
             'fecha_hora' => '2021-03-18',
             'identificador' => 'E-GGSOL-2021-0081',
@@ -108,6 +108,6 @@ class DatabaseSeeder extends Seeder
             'observaciones' => '* DATOS CALCULADOS. ** EL PESO MOLECULAR DEL PSEUDOCOMPONENTE C6 ESTA REFERENCIADO DE LA TABLA DE KATZ Y FIROOZABADI DEL LIBRO PHASE BEHAVIOR pag 71.',
             'nombre_componente' => 'Nom Componente',
             'fecha_muestreo' => '2021-07-04',
-        ]);*/
+        ]);
     }
 }
