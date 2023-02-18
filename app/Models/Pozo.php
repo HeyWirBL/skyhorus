@@ -44,6 +44,16 @@ class Pozo extends Model
         return $this->hasMany(ComponentePozo::class);
     }
 
+    public function cromatografiaGases()
+    {
+        return $this->hasMany(CromatografiaGas::class);
+    }
+
+    public function cromatografiaLiquidas()
+    {
+        return $this->hasMany(CromatografiaLiquida::class);
+    }
+
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {

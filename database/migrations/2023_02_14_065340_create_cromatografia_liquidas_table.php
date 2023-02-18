@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('cromatografia_gas', function (Blueprint $table) {
+        Schema::create('cromatografia_liquidas', function (Blueprint $table) {
             $table->id();
             $table->mediumText('documento');
             $table->foreignId('pozo_id')
@@ -32,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('cromatografia_gas');
+        Schema::dropIfExists('cromatografia_liquidas');
     }
 };

@@ -180,7 +180,9 @@ Route::middleware('auth')->group(function () {
         ->name('pozos.destroy');
 
     /* Catálogo de Pozos: Documentos */
-    Route::resource('docpozos', DocPozoController::class)->only(['index']);
+    // Route::resource('docpozos', DocPozoController::class)->only(['index']);
+    Route::get('doc-pozos', [DocPozoController::class, 'index'])
+        ->name('doc-pozos');
 
     /* Catálogo de Pozos: Componentes */
     //Route::resource('componentespozos', ComponentePozoController::class)->only(['index']);
@@ -198,10 +200,16 @@ Route::middleware('auth')->group(function () {
         ->name('componente-pozos.export');
 
     /* Cromatografías: Gas */
-    Route::resource('cromatografiagas', CromatografiaGasController::class)->only(['index']);
+    //Route::resource('cromatografiagas', CromatografiaGasController::class)->only(['index']);
+
+    Route::get('cromatografia-gases', [CromatografiaGasController::class, 'index'])
+        ->name('cromatografia-gases');
 
     /* Cromatografías: Liquída */
-    Route::resource('cromatografialiquida', CromatografiaLiquidaController::class)->only(['index']);
+    //Route::resource('cromatografialiquida', CromatografiaLiquidaController::class)->only(['index']);
+
+    Route::get('cromatografia-liquidas', [CromatografiaLiquidaController::class, 'index'])
+        ->name('cromatografia-liquidas');
 
     /* Gráficas Generales */
     Route::resource('graficas', GraficaController::class)->only(['index']);

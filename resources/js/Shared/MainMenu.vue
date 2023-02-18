@@ -109,9 +109,9 @@ const isUrl = (...urls) => {
 
         <!-- Well Documents Catalog -->
         <div class="mb-2">
-          <Link class="group flex text-base items-center p-2 pl-11 rounded-md" :class="isUrl('docpozos') ? 'bg-yellow-500' : 'hover:bg-zinc-700'" href="/docpozos">
-            <Icon class="w-6 h-6" :class="isUrl('docpozos') ? 'fill-white' : 'fill-zinc-300 group-hover:fill-white'" name="documents" />
-            <div class="ml-2" :class="isUrl('docpozos') ? 'text-white' : 'text-zinc-300 group-hover:text-white'">Documentos</div>
+          <Link class="group flex text-base items-center p-2 pl-11 rounded-md" :class="isUrl('doc-pozos') ? 'bg-yellow-500' : 'hover:bg-zinc-700'" href="/doc-pozos">
+            <Icon class="w-6 h-6" :class="isUrl('doc-pozos') ? 'fill-white' : 'fill-zinc-300 group-hover:fill-white'" name="documents" />
+            <div class="ml-2" :class="isUrl('doc-pozos') ? 'text-white' : 'text-zinc-300 group-hover:text-white'">Documentos</div>
           </Link>
         </div>
         <!-- End Well Documents Catalog -->
@@ -143,18 +143,18 @@ const isUrl = (...urls) => {
       <div class="peer-checked:hidden">
         <!-- Gas Chromatography Catalog -->
         <div class="mb-2">
-          <Link class="group flex text-base items-center p-2 pl-11 rounded-md" :class="isUrl('cromatografiagas') ? 'bg-yellow-500' : 'hover:bg-zinc-700'" href="/cromatografiagas">
-            <Icon class="w-5 h-5" :class="isUrl('cromatografiagas') ? 'fill-white' : 'fill-zinc-300 group-hover:fill-white'" name="fire" />
-            <div class="ml-2" :class="isUrl('cromatografiagas') ? 'text-white' : 'text-zinc-300 group-hover:text-white'">Gas</div>
+          <Link class="group flex text-base items-center p-2 pl-11 rounded-md" :class="isUrl('cromatografia-gases') ? 'bg-yellow-500' : 'hover:bg-zinc-700'" href="/cromatografia-gases">
+            <Icon class="w-5 h-5" :class="isUrl('cromatografia-gases') ? 'fill-white' : 'fill-zinc-300 group-hover:fill-white'" name="fire" />
+            <div class="ml-2" :class="isUrl('cromatografia-gases') ? 'text-white' : 'text-zinc-300 group-hover:text-white'">Gas</div>
           </Link>
         </div>
         <!-- Gas Chromatography Catalog -->
 
         <!-- Liquid Chromatography Catalog -->
         <div>
-          <Link class="group flex text-base items-center p-2 pl-11 rounded-md" :class="isUrl('cromatografialiquida') ? 'bg-yellow-500' : 'hover:bg-zinc-700'" href="/cromatografialiquida">
-            <Icon class="w-6 h-6" :class="isUrl('cromatografialiquida') ? 'fill-white' : 'fill-zinc-300 group-hover:fill-white'" name="liquid" />
-            <div class="ml-2" :class="isUrl('cromatografialiquida') ? 'text-white' : 'text-zinc-300 group-hover:text-white'">Liquída</div>
+          <Link class="group flex text-base items-center p-2 pl-11 rounded-md" :class="isUrl('cromatografia-liquidas') ? 'bg-yellow-500' : 'hover:bg-zinc-700'" href="/cromatografia-liquidas">
+            <Icon class="w-6 h-6" :class="isUrl('cromatografia-liquidas') ? 'fill-white' : 'fill-zinc-300 group-hover:fill-white'" name="liquid" />
+            <div class="ml-2" :class="isUrl('cromatografia-liquidas') ? 'text-white' : 'text-zinc-300 group-hover:text-white'">Liquída</div>
           </Link>
         </div>
         <!-- Liquid Chromatography Catalog -->

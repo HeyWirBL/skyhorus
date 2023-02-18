@@ -94,6 +94,14 @@ class PozoController extends Controller
                     ->get()
                     ->map
                     ->only('id', 'equipo_utilizado', 'nombre_componente', 'fecha_recep'),
+                'cromatografiaGases' => $pozo->cromatografiaGases()
+                    ->get()
+                    ->map
+                    ->only('id', 'documento', 'fecha_hora'),
+                'cromatografiaLiquidas' => $pozo->cromatografiaLiquidas()
+                    ->get()
+                    ->map
+                    ->only('id', 'documento', 'fecha_hora'),
             ],
         ]);
     }
