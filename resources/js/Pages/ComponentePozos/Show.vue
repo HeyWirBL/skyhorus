@@ -264,6 +264,15 @@ defineProps({
                     </td>
                   </tr>
                 </tbody>
+                <tfoot class="text-sm text-left font-bold uppercase bg-white border-b">
+                  <tr>
+                    <th scope="row" class="px-6 py-3">Total</th>
+                    <th class="px-6 py-3">540.86</th>
+                    <th class="px-6 py-3">100.00</th>
+                    <th class="px-6 py-3">100</th>
+                    <th class="px-6 py-3">0</th>
+                  </tr>
+                </tfoot>
               </table>
             </dd>
           </div>

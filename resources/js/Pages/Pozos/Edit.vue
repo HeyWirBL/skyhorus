@@ -46,6 +46,8 @@ const restore = () => {
     <Head :title="`${form.nombre_pozo}`" />
     <h1 class="mb-8 text-3xl font-bold">
       <Link class="text-yellow-400 hover:text-yellow-600" href="/pozos">Pozos</Link>
+      <span class="text-yellow-400 font-medium">&nbsp;/</span>
+      <Link class="text-yellow-400 hover:text-yellow-600" :href="`/pozos/${props.pozo.id}`">&nbsp;Detalles</Link>
       <span class="text-yellow-400 font-medium">&nbsp;/</span> {{ form.nombre_pozo }}
     </h1>
     <TrashedMessage v-if="props.pozo.deleted_at" class="mb-6" @restore="restore">Este pozo ha sido eliminado.</TrashedMessage>

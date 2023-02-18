@@ -76,8 +76,7 @@ const reset = () => {
             <th scope="col" class="px-6 py-3">No.</th>
             <th scope="col" class="px-6 py-3">Pozo/Instalación</th>
             <th scope="col" class="px-6 py-3">Identificador</th>
-            <th scope="col" class="px-6 py-3">Fecha del Muestreo</th>
-            <th scope="col" class="px-6 py-3" colspan="2">Acciones</th>
+            <th scope="col" class="px-6 py-3" colspan="2">Fecha del Muestreo</th>
           </tr>
         </thead>
         <tbody>
@@ -108,9 +107,6 @@ const reset = () => {
               <Link class="flex items-center px-6 py-4" :href="`/pozos/${pozo.id}`" tabindex="-1">
                 {{ pozo.fecha_hora }}
               </Link>
-            </td>
-            <td>
-              <Link class="flex items-center px-6 py-4 text-yellow-600 hover:underline focus:text-yellow-500" :href="`/pozos/${pozo.id}/editar`" tabindex="-1"> Editar </Link>
             </td>
             <td class="w-px">
               <Link class="flex items-center px-6" :href="`/pozos/${pozo.id}`" tabindex="-1">
