@@ -196,6 +196,18 @@ Route::middleware('auth')->group(function () {
     Route::get('componente-pozos/{componentePozo}', [ComponentePozoController::class, 'show'])
         ->name('componente-pozos.show');
 
+    Route::get('componente-pozos/{componentePozo}/editar', [ComponentePozoController::class, 'edit'])
+        ->name('componente-pozos.edit');
+
+    Route::put('componente-pozos/{componentePozo}', [ComponentePozoController::class, 'update'])
+        ->name('componente-pozos.update');
+
+    Route::put('componente-pozos/{componentePozo}/restore', [ComponentePozoController::class, 'restore'])
+        ->name('pocomponente-pozoszos.restore');
+
+    Route::delete('componente-pozos/{componentePozo}', [ComponentePozoController::class, 'destroy'])
+        ->name('componente-pozos.destroy');
+
     Route::post('componente-pozos/import', [ComponentePozoController::class, 'import'])
         ->name('componente-pozos.import');
 
