@@ -91,7 +91,7 @@ class DirectorioController extends Controller
                     ->withQueryString()
                     ->through(fn ($documento) => [
                         'id' => $documento->id,
-                        'documento' => $documento->documento,
+                        'documento' => json_decode($documento->documento),
                         'deleted_at' => $documento->deleted_at,
                         'ano' => $documento->ano ? $documento->ano->only('ano') : null,
                         'mes' => $documento->mes ? $documento->mes->only('nombre') : null,
