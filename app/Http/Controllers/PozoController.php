@@ -64,7 +64,7 @@ class PozoController extends Controller
             'volumen_cm3' => 'required|max:150',
             'volumen_lts' => 'required|max:150',
             'observaciones' => 'nullable',
-            'nombre_pozo' => 'required|max:150|unique:'.Pozo::class,
+            'nombre_pozo' => 'required|max:150|',
         ]);
         
         $pozo->create($validated);
@@ -154,7 +154,7 @@ class PozoController extends Controller
             'volumen_cm3' => ['required', 'max:150'],
             'volumen_lts' => ['required', 'max:150'],
             'observaciones' => ['nullable'],
-            'nombre_pozo' => ['required', 'max:150', Rule::unique('pozos')->ignore($pozo->id)],
+            'nombre_pozo' => ['required', 'max:150'],
         ]);
 
         $pozo->update($validated);
