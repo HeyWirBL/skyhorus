@@ -55,15 +55,6 @@ const isUrl = (...urls) => {
         </div>
         <!-- End Folders Catalog -->
 
-        <!-- Months Catalog -->
-        <div class="mb-2">
-          <Link class="group flex text-base items-center p-2 pl-11 rounded-md" :class="isUrl('meses') ? 'bg-yellow-500' : 'hover:bg-zinc-700'" href="/meses">
-            <Icon class="w-6 h-6" :class="isUrl('meses') ? 'fill-white' : 'fill-zinc-300 group-hover:fill-white'" name="time" />
-            <div class="ml-2" :class="isUrl('meses') ? 'text-white group-hover:text-white' : 'text-zinc-300 group-hover:text-white'">Meses</div>
-          </Link>
-        </div>
-        <!-- End Months Catalog -->
-
         <!-- Years Catalog -->
         <div class="mb-2">
           <Link class="group flex text-base items-center p-2 pl-11 rounded-md" :class="isUrl('anos') ? 'bg-yellow-500' : 'hover:bg-zinc-700'" href="/anos">

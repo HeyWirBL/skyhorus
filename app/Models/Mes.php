@@ -23,29 +23,11 @@ class Mes extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'nombre',
+        //
     ];
 
     public function documentos()
     {
         return $this->hasMany(Documento::class);
-    }
-
-    public function resolveRouteBinding($value, $field = null)
-    {
-        return $this->where($field ?? 'id', $value)->withTrashed()->firstOrFail();
-    }
-
-    public function scopeFilter($query, array $filters)
-    {
-        $query->when($filters['search'] ?? null, function ($query, $search) {
-            $query->where('nombre', 'like', '%'.$search.'%');
-        })->when($filters['trashed'] ?? null, function ($query, $trashed) {
-            if ($trashed === 'with') {
-                $query->withTrashed();
-            } elseif ($trashed === 'only') {
-                $query->onlyTrashed();
-            }
-        });
     }
 }

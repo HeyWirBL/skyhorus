@@ -9,7 +9,6 @@ use App\Http\Controllers\DirectorioController;
 use App\Http\Controllers\DocPozoController;
 use App\Http\Controllers\DocumentoController;
 use App\Http\Controllers\GraficaController;
-use App\Http\Controllers\MesController;
 use App\Http\Controllers\PozoController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -76,31 +75,6 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('directorios/{directorio}', [DirectorioController::class, 'destroy'])
         ->name('directorios.destroy');
-
-    /* Catálogo de Meses */
-    /*Route::resource('meses', MesController::class)->only([
-        'index'
-    ]);*/
-    Route::get('meses', [MesController::class, 'index'])
-        ->name('meses');
-
-    Route::get('meses/crear', [MesController::class, 'create'])
-        ->name('meses.create');
-
-    Route::get('meses/{mes}/editar', [MesController::class, 'edit'])
-        ->name('meses.edit');
-
-    Route::post('meses', [MesController::class, 'store'])
-        ->name('directorios.store');
-        
-    Route::put('meses/{mes}', [MesController::class, 'update'])
-        ->name('meses.update');
-
-    Route::put('meses/{mes}/restore', [MesController::class, 'restore'])
-        ->name('meses.restore');
-
-    Route::delete('meses/{mes}', [MesController::class, 'destroy'])
-        ->name('meses.destroy');
 
     /* Catálogo de Años */
     /*Route::resource('anos', AnoController::class)->only([
