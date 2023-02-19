@@ -86,6 +86,7 @@ class PozoController extends Controller
                 'volumen_lts' => $pozo->volumen_lts,
                 'observaciones' => $pozo->observaciones,
                 'nombre_pozo' => $pozo->nombre_pozo, 
+                'deleted_at' => $pozo->deleted_at, 
                 'docPozos' => $pozo->docPozos()
                     ->get()
                     ->map
@@ -124,7 +125,8 @@ class PozoController extends Controller
                 'volumen_cm3' => $pozo->volumen_cm3,
                 'volumen_lts' => $pozo->volumen_lts,
                 'observaciones' => $pozo->observaciones,
-                'nombre_pozo' => $pozo->nombre_pozo,                
+                'nombre_pozo' => $pozo->nombre_pozo,    
+                'deleted_at' => $pozo->deleted_at,            
             ],    
         ]);
     }

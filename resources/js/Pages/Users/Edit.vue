@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, inject, ref } from 'vue'
 import { Head, Link, useForm } from '@inertiajs/vue3'
 import Icon from '@/Components/Icon.vue'
 import LoadingButton from '@/Components/LoadingButton.vue'
@@ -10,6 +10,8 @@ import TrashedMessage from '@/Shared/TrashedMessage.vue'
 const props = defineProps({
   user: Object,
 })
+
+const swal = inject('$swal')
 
 const hidePassword = ref(true)
 
@@ -33,15 +35,37 @@ const update = () => {
 }
 
 const destroy = () => {
-  if (confirm('¿Estás seguro de querer eliminar este usuario?')) {
-    form.delete(`/users/${props.user.id}`)
-  }
+  swal({
+    title: '¿Estás seguro de querer eliminar este usuario?',
+    text: 'Al hacer clic en el botón de confirmar estarás enviando este usuario al modo "Solo Eliminado".',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Confirmar',
+    cancelButtonText: 'Cancelar',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      form.delete(`/users/${props.user.id}`)
+    }
+  })
 }
 
 const restore = () => {
-  if (confirm('¿Estás seguro de querer restablecer este usuario?')) {
-    form.put(`/users/${props.user.id}/restore`)
-  }
+  swal({
+    title: '¿Estás seguro de querer restablecer este usuario?',
+    text: 'Este usuario se restablecerá del modo "Solo Eliminado" y pasará al estado "Con Modificación".',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Restablecer',
+    cancelButtonText: 'Cancelar',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      form.put(`/users/${props.user.id}/restore`)
+    }
+  })
 }
 
 const passwordIconName = computed(() => (hidePassword.value ? 'eye' : 'eye-slash'))

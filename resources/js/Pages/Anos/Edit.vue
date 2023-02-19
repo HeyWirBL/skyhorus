@@ -1,4 +1,5 @@
 <script setup>
+import { inject } from 'vue'
 import { Head, Link, useForm } from '@inertiajs/vue3'
 import LoadingButton from '@/Components/LoadingButton.vue'
 import TextInput from '@/Components/TextInput.vue'
@@ -7,6 +8,8 @@ import TrashedMessage from '@/Shared/TrashedMessage.vue'
 const props = defineProps({
   ano: Object,
 })
+
+const swal = inject('$swal')
 
 const form = useForm({
   _method: 'put',
@@ -18,15 +21,37 @@ const update = () => {
 }
 
 const destroy = () => {
-  if (confirm('¿Estás seguro de querer eliminar este año?')) {
-    form.delete(`/anos/${props.ano.id}`)
-  }
+  swal({
+    title: '¿Estás seguro de querer eliminar este año?',
+    text: 'Al hacer clic en el botón de confirmar estarás enviando esta año al modo "Solo Eliminado".',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Confirmar',
+    cancelButtonText: 'Cancelar',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      form.delete(`/anos/${props.ano.id}`)
+    }
+  })
 }
 
 const restore = () => {
-  if (confirm('¿Estás seguro de querer restablecer este año?')) {
-    form.put(`/anos/${props.ano.id}/restore`)
-  }
+  swal({
+    title: '¿Estás seguro de querer restablecer este año?',
+    text: 'Este año se restablecerá del modo "Solo Eliminado" y pasará al estado "Con Modificación".',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Restablecer',
+    cancelButtonText: 'Cancelar',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      form.put(`/anos/${props.ano.id}/restore`)
+    }
+  })
 }
 </script>
 
