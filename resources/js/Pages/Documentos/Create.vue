@@ -1,6 +1,14 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3'
 import DropZone from '@/Components/DropZone.vue'
+import SelectInput from '@/Components/SelectInput.vue'
+import LoadingButton from '@/Components/LoadingButton.vue'
+
+defineProps({
+  directorios: Array,
+  anos: Array,
+  meses: Array,
+})
 </script>
 
 <template>
@@ -21,6 +29,21 @@ import DropZone from '@/Components/DropZone.vue'
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
           <!-- DropZone -->
           <DropZone class="pb-8 pr-6 w-full" />
+          <SelectInput class="pb-8 pr-6 w-full" label="Carpeta">
+            <option :value="null" />
+            <option v-for="directorio in directorios" :key="directorio.id" :value="directorio.id">{{ directorio.nombre_dir }}</option>
+          </SelectInput>
+          <SelectInput class="pb-8 pr-6 w-full lg:w-1/2" label="Año">
+            <option :value="null" />
+            <option v-for="ano in anos" :key="ano.id" :value="ano.id">{{ ano.ano }}</option>
+          </SelectInput>
+          <SelectInput class="pb-8 pr-6 w-full lg:w-1/2" label="Mes">
+            <option :value="null" />
+            <option v-for="mes in meses" :key="mes.id" :value="mes.id">{{ mes.nombre }}</option>
+          </SelectInput>
+        </div>
+        <div class="flex items-center justify-end px-8 py-4 bg-gray-50 border-t border-gray-100">
+          <LoadingButton class="btn-yellow" type="submit">Guardar</LoadingButton>
         </div>
       </form>
     </div>
