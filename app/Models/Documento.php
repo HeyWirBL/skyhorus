@@ -30,11 +30,6 @@ class Documento extends Model
         return $this->belongsTo(Mes::class);
     }
 
-    public function scopeOrderByName($query)
-    {
-        $query->orderBy('')->orderBy('');
-    }
-
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {
@@ -48,26 +43,20 @@ class Documento extends Model
                         $query->where('nombre', 'like', '%'.$search.'%');
                       });
             });
+        })->when($filters['year'] ?? null, function ($query, $year) {
+            $query->where(function ($query) use ($year) {
+                $query->where('ano_id', $year);
+            });
+        })->when($filters['month'] ?? null, function ($query, $month) {
+            $query->where(function ($query) use ($month) {
+                $query->where('mes_id', $month);
+            });
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {
             if ($trashed === 'with') {
                 $query->withTrashed();
             } elseif ($trashed === 'only') {
                 $query->onlyTrashed();
             }
-        });
-    }
-
-    public function scopeDatefilter($query, array $filters)
-    {
-        $query->when($filters['year'] ?? null, function ($query, $year) {
-            $query->where(function ($query) use ($year) {
-                $query->where('ano_id', $year);
-            });
-        })
-        ->when($filters['month'] ?? null, function ($query, $month) {
-            $query->where(function ($query) use ($month) {
-                $query->where('mes_id', $month);
-            });
         });
     }
 }

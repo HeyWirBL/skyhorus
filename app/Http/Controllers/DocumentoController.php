@@ -18,15 +18,15 @@ class DocumentoController extends Controller
     /**
      * Display a listing of documents.
      */
-    public function index(Request $request, Documento $documento): Response
+    public function index(Request $request, Documento $documento, Ano $ano, Mes $mes): Response
     {
         return Inertia::render('Documentos/Index', [
-            'filters' => $request->all('search','trashed'),
+            'filters' => $request->all('search', 'year', 'month', 'trashed'),
             'documentos' => $documento->query()
                 ->with('directorio')
                 ->with('ano')
                 ->with('mes')
-                ->filter($request->only('search', 'trashed'))
+                ->filter($request->only('search', 'year', 'month', 'trashed'))
                 ->paginate(10)
                 ->withQueryString()
                 ->through(fn ($doc) => [
@@ -37,6 +37,16 @@ class DocumentoController extends Controller
                     'ano' => $doc->ano ? $doc->ano->only('ano') : null,
                     'mes' => $doc->mes ? $doc->mes->only('nombre') : null,
                 ]),
+            'anos' => $ano->query()
+                ->latest()
+                ->get()
+                ->map
+                ->only('id', 'ano'),
+            'meses' => $mes->query()
+                ->latest()
+                ->get()
+                ->map
+                ->only('id', 'nombre'),
 
         ]);
     }

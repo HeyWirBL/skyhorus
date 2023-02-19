@@ -11,6 +11,8 @@ import Pagination from '@/Components/Pagination.vue'
 const props = defineProps({
   filters: Object,
   documentos: Object,
+  anos: Array,
+  meses: Array,
 })
 
 const selected = ref([])
@@ -18,6 +20,8 @@ const selectAll = ref(false)
 
 const form = ref({
   search: props.filters.search,
+  year: props.filters.year,
+  month: props.filters.month,
   trashed: props.filters.trashed,
 })
 
@@ -51,6 +55,16 @@ const reset = () => {
     <h1 class="mb-8 text-3xl font-bold">Documentos</h1>
     <div class="flex items-center justify-between mb-6">
       <SearchFilter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
+        <label class="block mt-4 text-gray-700">Año:</label>
+        <select v-model="form.year" class="form-select mt-1 w-full">
+          <option :value="null" />
+          <option v-for="ano in anos" :key="ano.id" :value="ano.id">{{ ano.ano }}</option>
+        </select>
+        <label class="block mt-4 text-gray-700">Mes:</label>
+        <select v-model="form.month" class="form-select mt-1 w-full">
+          <option :value="null" />
+          <option v-for="mes in meses" :key="mes.id" :value="mes.id">{{ mes.nombre }}</option>
+        </select>
         <label class="block mt-4 text-gray-700">Eliminado:</label>
         <select v-model="form.trashed" class="form-select mt-1 w-full">
           <option :value="null" />
