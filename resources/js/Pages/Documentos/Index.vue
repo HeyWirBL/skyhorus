@@ -25,6 +25,8 @@ const form = ref({
   trashed: props.filters.trashed,
 })
 
+function formatBytes(a, b = 2) { if (!+a) return "0 Bytes"; const c = 0 > b ? 0 : b, d = Math.floor(Math.log(a) / Math.log(1024)); return `${parseFloat((a / Math.pow(1024, d)).toFixed(c))} ${["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"][d]}` }
+
 watch(
   () => form.value,
   debounce(function () {
@@ -103,7 +105,10 @@ const reset = () => {
             </td>
             <td>
               <Link class="flex items-center px-6 py-4" :href="`/documentos/${documento.id}`">
-                {{ documento.documento }}
+                {{ documento.documento[0].usrName }}
+                <div class="text-xs text-orange-300 ml-3">
+                {{ formatBytes(documento.documento[0].size) }}
+                </div>
               </Link>
             </td>
             <td>

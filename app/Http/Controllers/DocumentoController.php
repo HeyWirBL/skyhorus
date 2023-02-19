@@ -31,7 +31,7 @@ class DocumentoController extends Controller
                 ->withQueryString()
                 ->through(fn ($doc) => [
                     'id' => $doc->id,
-                    'documento' => $doc->documento,
+                    'documento' => json_decode($doc->documento, true),
                     'deleted_at' => $doc->deleted_at,
                     'directorio' => $doc->directorio ? $doc->directorio->only('nombre_dir') : null,
                     'ano' => $doc->ano ? $doc->ano->only('ano') : null,
