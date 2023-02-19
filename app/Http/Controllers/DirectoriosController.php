@@ -82,13 +82,14 @@ class DirectoriosController extends Controller
                 'documentos' => $directorio->documentos()
                 ->filter(Request::only('search', 'trashed'))
                 ->datefilter(Request::only('year', 'month'))
-                ->get()->map->only('id', 
-                    'Nombre', 
-                    'documento', 
-                    'ano_id', 
-                    'mes_id',  
-                    'created_at', 
-                    'updated_at'),
+                ->get()->map(fn ($documento) => [
+                    'id' => $documento->id,
+                    'Nombre' => $documento->Nombre,
+                    'documento' => $documento->documento,
+                    'ano_id' => $documento->ano ? $documento->ano->only('ano') : null,
+                    'mes_id' => $documento->mes ? $documento->mes->only('nombre') : null,
+                    'deleted_at' => $documento->deleted_at,
+                ])
             ],
             'anos' => $ano->query()
                 ->latest()

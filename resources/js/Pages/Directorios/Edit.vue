@@ -166,7 +166,7 @@ const restore = () => {
                     class="flex items-center px-6 py-4 focus:text-yellow-500"
                     :href="`/document/${documento.id}/edit`"
                   >
-                    {{ documento.mes_id }}</Link
+                    {{ documento.mes_id.nombre }}</Link
                   >
                 </td>
                 <td class="border-t">
@@ -174,7 +174,7 @@ const restore = () => {
                     class="flex items-center px-6 py-4 focus:text-yellow-500"
                     :href="`/document/${documento.id}/edit`"
                   >
-                    {{ documento.ano_id }}
+                    {{ documento.ano_id.ano }}
                   </Link>
                 </td>
                 <td class="w-px border-t">
