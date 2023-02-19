@@ -72,11 +72,11 @@ class User extends Authenticatable
     public function scopeWhereRole($query, $role)
     {
         switch ($role) {
-            case 'Usuario': return $query->where('Usuario');
-            case 'Administrador': return $query->where('Administrador');
-            case 'Colaborador': return $query->where('Colaborador');
-            case 'Consultor': return $query->where('Consultor');
-            case 'Editor': return $query->where('Editor');
+            case 'Usuario': return $query->where('rol', $role);
+            case 'Administrador': return $query->where('rol', $role);
+            case 'Colaborador': return $query->where('rol', $role);
+            case 'Consultor': return $query->where('rol', $role);
+            case 'Editor': return $query->where('rol', $role);
         }
     }
 
