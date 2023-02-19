@@ -9,8 +9,8 @@ import Pagination from '@/Components/Pagination.vue'
 import SearchFilter from '@/Components/SearchFilter.vue'
 
 const props = defineProps({
-  directorios: Object,
   filters: Object,
+  directorios: Object,
 })
 
 const selected = ref([])
@@ -79,7 +79,7 @@ const reset = () => {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="dir in props.directorios.data" :key="dir.id" class="bg-white hover:bg-gray-100 focus-within:bg-gray-100 border-b">
+          <tr v-for="dir in directorios.data" :key="dir.id" class="bg-white hover:bg-gray-100 focus-within:bg-gray-100 border-b">
             <td class="w-4 p-4">
               <div class="flex items-center">
                 <input :id="`checkbox-directorio-${dir.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="dir.id" />
@@ -87,7 +87,7 @@ const reset = () => {
               </div>
             </td>
             <td class="flex items-center">
-              <Link class="px-6 py-4 text-yellow-500 hover:underline focus:text-yellow-500" :href="`/directorios/${dir.id}`"> Archivos ({{ 0 }}) </Link>
+              <Link class="px-6 py-4 text-yellow-500 hover:underline focus:text-yellow-500" :href="`/directorios/${dir.id}/editar`"> Archivos ({{ dir.documentos.length }}) </Link>
             </td>
             <td>
               <Link class="flex items-center px-6 py-4 focus:text-yellow-500" :href="`/directorios/${dir.id}/editar`" tabindex="-1">
@@ -106,13 +106,13 @@ const reset = () => {
               </Link>
             </td>
           </tr>
-          <tr v-if="props.directorios.data.length === 0">
+          <tr v-if="directorios.data.length === 0">
             <td class="px-6 py-4" colspan="5">No se encontraron directorios registrados.</td>
           </tr>
         </tbody>
       </table>
     </div>
     <!-- Paginator -->
-    <Pagination class="pt-4" :links="props.directorios.links" :total="props.directorios.total" />
+    <Pagination class="pt-4" :links="directorios.links" :total="directorios.total" />
   </div>
 </template>
