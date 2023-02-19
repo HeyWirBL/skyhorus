@@ -133,11 +133,6 @@ class ComponentePozoController extends Controller
      */
     public function export(Request $request)
     {
-        $export = new ComponentePozosExport([
-            [1, 2, 3],
-            [4, 5, 6]
-        ]);
-        
-        return Excel::download($export, 'componente_pozos.xlsx', \Maatwebsite\Excel\Excel::XLSX);
+        return Excel::download(new ComponentePozosExport($request->id), 'componentes_pozo.pdf', \Maatwebsite\Excel\Excel::MPDF);
     }
 }
