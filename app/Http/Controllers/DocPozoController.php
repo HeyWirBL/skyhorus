@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\DocPozo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -15,6 +16,10 @@ class DocPozoController extends Controller
     public function index(Request $request, DocPozo $docPozo): Response
     {
         return Inertia::render('DocPozos/Index', [
+            'can' => [
+                'createDocPozo' => Auth::user()->can('create', DocPozo::class),
+                'editDocPozo' => Auth::user()->can('update', DocPozo::class),
+            ],
             'filters' => $request->all('search', 'trashed'),
             'docPozos' => $docPozo->query()
                 ->filter($request->only(['search', 'trashed']))

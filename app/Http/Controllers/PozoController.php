@@ -6,6 +6,7 @@ use App\Models\Pozo;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -18,6 +19,10 @@ class PozoController extends Controller
     public function index(Request $request, Pozo $pozo): Response
     {
         return Inertia::render('Pozos/Index', [
+            'can' => [
+                'createPozo' => Auth::user()->can('create', Pozo::class),
+                'editPozo' => Auth::user()->can('update', Pozo::class),
+            ],
             'filters' => $request->all('search','trashed'),
             'pozos' => $pozo->query()
                 ->filter($request->only('search', 'trashed'))

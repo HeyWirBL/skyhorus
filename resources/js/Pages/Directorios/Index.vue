@@ -9,6 +9,7 @@ import Pagination from '@/Components/Pagination.vue'
 import SearchFilter from '@/Components/SearchFilter.vue'
 
 const props = defineProps({
+  can: Object,
   filters: Object,
   directorios: Object,
 })
@@ -58,7 +59,7 @@ const reset = () => {
           <option value="only">Solo Eliminado</option>
         </select>
       </SearchFilter>
-      <Link class="btn-yellow" href="/directorios/crear">
+      <Link v-if="can.createDirectorio" class="btn-yellow" href="/directorios/crear">
         <span>Crear</span>
         <span class="hidden md:inline">&nbsp;Directorio</span>
       </Link>
@@ -67,7 +68,7 @@ const reset = () => {
       <table class="w-full whitespace-nowrap">
         <thead class="text-sm text-left font-bold uppercase bg-white border-b">
           <tr>
-            <th scope="col" class="p-4">
+            <th v-if="can.editDirectorio" scope="col" class="p-4">
               <div class="flex items-center">
                 <input id="checkbox-all-directorios" v-model="selectAll" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="select" />
                 <label for="checkbox-all-directorios" class="sr-only">checkbox</label>
@@ -80,34 +81,42 @@ const reset = () => {
         </thead>
         <tbody>
           <tr v-for="dir in directorios.data" :key="dir.id" class="bg-white hover:bg-gray-100 focus-within:bg-gray-100 border-b">
-            <td class="w-4 p-4">
+            <td v-if="can.editDirectorio" class="w-4 p-4">
               <div class="flex items-center">
                 <input :id="`checkbox-directorio-${dir.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="dir.id" />
                 <label :for="`checkbox-directorio-${dir.id}`" class="sr-only">checkbox</label>
               </div>
             </td>
             <td class="flex items-center">
-              <Link class="px-6 py-4 text-yellow-500 hover:underline focus:text-yellow-500" :href="`/directorios/${dir.id}/editar`"> Archivos ({{ dir.documentos.length }}) </Link>
+              <Link v-if="can.editDirectorio" class="px-6 py-4 text-yellow-500 hover:underline focus:text-yellow-500" :href="`/directorios/${dir.id}/editar`"> Archivos ({{ dir.documentos.length }}) </Link>
+              <div v-else class="px-6 py-4 text-yellow-500">Archivos ({{ dir.documentos.length }})</div>
             </td>
             <td>
-              <Link class="flex items-center px-6 py-4 focus:text-yellow-500" :href="`/directorios/${dir.id}/editar`" tabindex="-1">
+              <Link v-if="can.editDirectorio" class="flex items-center px-6 py-4 focus:text-yellow-500" :href="`/directorios/${dir.id}/editar`" tabindex="-1">
                 {{ dir.nombre_dir }}
                 <Icon v-if="dir.deleted_at" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" name="trash" />
               </Link>
+              <div v-else class="flex items-center px-6 py-4">
+                {{ dir.nombre_dir }}
+                <Icon v-if="dir.deleted_at" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" name="trash" />
+              </div>
             </td>
             <td>
-              <Link class="flex items-center px-6 py-4" :href="`/directorios/${dir.id}/editar`" tabindex="-1">
+              <Link v-if="can.editDirectorio" class="flex items-center px-6 py-4" :href="`/directorios/${dir.id}/editar`" tabindex="-1">
                 {{ dir.fecha_dir }}
               </Link>
+              <div v-else class="flex items-center px-6 py-4">
+                {{ dir.fecha_dir }}
+              </div>
             </td>
-            <td class="w-px">
+            <td v-if="can.editDirectorio" class="w-px">
               <Link class="flex items-center px-6" :href="`/directorios/${dir.id}/editar`" tabindex="-1">
                 <Icon class="block w-6 h-6 fill-gray-400" name="cheveron-right" />
               </Link>
             </td>
           </tr>
           <tr v-if="directorios.data.length === 0">
-            <td class="px-6 py-4" colspan="5">No se encontraron directorios registrados.</td>
+            <td class="px-6 py-4" colspan="5">No se encontraron carpetas registradas.</td>
           </tr>
         </tbody>
       </table>

@@ -9,6 +9,7 @@ import SearchFilter from '@/Components/SearchFilter.vue'
 import Pagination from '@/Components/Pagination.vue'
 
 const props = defineProps({
+  can: Object,
   filters: Object,
   componentePozos: Object,
 })
@@ -58,7 +59,7 @@ const reset = () => {
           <option value="only">Solo Eliminado</option>
         </select>
       </SearchFilter>
-      <Link class="btn-yellow mr-4" href="/componente-pozos/crear">
+      <Link v-if="can.createComponentePozo" class="btn-yellow mr-4" href="/componente-pozos/crear">
         <span>Importar</span>
         <span class="hidden md:inline">&nbsp;Excel</span>
       </Link>
@@ -67,7 +68,7 @@ const reset = () => {
       <table class="w-full whitespace-nowrap">
         <thead class="text-sm text-left font-bold uppercase bg-white border-b">
           <tr>
-            <th scope="col" class="p-4">
+            <th v-if="can.editComponentePozo" scope="col" class="p-4">
               <div class="flex items-center">
                 <input id="checkbox-all-componente-pozos" v-model="selectAll" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="select" />
                 <label for="checkbox-all-componente-pozos" class="sr-only">checkbox</label>
@@ -82,7 +83,7 @@ const reset = () => {
         </thead>
         <tbody>
           <tr v-for="componentePozo in props.componentePozos.data" :key="componentePozo.id" class="bg-white hover:bg-gray-100 focus-within:bg-gray-100 border-b">
-            <td class="w-4 p-4">
+            <td v-if="can.editComponentePozo" class="w-4 p-4">
               <div class="flex items-center">
                 <input :id="`checkbox-componentespozo-${componentePozo.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="componentePozo.id" />
                 <label :for="`checkbox-componentespozo-${componentePozo.id}`" class="sr-only">checkbox</label>

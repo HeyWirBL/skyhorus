@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
@@ -19,6 +20,10 @@ class UserController extends Controller
     public function index(Request $request): Response
     {
         return Inertia::render('Users/Index', [
+            'can' => [
+                'createUser' => Auth::user()->can('create', User::class),
+                'editUser' => Auth::user()->can('update', User::class),
+            ],
             'filters' => $request->all('search', 'role', 'trashed'),
             'users' => $request->user()->query()
                 ->orderByName()

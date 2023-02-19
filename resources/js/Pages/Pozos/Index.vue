@@ -9,6 +9,7 @@ import SearchFilter from '@/Components/SearchFilter.vue'
 import Pagination from '@/Components/Pagination.vue'
 
 const props = defineProps({
+  can: Object,
   filters: Object,
   pozos: Object,
 })
@@ -58,7 +59,7 @@ const reset = () => {
           <option value="only">Solo Eliminado</option>
         </select>
       </SearchFilter>
-      <Link class="btn-yellow" href="/pozos/crear">
+      <Link v-if="can.createPozo" class="btn-yellow" href="/pozos/crear">
         <span>Crear</span>
         <span class="hidden md:inline">&nbsp;Pozo</span>
       </Link>
@@ -67,7 +68,7 @@ const reset = () => {
       <table class="w-full whitespace-nowrap">
         <thead class="text-sm text-left font-bold uppercase bg-white border-b">
           <tr>
-            <th scope="col" class="p-4">
+            <th v-if="can.editPozo" scope="col" class="p-4">
               <div class="flex items-center">
                 <input id="checkbox-all-pozos" v-model="selectAll" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="select" />
                 <label for="checkbox-all-pozos" class="sr-only">checkbox</label>
@@ -81,34 +82,47 @@ const reset = () => {
         </thead>
         <tbody>
           <tr v-for="pozo in props.pozos.data" :key="pozo.id" class="bg-white hover:bg-gray-100 focus-within:bg-gray-100 border-b">
-            <td class="w-4 p-4">
+            <td v-if="can.editPozo" class="w-4 p-4">
               <div class="flex items-center">
                 <input :id="`checkbox-pozo-${pozo.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="pozo.id" />
                 <label :for="`checkbox-pozo-${pozo.id}`" class="sr-only">checkbox</label>
               </div>
             </td>
             <td>
-              <Link class="flex items-center px-6 py-4" :href="`/pozos/${pozo.id}`">
+              <Link v-if="can.editPozo" class="flex items-center px-6 py-4" :href="`/pozos/${pozo.id}`">
                 {{ pozo.id }}
               </Link>
+              <div v-else class="flex items-center px-6 py-4">
+                {{ pozo.id }}
+              </div>
             </td>
             <td>
-              <Link class="flex items-center px-6 py-4 focus:text-yellow-500" :href="`/pozos/${pozo.id}`" tabindex="-1">
+              <Link v-if="can.editPozo" class="flex items-center px-6 py-4 focus:text-yellow-500" :href="`/pozos/${pozo.id}`" tabindex="-1">
                 {{ pozo.nombre_pozo }}
                 <Icon v-if="pozo.deleted_at" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" name="trash" />
               </Link>
+              <div v-else class="flex items-center px-6 py-4">
+                {{ pozo.nombre_pozo }}
+                <Icon v-if="pozo.deleted_at" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" name="trash" />
+              </div>
             </td>
             <td>
-              <Link class="flex items-center px-6 py-4" :href="`/pozos/${pozo.id}`" tabindex="-1">
+              <Link v-if="can.editPozo" class="flex items-center px-6 py-4" :href="`/pozos/${pozo.id}`" tabindex="-1">
                 {{ pozo.identificador }}
               </Link>
+              <div v-else class="flex items-center px-6 py-4">
+                {{ pozo.identificador }}
+              </div>
             </td>
             <td>
-              <Link class="flex items-center px-6 py-4" :href="`/pozos/${pozo.id}`" tabindex="-1">
+              <Link v-if="can.editPozo" class="flex items-center px-6 py-4" :href="`/pozos/${pozo.id}`" tabindex="-1">
                 {{ pozo.fecha_hora }}
               </Link>
+              <div v-else class="flex items-center px-6 py-4">
+                {{ pozo.fecha_hora }}
+              </div>
             </td>
-            <td class="w-px">
+            <td v-if="can.editPozo" class="w-px">
               <Link class="flex items-center px-6" :href="`/pozos/${pozo.id}`" tabindex="-1">
                 <Icon class="block w-6 h-6 fill-gray-400" name="cheveron-right" />
               </Link>

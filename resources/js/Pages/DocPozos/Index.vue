@@ -9,6 +9,7 @@ import SearchFilter from '@/Components/SearchFilter.vue'
 import Pagination from '@/Components/Pagination.vue'
 
 const props = defineProps({
+  can: Object,
   filters: Object,
   docPozos: Object,
 })
@@ -58,7 +59,7 @@ const reset = () => {
           <option value="only">Solo Eliminado</option>
         </select>
       </SearchFilter>
-      <Link class="btn-yellow mr-4" href="/doc-pozos/crear">
+      <Link v-if="can.createDocPozo" class="btn-yellow mr-4" href="/doc-pozos/crear">
         <span>Subir</span>
         <span class="hidden md:inline">&nbsp;Documentos</span>
       </Link>
@@ -67,7 +68,7 @@ const reset = () => {
       <table class="w-full whitespace-nowrap">
         <thead class="text-sm text-left font-bold uppercase bg-white border-b">
           <tr>
-            <th scope="col" class="p-4">
+            <th v-if="can.editDocPozo" scope="col" class="p-4">
               <div class="flex items-center">
                 <input id="checkbox-all-doc-pozos" v-model="selectAll" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="select" />
                 <label for="checkbox-all-doc-pozos" class="sr-only">checkbox</label>
@@ -80,7 +81,7 @@ const reset = () => {
         </thead>
         <tbody>
           <tr v-for="docPozo in props.docPozos.data" :key="docPozo.id" class="bg-white hover:bg-gray-100 focus-within:bg-gray-100 border-b">
-            <td class="w-4 p-4">
+            <td v-if="can.editDocPozo" class="w-4 p-4">
               <div class="flex items-center">
                 <input :id="`checkbox-docpozo-${docPozo.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="docPozo.id" />
                 <label :for="`checkbox-docpozo-${docPozo.id}`" class="sr-only">checkbox</label>
@@ -99,7 +100,7 @@ const reset = () => {
             <td>
               <Link class="flex items-center px-6 py-4" :href="`/doc-pozos/${docPozo.id}/editar`" tabindex="-1">{{ docPozo.fecha_hora }} </Link>
             </td>
-            <td class="w-px">
+            <td v-if="can.editDocPozo" class="w-px">
               <Link class="flex items-center px-6" :href="`/doc-pozos/${docPozo.id}/editar`" tabindex="-1">
                 <Icon class="block w-6 h-6 fill-gray-400" name="cheveron-right" />
               </Link>

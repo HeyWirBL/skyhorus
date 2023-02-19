@@ -4,6 +4,7 @@ import Icon from '@/Components/Icon.vue'
 // import { computed } from 'vue'
 
 const props = defineProps({
+  can: Object,
   componentePozo: Object,
 })
 
@@ -30,7 +31,7 @@ const download = () => {
         <Link class="text-yellow-400 hover:text-yellow-600" href="/componente-pozos">Componentes del Pozo</Link>
         <span class="text-yellow-400 font-medium">&nbsp;/</span> {{ componentePozo.nombre_componente }}
       </h1>
-      <Link class="btn-yellow ml-auto" :href="`/componente-pozos/${componentePozo.id}/editar`">
+      <Link v-if="can.editComponentePozo" class="btn-yellow ml-auto" :href="`/componente-pozos/${componentePozo.id}/editar`">
         <span>Editar</span>
         <span class="hidden md:inline">&nbsp;Componentes</span>
       </Link>

@@ -13,6 +13,24 @@ const isUrl = (...urls) => {
 }
 </script>
 
+<script>
+export default {
+  data() {
+    return {
+      show: true,
+    }
+  },
+  watch: {
+    '$page.props.auth.can': {
+      handler() {
+        this.show = true
+      },
+      deep: true,
+    },
+  },
+}
+</script>
+
 <template>
   <div>
     <!-- Dashboard Link -->
@@ -38,7 +56,7 @@ const isUrl = (...urls) => {
       <input id="general-catalogs" class="peer hidden" type="checkbox" checked />
       <div class="peer-checked:hidden">
         <!-- Users Catalog -->
-        <div class="mb-2">
+        <div v-if="$page.props.auth.can.viewAnyUser && show" class="mb-2">
           <Link class="group flex text-base items-center p-2 pl-11 rounded-md" :class="isUrl('users') ? 'bg-yellow-500' : 'hover:bg-zinc-700'" href="/users">
             <Icon class="w-5 h-5" :class="isUrl('users') ? 'fill-white' : 'fill-zinc-300 group-hover:fill-white'" name="users" />
             <div class="ml-2" :class="isUrl('users') ? 'text-white' : 'text-zinc-300 group-hover:text-white'">Usuarios</div>

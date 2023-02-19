@@ -9,6 +9,7 @@ use App\Models\Pozo;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -22,6 +23,10 @@ class ComponentePozoController extends Controller
     public function index(Request $request, ComponentePozo $componentePozo): Response
     {
         return Inertia::render('ComponentePozos/Index', [
+            'can' => [
+                'createComponentePozo' => Auth::user()->can('create', ComponentePozo::class),
+                'editComponentePozo' => Auth::user()->can('update', ComponentePozo::class),
+            ],
             'filters' => $request->all('search', 'trashed'),
             'componentePozos' => $componentePozo->query()
                 ->with('pozo')
@@ -58,6 +63,9 @@ class ComponentePozoController extends Controller
     public function show(ComponentePozo $componentePozo): Response
     {
         return Inertia::render('ComponentePozos/Show', [
+            'can' => [
+                'editComponentePozo' => Auth::user()->can('update', ComponentePozo::class),
+            ],
             'componentePozo' => [
                 'id' => $componentePozo->id,
                 'dioxido_carbono' => $componentePozo->dioxido_carbono,

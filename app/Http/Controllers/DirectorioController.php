@@ -8,6 +8,7 @@ use App\Models\Mes;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -20,6 +21,10 @@ class DirectorioController extends Controller
     public function index(Request $request, Directorio $directorio): Response
     {
         return Inertia::render('Directorios/Index', [
+            'can' => [
+                'createDirectorio' => Auth::user()->can('create', Directorio::class),
+                'editDirectorio' => Auth::user()->can('update', Directorio::class),
+            ],
             'filters' => $request->all('search', 'trashed'),
             'directorios' => $directorio->query()
                 ->with('documentos')

@@ -9,6 +9,7 @@ import Pagination from '@/Components/Pagination.vue'
 import SearchFilter from '@/Components/SearchFilter.vue'
 
 const props = defineProps({
+  can: Object,
   filters: Object,
   users: Object,
 })
@@ -69,7 +70,7 @@ const reset = () => {
           usuarios
         </select>
       </SearchFilter>
-      <Link class="btn-yellow" href="/users/crear">
+      <Link v-if="can.createUser" class="btn-yellow" href="/users/crear">
         <span>Crear</span>
         <span class="hidden md:inline">&nbsp;Usuario</span>
       </Link>
@@ -78,7 +79,7 @@ const reset = () => {
       <table class="w-full whitespace-nowrap">
         <thead class="text-sm text-left font-bold uppercase bg-white border-b">
           <tr>
-            <th scope="col" class="p-4">
+            <th v-if="can.editUser" scope="col" class="p-4">
               <div class="flex items-center">
                 <input id="checkbox-all-users" v-model="selectAll" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="select" />
                 <label for="checkbox-all-users" class="sr-only">checkbox</label>
@@ -93,40 +94,56 @@ const reset = () => {
         </thead>
         <tbody>
           <tr v-for="user in props.users.data" :key="user.id" class="bg-white hover:bg-gray-100 focus-within:bg-gray-100 border-b">
-            <td class="w-4 p-4">
+            <td v-if="can.editUser" class="w-4 p-4">
               <div class="flex items-center">
                 <input :id="`checkbox-user-${user.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="user.id" />
                 <label :for="`checkbox-user-${user.id}`" class="sr-only">checkbox</label>
               </div>
             </td>
             <td>
-              <Link class="flex items-center px-6 py-4" :href="`/users/${user.id}/editar`" tabindex="-1">
+              <Link v-if="can.editUser" class="flex items-center px-6 py-4" :href="`/users/${user.id}/editar`" tabindex="-1">
                 {{ user.nombre }}
                 <Icon v-if="user.deleted_at" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" name="trash" />
               </Link>
+              <div v-else class="flex items-center px-6 py-4">
+                {{ user.nombre }}
+                <Icon v-if="user.deleted_at" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" name="trash" />
+              </div>
             </td>
             <td>
-              <Link class="flex items-center px-6 py-4" :href="`/users/${user.id}/editar`" tabindex="-1">
+              <Link v-if="can.editUser" class="flex items-center px-6 py-4" :href="`/users/${user.id}/editar`" tabindex="-1">
                 {{ user.apellidos }}
               </Link>
+              <div v-else class="flex items-center px-6 py-4">
+                {{ user.apellidos }}
+              </div>
             </td>
             <td>
-              <Link class="flex items-center px-6 py-4" :href="`/users/${user.id}/editar`" tabindex="-1">
+              <Link v-if="can.editUser" class="flex items-center px-6 py-4" :href="`/users/${user.id}/editar`" tabindex="-1">
                 {{ user.usuario }}
               </Link>
+              <div v-else class="flex items-center px-6 py-4">
+                {{ user.usuario }}
+              </div>
             </td>
             <td>
-              <Link class="flex items-center px-6 py-4" :href="`/users/${user.id}/editar`" tabindex="-1">
+              <Link v-if="can.editUser" class="flex items-center px-6 py-4" :href="`/users/${user.id}/editar`" tabindex="-1">
                 {{ user.email }}
               </Link>
+              <div v-else class="flex items-center px-6 py-4">
+                {{ user.email }}
+              </div>
             </td>
             <td>
-              <Link class="flex items-center px-6 py-4" :href="`/users/${user.id}/editar`" tabindex="-1">
+              <Link v-if="can.editUser" class="flex items-center px-6 py-4" :href="`/users/${user.id}/editar`" tabindex="-1">
                 {{ user.rol }}
               </Link>
+              <div v-else class="flex items-center px-6 py-4">
+                {{ user.rol }}
+              </div>
             </td>
             <td class="w-px">
-              <Link class="flex items-center px-6" :href="`/users/${user.id}/editar`" tabindex="-1">
+              <Link v-if="can.editUser" class="flex items-center px-6" :href="`/users/${user.id}/editar`" tabindex="-1">
                 <Icon class="block w-6 h-6 fill-gray-400" name="cheveron-right" />
               </Link>
             </td>

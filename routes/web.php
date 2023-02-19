@@ -31,19 +31,19 @@ Route::middleware('auth')->group(function () {
     /* Catálogo de Usuarios  */
     //Route::resource('users', UserController::class);}
     Route::get('users', [UserController::class, 'index'])
-        ->name('users');
+        ->name('users')->middleware('can:viewAny,App\Models\User');
 
     Route::get('users/crear', [UserController::class, 'create'])
-        ->name('users.create');
+        ->name('users.create')->middleware('can:create,App\Models\User');
 
     Route::get('users/{user}/editar', [UserController::class, 'edit'])
-        ->name('users.edit');
+        ->name('users.edit')->middleware('can:update,App\Models\User');
 
     Route::post('users', [UserController::class, 'store'])
         ->name('users.store');
 
     Route::put('users/{user}', [UserController::class, 'update'])
-        ->name('users.update');
+        ->name('users.update')->middleware('can:update,App\Models\User');
 
     Route::put('users/{user}/restore', [UserController::class, 'restore'])
         ->name('users.restore');
@@ -59,16 +59,16 @@ Route::middleware('auth')->group(function () {
         ->name('directorios');
 
     Route::get('directorios/crear', [DirectorioController::class, 'create'])
-        ->name('directorios.create');
+        ->name('directorios.create')->middleware('can:create,App\Models\Directorio');
 
     Route::get('directorios/{directorio}/editar', [DirectorioController::class, 'edit'])
-        ->name('directorios.edit');
+        ->name('directorios.edit')->middleware('can:update,App\Models\Directorio');
 
     Route::post('directorios', [DirectorioController::class, 'store'])
         ->name('directorios.store');
         
     Route::put('directorios/{directorio}', [DirectorioController::class, 'update'])
-        ->name('directorios.update');
+        ->name('directorios.update')->middleware('can:update,App\Models\Directorio');
 
     Route::put('directorios/{directorio}/restore', [DirectorioController::class, 'restore'])
         ->name('directorios.restore');
@@ -133,19 +133,19 @@ Route::middleware('auth')->group(function () {
         ->name('pozos');
 
     Route::get('pozos/crear', [PozoController::class, 'create'])
-        ->name('pozos.create');
+        ->name('pozos.create')->middleware('can:create,App\Models\Pozo');
 
     Route::get('pozos/{pozo}', [PozoController::class, 'show'])
         ->name('pozos.show');
 
     Route::get('pozos/{pozo}/editar', [PozoController::class, 'edit'])
-        ->name('pozos.edit');
+        ->name('pozos.edit')->middleware('can:update,App\Models\Pozo');
 
     Route::post('pozos', [PozoController::class, 'store'])
         ->name('pozos.store');
 
     Route::put('pozos/{pozo}', [PozoController::class, 'update'])
-        ->name('pozos.update');
+        ->name('pozos.update')->middleware('can:update,App\Models\Pozo');
 
     Route::put('pozos/{pozo}/restore', [PozoController::class, 'restore'])
         ->name('pozos.restore');
@@ -165,16 +165,16 @@ Route::middleware('auth')->group(function () {
         ->name('componente-pozos');
 
     Route::get('componente-pozos/crear', [ComponentePozoController::class, 'create'])
-        ->name('componente-pozos.create');
+        ->name('componente-pozos.create')->middleware('can:create,App\Models\ComponentePozo');
         
     Route::get('componente-pozos/{componentePozo}', [ComponentePozoController::class, 'show'])
         ->name('componente-pozos.show');
 
     Route::get('componente-pozos/{componentePozo}/editar', [ComponentePozoController::class, 'edit'])
-        ->name('componente-pozos.edit');
+        ->name('componente-pozos.edit')->middleware('can:update,App\Models\ComponentePozo');
 
     Route::put('componente-pozos/{componentePozo}', [ComponentePozoController::class, 'update'])
-        ->name('componente-pozos.update');
+        ->name('componente-pozos.update')->middleware('can:update,App\Models\ComponentePozo');
 
     Route::put('componente-pozos/{componentePozo}/restore', [ComponentePozoController::class, 'restore'])
         ->name('pocomponente-pozoszos.restore');
