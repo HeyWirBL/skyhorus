@@ -1,13 +1,13 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3'
 import Icon from '@/Components/Icon.vue'
-import { computed } from 'vue'
+// import { computed } from 'vue'
 
 const props = defineProps({
   componentePozo: Object,
 })
 
-const total = computed(() => {
+/*const total = computed(() => {
   let total = []
   Object.entries(props.componentePozo).forEach(([key, val]) => {
     total.push(parseFloat(val.dioxido_carbono))
@@ -15,7 +15,7 @@ const total = computed(() => {
   return total.reduce(function (total, num) {
     return total + num
   }, 0)
-})
+})*/
 
 const download = () => {
   return window.open('/componente-pozos/export/' + props.componentePozo.id, '_blank')
@@ -24,10 +24,6 @@ const download = () => {
 
 <template>
   <div>
-    <pre>
-       total
-    </pre>
-
     <Head :title="`${componentePozo.nombre_componente}`" />
     <div class="flex items-center justify-start mb-8 w-full">
       <h1 class="text-3xl font-bold">

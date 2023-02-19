@@ -1,4 +1,5 @@
 <script setup>
+import { inject } from 'vue'
 import { Head, Link, useForm } from '@inertiajs/vue3'
 import LoadingButton from '@/Components/LoadingButton.vue'
 import TextInput from '@/Components/TextInput.vue'
@@ -8,6 +9,8 @@ import TrashedMessage from '@/Shared/TrashedMessage.vue'
 const props = defineProps({
   pozo: Object,
 })
+
+const swal = inject('$swal')
 
 const form = useForm({
   _method: 'put',
@@ -29,15 +32,37 @@ const update = () => {
 }
 
 const destroy = () => {
-  if (confirm('¿Estás seguro de querer eliminar este pozo?')) {
-    form.delete(`/pozos/${props.pozo.id}`)
-  }
+  swal({
+    title: '¿Estás seguro de querer eliminar este pozo?',
+    text: 'Al hacer clic en el botón de confirmar estarás enviando este pozo al modo "Solo Eliminado".',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Confirmar',
+    cancelButtonText: 'Cancelar',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      form.delete(`/pozos/${props.pozo.id}`)
+    }
+  })
 }
 
 const restore = () => {
-  if (confirm('¿Estás seguro de querer restablecer este pozo?')) {
-    form.put(`/pozos/${props.pozo.id}/restore`)
-  }
+  swal({
+    title: '¿Estás seguro de querer restablecer este pozo?',
+    text: 'Este pozo se restablecerá del modo "Solo Eliminado" y pasará al estado "Con Modificación".',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Restablecer',
+    cancelButtonText: 'Cancelar',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      form.put(`/pozos/${props.pozo.id}/restore`)
+    }
+  })
 }
 </script>
 
@@ -50,7 +75,7 @@ const restore = () => {
       <Link class="text-yellow-400 hover:text-yellow-600" :href="`/pozos/${props.pozo.id}`">&nbsp;Detalles</Link>
       <span class="text-yellow-400 font-medium">&nbsp;/</span> {{ form.nombre_pozo }}
     </h1>
-    <TrashedMessage v-if="props.pozo.deleted_at" class="mb-6" @restore="restore">Este pozo ha sido eliminado.</TrashedMessage>
+    <TrashedMessage v-if="pozo.deleted_at" class="mb-6" @restore="restore">Este pozo ha sido eliminado.</TrashedMessage>
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
       <form @submit.prevent="update">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">

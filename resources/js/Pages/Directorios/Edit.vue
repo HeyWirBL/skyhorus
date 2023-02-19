@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { inject, ref, watch } from 'vue'
 import { Head, Link, router, useForm } from '@inertiajs/vue3'
 import debounce from 'lodash/debounce'
 import mapValues from 'lodash/mapValues'
@@ -17,6 +17,8 @@ const props = defineProps({
   anos: Array,
   meses: Array,
 })
+
+const swal = inject('$swal')
 
 const selected = ref([])
 const selectAll = ref(false)
@@ -38,7 +40,6 @@ function formatBytes(a, b = 2) { if (!+a) return "0 Bytes"; const c = 0 > b ? 0 
 watch(
   () => search.value,
   debounce(function () {
-    console.log('typing')
     router.get(`/directorios/${props.directorio.id}/editar`, pickBy(search.value), { preserveState: true, preserveScroll: true, replace: true })
   }, 300),
   {
@@ -62,15 +63,37 @@ const reset = () => {
 const update = () => form.put(`/directorios/${props.directorio.id}`)
 
 const destroy = () => {
-  if (confirm('¿Estás seguro de querer eliminar esta carpeta?')) {
-    form.delete(`/directorios/${props.directorio.id}`)
-  }
+  swal({
+    title: '¿Estás seguro de querer eliminar esta carpeta?',
+    text: 'Al hacer clic en el botón de confirmar estarás enviando esta carpeta al modo "Solo Eliminado".',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Confirmar',
+    cancelButtonText: 'Cancelar',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      form.delete(`/directorios/${props.directorio.id}`)
+    }
+  })
 }
 
 const restore = () => {
-  if (confirm('¿Estás seguro de querer restablecer esta carpeta?')) {
-    form.put(`/directorios/${props.directorio.id}/restore`)
-  }
+  swal({
+    title: '¿Estás seguro de querer restablecer esta carpeta?',
+    text: 'Esta carpeta se restablecerá del modo "Solo Eliminado" y pasará al estado "Con Modificación".',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Restablecer',
+    cancelButtonText: 'Cancelar',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      form.put(`/directorios/${props.directorio.id}/restore`)
+    }
+  })
 }
 </script>
 
