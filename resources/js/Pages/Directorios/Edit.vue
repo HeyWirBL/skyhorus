@@ -26,7 +26,7 @@ const form = useForm({
   fecha_dir: props.directorio.fecha_dir,
 })
 
-const searchForm = ref({
+const search = ref({
   search: props.filters.search,
   year: props.filters.year,
   month: props.filters.month,
@@ -34,10 +34,10 @@ const searchForm = ref({
 })
 
 watch(
-  () => searchForm.value,
+  () => search.value,
   debounce(function () {
     console.log('typing')
-    router.get(`/directorios/${props.directorio.id}/editar`, pickBy(searchForm.value), { preserveState: true, preserveScroll: true, replace: true })
+    router.get(`/directorios/${props.directorio.id}/editar`, pickBy(search.value), { preserveState: true, preserveScroll: true, replace: true })
   }, 300),
   {
     deep: true,
@@ -54,7 +54,7 @@ const select = () => {
 }
 
 const reset = () => {
-  searchForm.value = mapValues(searchForm.value, () => null)
+  search.value = mapValues(search.value, () => null)
 }
 
 const update = () => form.put(`/directorios/${props.directorio.id}`)
@@ -94,19 +94,19 @@ const restore = () => {
     </div>
     <h2 class="mt-12 mb-8 text-2xl font-bold">Documentos</h2>
     <div class="flex items-center justify-between mb-6">
-      <SearchFilter v-model="searchForm.search" class="mr-4 w-full max-w-md" @reset="reset">
+      <SearchFilter v-model="search.search" class="mr-4 w-full max-w-md" @reset="reset">
         <label class="block mt-4 text-gray-700">Año:</label>
-        <select v-model="searchForm.year" class="form-select mt-1 w-full">
+        <select v-model="search.year" class="form-select mt-1 w-full">
           <option :value="null" />
           <option v-for="ano in anos" :key="ano.id" :value="ano.id">{{ ano.ano }}</option>
         </select>
         <label class="block mt-4 text-gray-700">Mes:</label>
-        <select v-model="searchForm.month" class="form-select mt-1 w-full">
+        <select v-model="search.month" class="form-select mt-1 w-full">
           <option :value="null" />
           <option v-for="mes in meses" :key="mes.id" :value="mes.id">{{ mes.nombre }}</option>
         </select>
         <label class="block mt-4 text-gray-700">Eliminado:</label>
-        <select v-model="searchForm.trashed" class="form-select mt-1 w-full">
+        <select v-model="search.trashed" class="form-select mt-1 w-full">
           <option :value="null" />
           <option value="with">Con Modificación</option>
           <option value="only">Solo Eliminado</option>
