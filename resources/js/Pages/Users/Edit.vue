@@ -9,6 +9,7 @@ import TrashedMessage from '@/Shared/TrashedMessage.vue'
 
 const props = defineProps({
   user: Object,
+  auth: Object,
 })
 
 const swal = inject('$swal')
@@ -107,7 +108,7 @@ const passwordFieldType = computed(() => (hidePassword.value ? 'password' : 'tex
           </SelectInput>
         </div>
         <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
-          <button v-if="!props.user.deleted_at" class="text-red-600 hover:underline" tabindex="-1" type="button" @click="destroy">Eliminar Usuario</button>
+          <button v-if="!user.deleted_at && auth.user.id !== user.id" class="text-red-600 hover:underline" tabindex="-1" type="button" @click="destroy">Eliminar Usuario</button>
           <LoadingButton :loading="form.processing" class="btn-yellow ml-auto" type="submit">Actualizar</LoadingButton>
         </div>
       </form>
