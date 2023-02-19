@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Directorio;
+use App\Models\Ano;
+use App\Models\Mes;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -15,13 +17,13 @@ class DirectorioController extends Controller
     /**
      * Display a listing of folders.
      */
-    public function index(Request $request, Directorio $directorio): Response
+    public function index(Directorio $directorio): Response
     {
         return Inertia::render('Directorios/Index', [
-            'filters' => $request->all('search', 'trashed'),
+            'filters' => Request::all('search', 'trashed'),
             'directorios' => $directorio->query()
                 ->latest()
-                ->filter($request->only('search', 'trashed'))
+                ->filter(Request::only('search', 'trashed'))
                 ->paginate(10)
                 ->withQueryString()
                 ->through(fn ($dir) => [
@@ -69,7 +71,7 @@ class DirectorioController extends Controller
     /**
      * Show the form for editing an specific folder.
      */
-    public function edit(Directorio $directorio): Response
+    public function edit(Directorio $directorio, Ano $ano, Mes $mes): Response
     {
         return Inertia::render('Directorios/Edit', [
             'directorio' => [
@@ -77,7 +79,28 @@ class DirectorioController extends Controller
                 'nombre_dir' => $directorio->nombre_dir,
                 'fecha_dir' => $directorio->fecha_dir,
                 'deleted_at' => $directorio->deleted_at,
+                'documentos' => $directorio->documentos()
+                ->filter(Request::only('search', 'trashed'))
+                ->datefilter(Request::only('year', 'month'))
+                ->get()->map(fn ($documento) => [
+                    'id' => $documento->id,
+                    'Nombre' => $documento->Nombre,
+                    'documento' => $documento->documento,
+                    'ano_id' => $documento->ano ? $documento->ano->only('ano') : null,
+                    'mes_id' => $documento->mes ? $documento->mes->only('nombre') : null,
+                    'deleted_at' => $documento->deleted_at,
+                ])
             ],
+            'anos' => $ano->query()
+                ->latest()
+                ->get()->map
+                ->only('id', 'ano'),
+            
+            'mes' => $mes->query()
+                ->latest()
+                ->get()->map
+                ->only('id', 'mes', 'nombre'),
+            
         ]);
     }
 
