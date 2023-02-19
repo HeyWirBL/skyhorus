@@ -190,11 +190,14 @@ Route::middleware('auth')->group(function () {
     Route::get('componente-pozos', [ComponentePozoController::class, 'index'])
         ->name('componente-pozos');
 
-    /*Route::get('componentes-pozos/crear', [ComponentePozoController::class, 'create'])
-        ->name('pozos.create');*/  
+    Route::get('componente-pozos/crear', [ComponentePozoController::class, 'create'])
+        ->name('componente-pozos.create');
         
     Route::get('componente-pozos/{componentePozo}', [ComponentePozoController::class, 'show'])
         ->name('componente-pozos.show');
+
+    Route::post('componente-pozos/import', [ComponentePozoController::class, 'import'])
+        ->name('componente-pozos.import');
 
     Route::get('componente-pozos/export/{componentePozo}', [ComponentePozoController::class, 'export'])
         ->name('componente-pozos.export');

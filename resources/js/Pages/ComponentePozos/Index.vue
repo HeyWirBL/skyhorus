@@ -58,7 +58,7 @@ const reset = () => {
           <option value="only">Solo Eliminado</option>
         </select>
       </SearchFilter>
-      <Link class="btn-yellow mr-4" href="#">
+      <Link class="btn-yellow mr-4" href="/componente-pozos/crear">
         <span>Importar</span>
         <span class="hidden md:inline">&nbsp;Excel</span>
       </Link>

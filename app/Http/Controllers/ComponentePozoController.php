@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Exports\ComponentePozosExport;
+use App\Imports\ComponentePozosImport;
 use App\Models\ComponentePozo;
+use App\Models\Pozo;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -31,6 +35,19 @@ class ComponentePozoController extends Controller
                     'deleted_at' => $cp->deleted_at,
                     'pozo' => $cp->pozo ? $cp->pozo->only('nombre_pozo') : null,
                 ]),
+        ]);
+    }
+
+    /**
+     * Show the form for creating a new well components.
+     */
+    public function create(Pozo $pozo): Response
+    {
+        return Inertia::render('ComponentePozos/Create', [
+            'pozos' => $pozo->query()
+                ->get()
+                ->map
+                ->only('id', 'nombre_pozo')
         ]);
     }
 
@@ -97,6 +114,18 @@ class ComponentePozoController extends Controller
                 'pozo' => $componentePozo->pozo->only('id', 'nombre_pozo'),
             ]
         ]);
+    }
+
+    /**
+     * Import data for componente wells.
+     */
+    public function import(Request $request): RedirectResponse
+    {
+        $file = $request->file('file');
+
+        Excel::import(new ComponentePozosImport, $file);
+
+        return Redirect::back()->with('success', 'Archivo importado!');
     }
 
     /**
