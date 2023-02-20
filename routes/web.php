@@ -56,7 +56,7 @@ Route::middleware('auth')->group(function () {
     Route::get('perfil', [ProfileController::class, 'edit'])
         ->name('perfil.edit');
 
-    Route::put('perfil/{user}', [ProfileController::class, 'update'])
+    Route::patch('perfil/{user}', [ProfileController::class, 'update'])
         ->name('perfil.update');
 
     /* Catálogo de Directorios / Carpetas */

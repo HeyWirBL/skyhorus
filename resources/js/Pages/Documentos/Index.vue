@@ -25,13 +25,6 @@ const form = ref({
   trashed: props.filters.trashed,
 })
 
-function formatBytes(a, b = 2) {
-  if (!+a) return '0 Bytes'
-  const c = 0 > b ? 0 : b,
-    d = Math.floor(Math.log(a) / Math.log(1024))
-  return `${parseFloat((a / Math.pow(1024, d)).toFixed(c))} ${['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'][d]}`
-}
-
 watch(
   () => form.value,
   debounce(function () {
@@ -41,6 +34,11 @@ watch(
     deep: true,
   },
 )
+
+const filesize = (size) => {
+  let i = Math.floor(Math.log(size) / Math.log(1024))
+  return (size / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'][i]
+}
 
 const select = () => {
   selected.value = []
@@ -108,13 +106,15 @@ const reset = () => {
                 <label :for="`checkbox-pozo-${documento.id}`" class="sr-only">checkbox</label>
               </div>
             </td>
-            <td>
-              <Link class="flex items-center px-6 py-4" :href="`/documentos/${documento.id}`">
-                {{ documento.documento[0].usrName }}
-                <div class="text-xs text-orange-300 ml-3">
-                  {{ formatBytes(documento.documento[0].size) }}
-                </div>
-              </Link>
+            <td class="flex items-center px-6 py-4">
+              <span class="leading-snug">
+                <Link class="text-yellow-400 hover:underline focus:text-yellow-500" :href="`/documentos/${documento.id}`">
+                  {{ documento.documento[0].usrName }}
+                </Link>
+                <span class="text-xs ml-2">
+                  {{ filesize(documento.documento[0].size) }}
+                </span>
+              </span>
             </td>
             <td>
               <Link class="flex items-center px-6 py-4 focus:text-yellow-500" :href="`/documentos/${documento.id}`" tabindex="-1">
@@ -135,13 +135,13 @@ const reset = () => {
               </Link>
             </td>
           </tr>
-          <tr v-if="props.documentos.data.length === 0">
+          <tr v-if="documentos.data.length === 0">
             <td class="px-6 py-4" colspan="5">No se encontraron documentos registrados.</td>
           </tr>
         </tbody>
       </table>
     </div>
     <!-- Paginator -->
-    <Pagination class="mt-4" :links="props.documentos.links" :total="props.documentos.total" />
+    <Pagination class="mt-4" :links="documentos.links" :total="documentos.total" />
   </div>
 </template>

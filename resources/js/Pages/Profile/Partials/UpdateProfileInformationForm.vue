@@ -16,7 +16,7 @@ const form = useForm({
 })
 
 const update = () => {
-  form.post(`/perfil/${user.id}`)
+  form.patch(`/perfil/${user.id}`)
 }
 </script>
 
