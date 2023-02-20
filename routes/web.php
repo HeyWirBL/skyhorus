@@ -178,9 +178,6 @@ Route::middleware('auth')->group(function () {
     Route::get('componente-pozos/{componentePozo}', [ComponentePozoController::class, 'show'])
         ->name('componente-pozos.show');
 
-    Route::get('componente-pozos/{componentePozo}/editar', [ComponentePozoController::class, 'edit'])
-        ->name('componente-pozos.edit')->middleware('can:update,App\Models\ComponentePozo');
-
     Route::put('componente-pozos/{componentePozo}', [ComponentePozoController::class, 'update'])
         ->name('componente-pozos.update')->middleware('can:update,App\Models\ComponentePozo');
 
