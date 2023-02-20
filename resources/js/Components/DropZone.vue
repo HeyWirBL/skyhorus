@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, defineEmits } from 'vue'
 import Dropzone from 'dropzone'
 
 const dropRef = ref(null)
@@ -25,13 +25,17 @@ const customPreview = `
         </div>
     </div>
 `
+const emit = defineEmits(['files']);
 
 onMounted(() => {
   if (dropRef.value !== null) {
     new Dropzone(dropRef.value, {
       previewTemplate: customPreview,
       url: '/documentos',
-      method: 'POST',
+      method: 'GET',
+      addedfiles: files => {
+        emit('files', files);
+      }
     })
 
     if (dropRef.value.querySelector('.dz-default')) {
