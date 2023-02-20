@@ -126,6 +126,9 @@ Route::middleware('auth')->group(function () {
     Route::post('documentos', [DocumentoController::class, 'store'])
         ->name('documentos.store');
 
+    Route::post('documentos/destroy-multiple', [DocumentoController::class, 'destroyMultiple'])
+        ->name('documentos.destroyMultiple');
+
     Route::put('documentos/{documento}', [DocumentoController::class, 'update'])
         ->name('documentos.update');
 
