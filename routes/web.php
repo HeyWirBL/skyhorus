@@ -10,6 +10,7 @@ use App\Http\Controllers\DocPozoController;
 use App\Http\Controllers\DocumentoController;
 use App\Http\Controllers\GraficaController;
 use App\Http\Controllers\PozoController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -50,6 +51,13 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('users/{user}', [UserController::class, 'destroy'])
         ->name('users.destroy');
+
+    /** Perfil de Usuario */
+    Route::get('perfil', [ProfileController::class, 'edit'])
+        ->name('perfil.edit');
+
+    Route::put('perfil/{user}', [ProfileController::class, 'update'])
+        ->name('perfil.update');
 
     /* Catálogo de Directorios / Carpetas */
     /*Route::resource('directorios', DirectorioController::class)->only([
