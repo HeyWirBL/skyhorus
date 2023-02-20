@@ -125,73 +125,82 @@ const download = () => {
       </button>
     </div>
 
-    <Modal :show="editComponenteModal" style="max-width: 800px !important">
-      <div class="p-6">
-        <h2 class="text-xl font-bold">Componentes Pozo, Editar [{{ componentePozo.id }}]</h2>
+    <Modal :show="editComponenteModal" style="max-width: 985px !important">
+      <div class="relative">
+        <!-- Modal Header -->
+        <div class="flex items-start justify-between p-4 border-b rounded-t">
+          <h2 class="text-xl font-semibold">Componentes Pozo, Editar [{{ componentePozo.id }}]</h2>
 
-        <div class="mt-6">
+          <button class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" type="button" @click="closeModal">
+            <Icon class="w-4 h-4" name="close" aria-hidden="true" />
+            <span class="sr-only">Cerrar modal</span>
+          </button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="p-6 space-y-6">
           <form @submit.prevent="updateComponentePozo">
-            <div class="flex flex-wrap">
-              <TextInput ref="firstInput" v-model="form.nombre_componente" :error="form.errors.nombre_componente" class="pb-8 sm:pr-6 w-full lg:w-1/2" label="Nombre del grupo de componentes" />
-              <SelectInput v-model="form.pozo_id" :error="form.errors.pozo_id" class="pb-8 sm:pr-6 w-full lg:w-1/2" label="Pozo/Instalación">
+            <div class="flex flex-wrap text-sm leading-relaxed">
+              <TextInput ref="firstInput" v-model="form.nombre_componente" :error="form.errors.nombre_componente" class="pb-8 pr-6 w-full lg:w-1/2" label="Nombre del grupo de componentes" />
+              <SelectInput v-model="form.pozo_id" :error="form.errors.pozo_id" class="pb-8 pr-6 w-full lg:w-1/2" label="Pozo/Instalación">
                 <option :value="null" />
                 <option v-for="pozo in pozos" :key="pozo.id" :value="pozo.id">{{ pozo.nombre_pozo }}</option>
               </SelectInput>
               <!-- Dioxido de Carbono -->
-              <TextInput v-model="form.dioxido_carbono" :error="form.errors.dioxido_carbono" class="pb-8 pr-4" style="width: 200px" label="Dióxido de carbono - PM" />
-              <TextInput v-model="form.pe_dioxido_carbono" :error="form.errors.pe_dioxido_carbono" class="pb-8 pr-4" style="width: 200px" label="Dióxido de carbono - % Peso" />
-              <TextInput v-model="form.mo_dioxido_carbono" :error="form.errors.mo_dioxido_carbono" class="pb-8 pr-4" style="width: 200px" label="Dióxido de carbono - % MOL" />
-              <TextInput v-model="form.den_dioxido_carbono" :error="form.errors.den_dioxido_carbono" class="pb-8 pr-4" style="width: 200px" label="Dióxido de carbono - Densidad" />
+              <TextInput v-model="form.dioxido_carbono" :error="form.errors.dioxido_carbono" class="pb-8 pr-4" label="Dióxido de carbono - PM" />
+              <TextInput v-model="form.pe_dioxido_carbono" :error="form.errors.pe_dioxido_carbono" class="pb-8 pr-4" label="Dióxido de carbono - % Peso" />
+              <TextInput v-model="form.mo_dioxido_carbono" :error="form.errors.mo_dioxido_carbono" class="pb-8 pr-4" label="Dióxido de carbono - % MOL" />
+              <TextInput v-model="form.den_dioxido_carbono" :error="form.errors.den_dioxido_carbono" class="pb-8 pr-4" label="Dióxido de carbono - Densidad" />
               <!-- Ácido Sulfidrico -->
-              <TextInput v-model="form.acido_sulfidrico" :error="form.errors.acido_sulfidrico" class="pb-8 pr-6 w-full lg:w-1/2" label="Ácido Sulfhídrico - PM" />
-              <TextInput v-model="form.pe_acido_sulfidrico" :error="form.errors.pe_acido_sulfidrico" class="pb-8 pr-6 w-full lg:w-1/2" label="Ácido Sulfhídrico - % Peso" />
-              <TextInput v-model="form.mo_acido_sulfidrico" :error="form.errors.mo_acido_sulfidrico" class="pb-8 pr-6 w-full lg:w-1/2" label="Ácido Sulfhídrico - % MOL" />
-              <TextInput v-model="form.den_acido_sulfidrico" :error="form.errors.den_acido_sulfidrico" class="pb-8 pr-6 w-full lg:w-1/2" label="Ácido Sulfhídrico - Densidad" />
+              <TextInput v-model="form.acido_sulfidrico" :error="form.errors.acido_sulfidrico" class="pb-8 pr-4" label="Ácido Sulfhídrico - PM" />
+              <TextInput v-model="form.pe_acido_sulfidrico" :error="form.errors.pe_acido_sulfidrico" class="pb-8 pr-4" label="Ácido Sulfhídrico - % Peso" />
+              <TextInput v-model="form.mo_acido_sulfidrico" :error="form.errors.mo_acido_sulfidrico" class="pb-8 pr-4" label="Ácido Sulfhídrico - % MOL" />
+              <TextInput v-model="form.den_acido_sulfidrico" :error="form.errors.den_acido_sulfidrico" class="pb-8 pr-4" label="Ácido Sulfhídrico - Densidad" />
               <!-- Nitrógeno -->
-              <TextInput v-model="form.nitrogeno" :error="form.errors.nitrogeno" class="pb-8 pr-6 w-full lg:w-1/2" label="Nitrógeno - PM" />
-              <TextInput v-model="form.pe_nitrogeno" :error="form.errors.pe_nitrogeno" class="pb-8 pr-6 w-full lg:w-1/2" label="Nitrógeno - % Peso" />
-              <TextInput v-model="form.mo_nitrogeno" :error="form.errors.mo_nitrogeno" class="pb-8 pr-6 w-full lg:w-1/2" label="Nitrógeno - % MOL" />
-              <TextInput v-model="form.den_nitrogeno" :error="form.errors.den_nitrogeno" class="pb-8 pr-6 w-full lg:w-1/2" label="Nitrógeno - Densidad" />
+              <TextInput v-model="form.nitrogeno" :error="form.errors.nitrogeno" class="pb-8 pr-4" label="Nitrógeno - PM" />
+              <TextInput v-model="form.pe_nitrogeno" :error="form.errors.pe_nitrogeno" class="pb-8 pr-4" label="Nitrógeno - % Peso" />
+              <TextInput v-model="form.mo_nitrogeno" :error="form.errors.mo_nitrogeno" class="pb-8 pr-4" label="Nitrógeno - % MOL" />
+              <TextInput v-model="form.den_nitrogeno" :error="form.errors.den_nitrogeno" class="pb-8 pr-4" label="Nitrógeno - Densidad" />
               <!-- Metano -->
-              <TextInput v-model="form.metano" :error="form.errors.metano" class="pb-8 pr-6 w-full lg:w-1/2" label="Metano - PM" />
-              <TextInput v-model="form.pe_metano" :error="form.errors.pe_metano" class="pb-8 pr-6 w-full lg:w-1/2" label="Metano - % Peso" />
-              <TextInput v-model="form.mo_metano" :error="form.errors.mo_metano" class="pb-8 pr-6 w-full lg:w-1/2" label="Metano - % MOL" />
-              <TextInput v-model="form.den_metano" :error="form.errors.den_metano" class="pb-8 pr-6 w-full lg:w-1/2" label="Metano - Densidad" />
+              <TextInput v-model="form.metano" :error="form.errors.metano" class="pb-8 pr-4" label="Metano - PM" />
+              <TextInput v-model="form.pe_metano" :error="form.errors.pe_metano" class="pb-8 pr-4" label="Metano - % Peso" />
+              <TextInput v-model="form.mo_metano" :error="form.errors.mo_metano" class="pb-8 pr-4" label="Metano - % MOL" />
+              <TextInput v-model="form.den_metano" :error="form.errors.den_metano" class="pb-8 pr-4" label="Metano - Densidad" />
               <!-- Etano -->
-              <TextInput v-model="form.etano" :error="form.errors.etano" class="pb-8 pr-6 w-full lg:w-1/2" label="Etano - PM" />
-              <TextInput v-model="form.pe_etano" :error="form.errors.pe_etano" class="pb-8 pr-6 w-full lg:w-1/2" label="Etano - % Peso" />
-              <TextInput v-model="form.mo_etano" :error="form.errors.mo_etano" class="pb-8 pr-6 w-full lg:w-1/2" label="Etano - % MOL" />
-              <TextInput v-model="form.den_etano" :error="form.errors.den_etano" class="pb-8 pr-6 w-full lg:w-1/2" label="Etano - Densidad" />
+              <TextInput v-model="form.etano" :error="form.errors.etano" class="pb-8 pr-4" label="Etano - PM" />
+              <TextInput v-model="form.pe_etano" :error="form.errors.pe_etano" class="pb-8 pr-4" label="Etano - % Peso" />
+              <TextInput v-model="form.mo_etano" :error="form.errors.mo_etano" class="pb-8 pr-4" label="Etano - % MOL" />
+              <TextInput v-model="form.den_etano" :error="form.errors.den_etano" class="pb-8 pr-4" label="Etano - Densidad" />
               <!-- Propano -->
-              <TextInput v-model="form.propano" :error="form.errors.propano" class="pb-8 pr-6 w-full lg:w-1/2" label="Propano - PM" />
-              <TextInput v-model="form.pe_propano" :error="form.errors.pe_propano" class="pb-8 pr-6 w-full lg:w-1/2" label="Propano - % Peso" />
-              <TextInput v-model="form.mo_propano" :error="form.errors.mo_propano" class="pb-8 pr-6 w-full lg:w-1/2" label="Propano - % MOL" />
-              <TextInput v-model="form.den_propano" :error="form.errors.den_propano" class="pb-8 pr-6 w-full lg:w-1/2" label="Propano - Densidad" />
+              <TextInput v-model="form.propano" :error="form.errors.propano" class="pb-8 pr-4" label="Propano - PM" />
+              <TextInput v-model="form.pe_propano" :error="form.errors.pe_propano" class="pb-8 pr-4" label="Propano - % Peso" />
+              <TextInput v-model="form.mo_propano" :error="form.errors.mo_propano" class="pb-8 pr-4" label="Propano - % MOL" />
+              <TextInput v-model="form.den_propano" :error="form.errors.den_propano" class="pb-8 pr-4" label="Propano - Densidad" />
               <!-- Isobutano -->
-              <TextInput v-model="form.iso_butano" :error="form.errors.iso_butano" class="pb-8 pr-6 w-full lg:w-1/2" label="Isobutano - PM" />
-              <TextInput v-model="form.pe_iso_butano" :error="form.errors.pe_iso_butano" class="pb-8 pr-6 w-full lg:w-1/2" label="Isobutano - % Peso" />
-              <TextInput v-model="form.mo_iso_butano" :error="form.errors.mo_iso_butano" class="pb-8 pr-6 w-full lg:w-1/2" label="Isobutano - % MOL" />
-              <TextInput v-model="form.den_iso_butano" :error="form.errors.den_iso_butano" class="pb-8 pr-6 w-full lg:w-1/2" label="Isobutano - Densidad" />
+              <TextInput v-model="form.iso_butano" :error="form.errors.iso_butano" class="pb-8 pr-4" label="Isobutano - PM" />
+              <TextInput v-model="form.pe_iso_butano" :error="form.errors.pe_iso_butano" class="pb-8 pr-4" label="Isobutano - % Peso" />
+              <TextInput v-model="form.mo_iso_butano" :error="form.errors.mo_iso_butano" class="pb-8 pr-4" label="Isobutano - % MOL" />
+              <TextInput v-model="form.den_iso_butano" :error="form.errors.den_iso_butano" class="pb-8 pr-4" label="Isobutano - Densidad" />
               <!-- Butano -->
-              <TextInput v-model="form.n_butano" :error="form.errors.n_butano" class="pb-8 pr-6 w-full lg:w-1/2" label="Butano - PM" />
-              <TextInput v-model="form.pe_n_butano" :error="form.errors.pe_n_butano" class="pb-8 pr-6 w-full lg:w-1/2" label="Butano - % Peso" />
-              <TextInput v-model="form.mo_n_butano" :error="form.errors.mo_n_butano" class="pb-8 pr-6 w-full lg:w-1/2" label="Butano - % MOL" />
-              <TextInput v-model="form.den_n_butano" :error="form.errors.den_n_butano" class="pb-8 pr-6 w-full lg:w-1/2" label="Butano - Densidad" />
+              <TextInput v-model="form.n_butano" :error="form.errors.n_butano" class="pb-8 pr-4" label="Butano - PM" />
+              <TextInput v-model="form.pe_n_butano" :error="form.errors.pe_n_butano" class="pb-8 pr-4" label="Butano - % Peso" />
+              <TextInput v-model="form.mo_n_butano" :error="form.errors.mo_n_butano" class="pb-8 pr-4" label="Butano - % MOL" />
+              <TextInput v-model="form.den_n_butano" :error="form.errors.den_n_butano" class="pb-8 pr-4" label="Butano - Densidad" />
               <!-- Isopentano -->
-              <TextInput v-model="form.iso_pentano" :error="form.errors.iso_pentano" class="pb-8 pr-6 w-full lg:w-1/2" label="Isopentano - PM" />
-              <TextInput v-model="form.pe_iso_pentano" :error="form.errors.pe_iso_pentano" class="pb-8 pr-6 w-full lg:w-1/2" label="Isopentano - % Peso" />
-              <TextInput v-model="form.mo_iso_pentano" :error="form.errors.mo_iso_pentano" class="pb-8 pr-6 w-full lg:w-1/2" label="Isopentano - % MOL" />
-              <TextInput v-model="form.den_iso_pentano" :error="form.errors.den_iso_pentano" class="pb-8 pr-6 w-full lg:w-1/2" label="Isopentano - Densidad" />
+              <TextInput v-model="form.iso_pentano" :error="form.errors.iso_pentano" class="pb-8 pr-4" label="Isopentano - PM" />
+              <TextInput v-model="form.pe_iso_pentano" :error="form.errors.pe_iso_pentano" class="pb-8 pr-4" label="Isopentano - % Peso" />
+              <TextInput v-model="form.mo_iso_pentano" :error="form.errors.mo_iso_pentano" class="pb-8 pr-4" label="Isopentano - % MOL" />
+              <TextInput v-model="form.den_iso_pentano" :error="form.errors.den_iso_pentano" class="pb-8 pr-4" label="Isopentano - Densidad" />
               <!-- Pentano -->
-              <TextInput v-model="form.n_pentano" :error="form.errors.n_pentano" class="pb-8 pr-6 w-full lg:w-1/2" label="Pentano - PM" />
-              <TextInput v-model="form.pe_n_pentano" :error="form.errors.pe_n_pentano" class="pb-8 pr-6 w-full lg:w-1/2" label="Pentano - % Peso" />
-              <TextInput v-model="form.mo_n_pentano" :error="form.errors.mo_n_pentano" class="pb-8 pr-6 w-full lg:w-1/2" label="Pentano - % MOL" />
-              <TextInput v-model="form.den_n_pentano" :error="form.errors.den_n_pentano" class="pb-8 pr-6 w-full lg:w-1/2" label="Pentano - Densidad" />
+              <TextInput v-model="form.n_pentano" :error="form.errors.n_pentano" class="pb-8 pr-4" label="Pentano - PM" />
+              <TextInput v-model="form.pe_n_pentano" :error="form.errors.pe_n_pentano" class="pb-8 pr-4" label="Pentano - % Peso" />
+              <TextInput v-model="form.mo_n_pentano" :error="form.errors.mo_n_pentano" class="pb-8 pr-4" label="Pentano - % MOL" />
+              <TextInput v-model="form.den_n_pentano" :error="form.errors.den_n_pentano" class="pb-8 pr-4" label="Pentano - Densidad" />
               <!-- Hexano -->
-              <TextInput v-model="form.n_exano" :error="form.errors.n_exano" class="pb-8 pr-6 w-full lg:w-1/2" label="Hexano - PM" />
-              <TextInput v-model="form.pe_n_exano" :error="form.errors.pe_n_exano" class="pb-8 pr-6 w-full lg:w-1/2" label="Hexano - % Peso" />
-              <TextInput v-model="form.mo_n_exano" :error="form.errors.mo_n_exano" class="pb-8 pr-6 w-full lg:w-1/2" label="Hexano - % MOL" />
-              <TextInput v-model="form.den_n_exano" :error="form.errors.den_n_exano" class="pb-8 pr-6 w-full lg:w-1/2" label="Hexano - Densidad" />
+              <TextInput v-model="form.n_exano" :error="form.errors.n_exano" class="pb-8 pr-4" label="Hexano - PM" />
+              <TextInput v-model="form.pe_n_exano" :error="form.errors.pe_n_exano" class="pb-8 pr-4" label="Hexano - % Peso" />
+              <TextInput v-model="form.mo_n_exano" :error="form.errors.mo_n_exano" class="pb-8 pr-4" label="Hexano - % MOL" />
+              <TextInput v-model="form.den_n_exano" :error="form.errors.den_n_exano" class="pb-8 pr-4" label="Hexano - Densidad" />
               <!-- Additional Fields -->
               <TextInput v-model="form.fecha_recep" :error="form.errors.fecha_recep" class="pb-8 pr-6 w-full lg:w-1/2" label="Fecha de Recepción" type="date" />
               <TextInput v-model="form.fecha_analisis" :error="form.errors.fecha_analisis" class="pb-8 pr-6 w-full lg:w-1/2" label="Fecha de Análisis" type="date" />
@@ -256,7 +265,7 @@ const download = () => {
           <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt class="text-base font-medium text-gray-500">Componentes</dt>
             <dd class="mt-1 text-base text-gray-900 sm:col-span-2 sm:mt-0 rounded-md shadow overflow-x-auto">
-              <table class="w-full whitespace-nowrap">
+              <table class="whitespace-nowrap">
                 <thead class="text-sm text-left font-bold uppercase bg-white border-b">
                   <tr>
                     <th scope="col" class="px-6 py-3">Información</th>
