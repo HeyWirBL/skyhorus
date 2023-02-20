@@ -29,17 +29,17 @@ class Documento extends Model
 
     public function directorio()
     {
-        return $this->belongsTo(Directorio::class);
+        return $this->belongsTo(Directorio::class)->withTrashed();
     }
 
     public function ano()
     {
-        return $this->belongsTo(Ano::class);
+        return $this->belongsTo(Ano::class)->withTrashed();
     }
 
     public function mes()
     {
-        return $this->belongsTo(Mes::class);
+        return $this->belongsTo(Mes::class)->withTrashed();
     }
 
     public function scopeFilter($query, array $filters)

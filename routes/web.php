@@ -10,6 +10,7 @@ use App\Http\Controllers\DocPozoController;
 use App\Http\Controllers\DocumentoController;
 use App\Http\Controllers\GraficaController;
 use App\Http\Controllers\PozoController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -50,6 +51,13 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('users/{user}', [UserController::class, 'destroy'])
         ->name('users.destroy');
+
+    /** Perfil de Usuario */
+    Route::get('perfil', [ProfileController::class, 'edit'])
+        ->name('perfil.edit');
+
+    Route::patch('perfil/{user}', [ProfileController::class, 'update'])
+        ->name('perfil.update');
 
     /* Catálogo de Directorios / Carpetas */
     /*Route::resource('directorios', DirectorioController::class)->only([
@@ -169,9 +177,6 @@ Route::middleware('auth')->group(function () {
         
     Route::get('componente-pozos/{componentePozo}', [ComponentePozoController::class, 'show'])
         ->name('componente-pozos.show');
-
-    Route::get('componente-pozos/{componentePozo}/editar', [ComponentePozoController::class, 'edit'])
-        ->name('componente-pozos.edit')->middleware('can:update,App\Models\ComponentePozo');
 
     Route::put('componente-pozos/{componentePozo}', [ComponentePozoController::class, 'update'])
         ->name('componente-pozos.update')->middleware('can:update,App\Models\ComponentePozo');
