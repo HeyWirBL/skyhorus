@@ -27,7 +27,7 @@ class Directorio extends Model
 
     public function documentos()
     {
-        return $this->hasMany(Documento::class);
+        return $this->hasMany(Documento::class)->withTrashed();
     }
 
     public function scopeFilter($query, array $filters)

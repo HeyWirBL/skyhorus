@@ -64,6 +64,9 @@ const reset = () => {
         <span class="hidden md:inline">&nbsp;Directorio</span>
       </Link>
     </div>
+    <div class="flex items-center mb-6">
+      <button class="btn-secondary" type="button" style="cursor: not-allowed" disabled>Borrar Elementos Seleccionados</button>
+    </div>
     <div class="bg-white rounded-md shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
         <thead class="text-sm text-left font-bold uppercase bg-white border-b">

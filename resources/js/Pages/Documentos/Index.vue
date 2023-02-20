@@ -42,6 +42,7 @@ const filesize = (size) => {
 
 const select = () => {
   selected.value = []
+
   if (!selectAll.value) {
     for (let i in props.documentos.data) {
       selected.value.push(props.documentos.data[i].id)
@@ -82,6 +83,11 @@ const reset = () => {
         <span class="hidden md:inline">&nbsp;Documentos</span>
       </Link>
     </div>
+    <div class="flex items-center mb-6">
+      <button class="btn-secondary" type="button" :disabled="!selectAll">Borrar Elementos Seleccionados</button>
+
+      id selected: {{ selected }}
+    </div>
     <div class="bg-white rounded-md shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
         <thead class="text-sm text-left font-bold uppercase bg-white border-b">
@@ -99,11 +105,11 @@ const reset = () => {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="documento in props.documentos.data" :key="documento.id" class="bg-white hover:bg-gray-100 focus-within:bg-gray-100 border-b">
+          <tr v-for="documento in documentos.data" :key="documento.id" class="bg-white hover:bg-gray-100 focus-within:bg-gray-100 border-b">
             <td class="w-4 p-4">
               <div class="flex items-center">
-                <input :id="`checkbox-pozo-${documento.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="documento.id" />
-                <label :for="`checkbox-pozo-${documento.id}`" class="sr-only">checkbox</label>
+                <input :id="`checkbox-documento-${documento.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="documento.id" />
+                <label :for="`checkbox-documento-${documento.id}`" class="sr-only">checkbox</label>
               </div>
             </td>
             <td class="flex items-center px-6 py-4">

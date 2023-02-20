@@ -14,9 +14,6 @@ const props = defineProps({
   users: Object,
 })
 
-const selected = ref([])
-const selectAll = ref(false)
-
 const form = ref({
   search: props.filters.search,
   role: props.filters.role,
@@ -32,15 +29,6 @@ watch(
     deep: true,
   },
 )
-
-const select = () => {
-  selected.value = []
-  if (!selectAll.value) {
-    for (let i in props.users.data) {
-      selected.value.push(props.users.data[i].id)
-    }
-  }
-}
 
 const reset = () => {
   form.value = mapValues(form.value, () => null)
@@ -79,12 +67,6 @@ const reset = () => {
       <table class="w-full whitespace-nowrap">
         <thead class="text-sm text-left font-bold uppercase bg-white border-b">
           <tr>
-            <th v-if="can.editUser" scope="col" class="p-4">
-              <div class="flex items-center">
-                <input id="checkbox-all-users" v-model="selectAll" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="select" />
-                <label for="checkbox-all-users" class="sr-only">checkbox</label>
-              </div>
-            </th>
             <th scope="col" class="px-6 py-3">Nombre</th>
             <th scope="col" class="px-6 py-3">Apellidos</th>
             <th scope="col" class="px-6 py-3">Usuario</th>
@@ -94,12 +76,6 @@ const reset = () => {
         </thead>
         <tbody>
           <tr v-for="user in props.users.data" :key="user.id" class="bg-white hover:bg-gray-100 focus-within:bg-gray-100 border-b">
-            <td v-if="can.editUser" class="w-4 p-4">
-              <div class="flex items-center">
-                <input :id="`checkbox-user-${user.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="user.id" />
-                <label :for="`checkbox-user-${user.id}`" class="sr-only">checkbox</label>
-              </div>
-            </td>
             <td>
               <Link v-if="can.editUser" class="flex items-center px-6 py-4" :href="`/users/${user.id}/editar`" tabindex="-1">
                 {{ user.nombre }}
