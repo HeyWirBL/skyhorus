@@ -1,13 +1,13 @@
 module.exports = {
+  extends: ['eslint:recommended', 'plugin:vue/vue3-recommended'],
+  parserOptions: {
+    ecmaVersion: 2020,
+    sourceType: 'module',
+  },
   env: {
     amd: true,
     browser: true,
-    es2021: true,
-  },
-  extends: ['eslint:recommended', 'plugin:vue/vue3-recommended'],
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
+    es6: true,
   },
   plugins: ['vue'],
   rules: {
@@ -31,5 +31,6 @@ module.exports = {
         },
       },
     ],
+    'vue/no-v-text-v-html-on-component': 'off',
   },
 }
