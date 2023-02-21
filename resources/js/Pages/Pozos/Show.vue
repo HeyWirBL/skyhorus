@@ -1,5 +1,5 @@
 <script setup>
-import { nextTick, ref } from 'vue'
+import { inject, nextTick, ref } from 'vue'
 import { Head, Link, useForm } from '@inertiajs/vue3'
 import Icon from '@/Components/Icon.vue'
 import LoadingButton from '@/Components/LoadingButton.vue'
@@ -11,6 +11,8 @@ import TrashedMessage from '@/Shared/TrashedMessage.vue'
 const props = defineProps({
   pozo: Object,
 })
+
+const swal = inject('$swal')
 
 const editPozoModal = ref(false)
 const firstInput = ref(null)
@@ -75,6 +77,23 @@ const selectDocPozos = () => {
       selected.value.push(props.pozo.docPozos[i].id)
     }
   }
+}
+
+const restore = () => {
+  swal({
+    title: '¿Estás seguro de querer restablecer este pozo?',
+    text: 'Este pozo se restablecerá del modo "Solo Eliminado" y pasará al estado "Con Modificación".',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Restablecer',
+    cancelButtonText: 'Cancelar',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      form.put(`/pozos/${props.pozo.id}/restore`)
+    }
+  })
 }
 
 const selectComponentePozos = () => {

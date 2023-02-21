@@ -150,9 +150,6 @@ Route::middleware('auth')->group(function () {
     Route::get('pozos/{pozo}', [PozoController::class, 'show'])
         ->name('pozos.show');
 
-    Route::get('pozos/{pozo}/editar', [PozoController::class, 'edit'])
-        ->name('pozos.edit')->middleware('can:update,App\Models\Pozo');
-
     Route::post('pozos', [PozoController::class, 'store'])
         ->name('pozos.store');
 

@@ -85,6 +85,41 @@ const removeSelectedItems = () => {
     })
   }
 }
+
+const restoreSelectedItems = () => {
+  if (selected.value.length === 1) {
+    swal({
+      title: '¿Estás seguro de querer restablecer este pozo?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Confirmar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        formPozo.put(`/pozos/${selected.value}/restore`, {
+          onSuccess: () => (selected.value = []),
+          onFinish: () => (selectAll.value = false),
+        })
+      }
+    })
+  } else {
+    swal({
+      title: '¿Estás seguro de querer restablecer estos pozos?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Confirmar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // TODO: restore every item selected
+      }
+    })
+  }
+}
 </script>
 
 <template>
@@ -107,6 +142,10 @@ const removeSelectedItems = () => {
       </Link>
       <button v-if="pozos.data.length !== 0 && !isTrashed" class="btn-secondary" type="button" :disabled="!selectAll && !selected.length" @click="removeSelectedItems">
         <span>Borrar Elementos</span>
+        <span class="hidden md:inline">&nbsp;Seleccionados</span>
+      </button>
+      <button v-if="pozos.data.length !== 0 && isTrashed" class="btn-secondary" type="button" :disabled="!selectAll && !selected.length" @click="restoreSelectedItems">
+        <span>Restablecer Elementos</span>
         <span class="hidden md:inline">&nbsp;Seleccionados</span>
       </button>
     </div>
