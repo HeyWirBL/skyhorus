@@ -1,9 +1,3 @@
-<script>
-export default {
-  value: null,
-}
-</script>
-
 <script setup>
 import { computed } from 'vue'
 
@@ -13,6 +7,10 @@ const props = defineProps({
   checked: {
     type: [Array, Boolean],
     default: false,
+  },
+  value: {
+    type: null,
+    default: null,
   },
 })
 
