@@ -169,8 +169,17 @@ class PozoController extends Controller
     public function destroy(Pozo $pozo): RedirectResponse
     {
         $pozo->delete();
-
         return Redirect::back()->with('success', 'Pozo eliminado.');
+    }
+
+    /**
+     * Delete multiple wells.
+     */
+    public function destroyAll(): RedirectResponse
+    {
+        //
+        
+        return Redirect::back()->with('success', 'Pozos eliminados.');
     }
 
     /**

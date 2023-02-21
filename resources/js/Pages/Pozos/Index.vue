@@ -1,6 +1,6 @@
 <script setup>
-import { inject, ref, watch } from 'vue'
-import { Head, Link, router } from '@inertiajs/vue3'
+import { computed, inject, ref, watch } from 'vue'
+import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3'
 import debounce from 'lodash/debounce'
 import mapValues from 'lodash/mapValues'
 import pickBy from 'lodash/pickBy'
@@ -24,6 +24,9 @@ const form = ref({
   trashed: props.filters.trashed,
 })
 
+const formPozo = useForm({})
+const isTrashed = computed(() => usePage().url.includes('trashed=only'))
+
 watch(
   () => form.value,
   debounce(function () {
@@ -34,17 +37,18 @@ watch(
   },
 )
 
-const select = () => {
-  selected.value = []
-  if (!selectAll.value) {
-    for (let i in props.pozos.data) {
-      selected.value.push(props.pozos.data[i].id)
-    }
-  }
-}
-
 const reset = () => {
   form.value = mapValues(form.value, () => null)
+}
+
+const select = () => {
+  selected.value = []
+
+  if (!selectAll.value) {
+    props.pozos.data.forEach((pozo) => {
+      selected.value.push(pozo.id)
+    })
+  }
 }
 
 const removeSelectedItems = () => {
@@ -59,7 +63,10 @@ const removeSelectedItems = () => {
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        //props.cromatografiaGases.data
+        formPozo.delete(`/pozos/${selected.value}`, {
+          onSuccess: () => (selected.value = []),
+          onFinish: () => (selectAll.value = false),
+        })
       }
     })
   } else {
@@ -73,7 +80,7 @@ const removeSelectedItems = () => {
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        //props.cromatografiaGases.data
+        // TODO: remove every item selected
       }
     })
   }
@@ -89,7 +96,6 @@ const removeSelectedItems = () => {
         <label class="block mt-4 text-gray-700">Eliminado:</label>
         <select v-model="form.trashed" class="form-select mt-1 w-full">
           <option :value="null" />
-          <option value="with">Con Modificación</option>
           <option value="only">Solo Eliminado</option>
         </select>
       </SearchFilter>
@@ -99,7 +105,7 @@ const removeSelectedItems = () => {
         <span>Crear</span>
         <span class="hidden md:inline">&nbsp;Pozo</span>
       </Link>
-      <button v-if="pozos.data.length !== 0" class="btn-secondary" type="button" :disabled="!selectAll && !selected.length" @click="removeSelectedItems">
+      <button v-if="pozos.data.length !== 0 && !isTrashed" class="btn-secondary" type="button" :disabled="!selectAll && !selected.length" @click="removeSelectedItems">
         <span>Borrar Elementos</span>
         <span class="hidden md:inline">&nbsp;Seleccionados</span>
       </button>
