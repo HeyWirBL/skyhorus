@@ -3,7 +3,7 @@ import { Head, Link, useForm } from '@inertiajs/vue3'
 import DropZone from '@/Components/DropZone.vue'
 import SelectInput from '@/Components/SelectInput.vue'
 import LoadingButton from '@/Components/LoadingButton.vue'
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import debounce from 'lodash/debounce';
 
 defineProps({
@@ -11,31 +11,20 @@ defineProps({
   anos: Array,
   meses: Array,
 })
+var files = ref([]);
 
-const files = [];
-const folder = ref('');
-const year = ref('');
-const month = ref('');
-
-function showFiles(){
-  console.log('hola mundo');
-}
-
+const form = useForm({
+  documento: [],
+  directorio_id: '',
+  ano_id: '',
+  mes_id: '',
+});
 
 function store() {
-  for (var i = 0; i < files.value.length; i++) {
-    var documento = [];
-    documento[i] = JSON.stringify(files.value[i]);
-    const form = useForm({
-      documento: documento[i],
-      directorio_id: folder.value,
-      ano_id: year.value,
-      mes_id: month.value,
-    });
-
-    form.post('/documentos');
-
+  for(let i = 0; i < files.value.length; i++){
+    form.documento[i] = JSON.stringify(files.value[i]);
   }
+  form.post('/documentos');
 }
 </script>
 
@@ -56,16 +45,16 @@ function store() {
       <form @submit.prevent="store">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
           <!-- DropZone -->
-          <DropZone class="pb-8 pr-6 w-full" @files="(fl) => files.value = fl"/>
-          <SelectInput class="pb-8 pr-6 w-full" label="Carpeta" v-model="folder">
+          <DropZone class="pb-8 pr-6 w-full" @files="(fl) => files = fl"/> 
+          <SelectInput class="pb-8 pr-6 w-full" label="Carpeta" v-model="form.directorio_id">
             <option :value="null" />
             <option v-for="directorio in directorios" :key="directorio.id" :value="directorio.id">{{ directorio.nombre_dir }}</option>
           </SelectInput>
-          <SelectInput class="pb-8 pr-6 w-full lg:w-1/2" label="Año" v-model="year">
+          <SelectInput class="pb-8 pr-6 w-full lg:w-1/2" label="Año" v-model="form.ano_id">
             <option :value="null" />
             <option v-for="ano in anos" :key="ano.id" :value="ano.id">{{ ano.ano }}</option>
           </SelectInput>
-          <SelectInput class="pb-8 pr-6 w-full lg:w-1/2" label="Mes" v-model="month">
+          <SelectInput class="pb-8 pr-6 w-full lg:w-1/2" label="Mes" v-model="form.mes_id">
             <option :value="null" />
             <option v-for="mes in meses" :key="mes.id" :value="mes.id">{{ mes.nombre }}</option>
           </SelectInput>
@@ -74,7 +63,6 @@ function store() {
           <LoadingButton class="btn-yellow" type="submit">Guardar</LoadingButton>
         </div>
       </form>
-      <button @click="showFiles">Mostrar</button>
     </div>
   </div>
 </template>
