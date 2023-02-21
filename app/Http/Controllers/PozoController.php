@@ -25,6 +25,7 @@ class PozoController extends Controller
             ],
             'filters' => $request->all('search','trashed'),
             'pozos' => $pozo->query()
+                ->orderBy('id', 'desc')
                 ->filter($request->only('search', 'trashed'))
                 ->paginate(10)
                 ->withQueryString()

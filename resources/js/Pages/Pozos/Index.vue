@@ -148,10 +148,10 @@ const removeSelectedItems = () => {
             </td>
             <td>
               <Link v-if="can.editPozo" class="flex items-center px-6 py-4" :href="`/pozos/${pozo.id}`" tabindex="-1">
-                {{ pozo.identificador }}
+                {{ pozo.identificador === '' ? 'No hay identificador' : pozo.identificador }}
               </Link>
               <div v-else class="flex items-center px-6 py-4">
-                {{ pozo.identificador }}
+                {{ pozo.identificador === '' ? 'No hay identificador' : pozo.identificador }}
               </div>
             </td>
             <td>

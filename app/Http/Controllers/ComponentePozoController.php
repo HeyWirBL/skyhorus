@@ -125,6 +125,7 @@ class ComponentePozoController extends Controller
                 'pozo' => $componentePozo->pozo->only('id', 'nombre_pozo'),
             ],
             'pozos' => $pozo->query()
+                ->orderBy('id', 'desc')
                 ->get()
                 ->map
                 ->only('id', 'nombre_pozo'),

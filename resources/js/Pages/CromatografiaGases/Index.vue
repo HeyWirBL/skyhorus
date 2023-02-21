@@ -87,7 +87,7 @@ const removeSelectedItems = () => {
 <template>
   <div>
     <Head title="Cromatografía de Gas" />
-    <h1 class="mb-8 text-3xl font-bold">Cromatografías de Gas</h1>
+    <h1 class="mb-8 text-3xl font-bold">Cromatografía de Gas</h1>
     <div class="flex items-center justify-between mb-6">
       <SearchFilter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
         <label class="block mt-4 text-gray-700">Eliminado:</label>
