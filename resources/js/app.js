@@ -14,11 +14,11 @@ createInertiaApp({
   resolve: async (name) => {
     const pages = resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob('./Pages/**/*.vue'))
 
-    const page = await pages.then((page) => {
+    await pages.then((page) => {
       page.default.layout = name.startsWith('Auth/') ? undefined : page.default.layout || MainLayout
     })
 
-    return page
+    return pages
   },
   setup({ el, App, props, plugin }) {
     createApp({ render: () => h(App, props) })
