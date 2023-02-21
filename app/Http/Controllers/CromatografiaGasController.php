@@ -18,6 +18,7 @@ class CromatografiaGasController extends Controller
         return Inertia::render('CromatografiaGases/Index', [
             'filters' => $request->all('search', 'trashed'),
             'cromatografiaGases' => $cromatografiaGas->query()
+                ->orderBy('id', 'desc')
                 ->filter($request->only(['search', 'trashed']))
                 ->paginate(10)
                 ->withQueryString()

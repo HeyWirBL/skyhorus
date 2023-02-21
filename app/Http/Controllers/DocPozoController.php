@@ -23,6 +23,7 @@ class DocPozoController extends Controller
             ],
             'filters' => $request->all('search', 'trashed'),
             'docPozos' => $docPozo->query()
+                ->orderBy('id', 'desc')
                 ->filter($request->only(['search', 'trashed']))
                 ->paginate(10)
                 ->withQueryString()
