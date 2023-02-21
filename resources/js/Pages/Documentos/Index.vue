@@ -57,19 +57,35 @@ const reset = () => {
 }
 
 const removeSelectedItems = () => {
-  swal({
-    title: '¿Estás seguro de querer eliminar estos documentos?',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
-    confirmButtonText: 'Confirmar',
-    cancelButtonText: 'Cancelar',
-  }).then((result) => {
-    if (result.isConfirmed) {
-      props.documentos.data
-    }
-  })
+  if (selected.value.length === 1) {
+    swal({
+      title: '¿Estás seguro de querer eliminar este documento?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Confirmar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        //props.documentos.data
+      }
+    })
+  } else {
+    swal({
+      title: '¿Estás seguro de querer eliminar estos documentos?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Confirmar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        //props.documentos.data
+      }
+    })
+  }
 }
 </script>
 
@@ -96,14 +112,18 @@ const removeSelectedItems = () => {
           <option value="only">Solo Eliminado</option>
         </select>
       </SearchFilter>
-      <Link class="btn-yellow" href="/documentos/crear">
+    </div>
+    <div class="flex items-center mb-6">
+      <Link class="btn-yellow mr-2" href="/documentos/crear">
         <span>Subir</span>
         <span class="hidden md:inline">&nbsp;Documentos</span>
       </Link>
+      <button v-if="documentos.data.length !== 0" class="btn-secondary" type="button" :disabled="!selectAll && !selected.length" @click="removeSelectedItems">
+        <span>Borrar Elementos</span>
+        <span class="hidden md:inline">&nbsp;Seleccionados</span>
+      </button>
     </div>
-    <div class="flex items-center mb-6">
-      <button class="btn-secondary" type="button" :disabled="!selectAll" @click="removeSelectedItems">Borrar Elementos Seleccionados</button>
-    </div>
+
     <div class="bg-white rounded-md shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
         <thead class="text-sm text-left font-bold uppercase bg-white border-b">
@@ -129,14 +149,14 @@ const removeSelectedItems = () => {
               </div>
             </td>
             <td class="flex items-center px-6 py-4">
-              <span class="leading-snug">
+              <div class="leading-snug">
                 <Link class="text-yellow-400 hover:underline focus:text-yellow-500" :href="`/documentos/${documento.id}`">
                   {{ documento.documento[0].usrName }}
                 </Link>
                 <span class="text-xs ml-2">
                   {{ filesize(documento.documento[0].size) }}
                 </span>
-              </span>
+              </div>
             </td>
             <td>
               <Link class="flex items-center px-6 py-4 focus:text-yellow-500" :href="`/documentos/${documento.id}`" tabindex="-1">

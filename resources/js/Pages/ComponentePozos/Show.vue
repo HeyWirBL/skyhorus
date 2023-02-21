@@ -7,6 +7,7 @@ import Modal from '@/Components/Modal.vue'
 import SelectInput from '@/Components/SelectInput.vue'
 import TextInput from '@/Components/TextInput.vue'
 import TextareaInput from '@/Components/TextareaInput.vue'
+import TrashedMessage from '@/Shared/TrashedMessage.vue'
 
 const props = defineProps({
   can: Object,
@@ -83,27 +84,20 @@ const openModal = () => {
 const updateComponentePozo = () => {
   form.post(`/componente-pozos/${props.componentePozo.id}`, {
     preserveScroll: true,
-    onSuccess: () => closeModal(),
+    onSuccess: () => (editComponenteModal.value = false),
     onError: () => firstInput.value.focus(),
-    onFinish: () => form.reset(),
+    onFinish: () => {
+      if (!form.hasErrors) {
+        form.reset()
+      }
+    },
   })
 }
 
 const closeModal = () => {
   editComponenteModal.value = false
-
   form.reset()
 }
-
-/*const total = computed(() => {
-  let total = []
-  Object.entries(props.componentePozo).forEach(([key, val]) => {
-    total.push(parseFloat(val.dioxido_carbono))
-  })
-  return total.reduce(function (total, num) {
-    return total + num
-  }, 0)
-})*/
 
 const download = () => {
   return window.open('/componente-pozos/export/' + props.componentePozo.id, '_blank')
@@ -124,6 +118,8 @@ const download = () => {
         <span class="hidden md:inline">&nbsp;Componentes</span>
       </button>
     </div>
+
+    <TrashedMessage v-if="componentePozo.deleted_at" class="mb-6" @restore="restore">Estos componentes de pozo han sido eliminados.</TrashedMessage>
 
     <Modal :show="editComponenteModal" style="max-width: 985px !important">
       <div class="relative">

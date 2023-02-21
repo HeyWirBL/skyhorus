@@ -13,14 +13,13 @@ class CromatografiaLiquidaController extends Controller
     {
         return Inertia::render('CromatografiaLiquidas/Index', [
             'filters' => $request->all('search', 'trashed'),
-            '
-            ' => $cromatografiaLiquida->query()
+            'cromatografiaLiquidas' => $cromatografiaLiquida->query()
                 ->filter($request->only(['search', 'trashed']))
                 ->paginate(10)
                 ->withQueryString()
                 ->through(fn ($cl) => [
                     'id' => $cl->id,
-                    'documento' => $cl->documento,
+                    'documento' => json_decode($cl->documento, true),
                     'fecha_hora' => $cl->fecha_hora,
                     'deleted_at' => $cl->deleted_at,
                     'pozo' => $cl->pozo ? $cl->pozo->only('nombre_pozo') : null,

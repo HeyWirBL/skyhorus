@@ -19,7 +19,7 @@ class CromatografiaGasController extends Controller
                 ->withQueryString()
                 ->through(fn ($cg) => [
                     'id' => $cg->id,
-                    'documento' => $cg->documento,
+                    'documento' => json_decode($cg->documento, true),
                     'fecha_hora' => $cg->fecha_hora,
                     'deleted_at' => $cg->deleted_at,
                     'pozo' => $cg->pozo ? $cg->pozo->only('nombre_pozo') : null,

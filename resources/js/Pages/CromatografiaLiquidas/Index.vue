@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { inject, ref, watch } from 'vue'
 import { Head, Link, router } from '@inertiajs/vue3'
 import debounce from 'lodash/debounce'
 import mapValues from 'lodash/mapValues'
@@ -12,6 +12,8 @@ const props = defineProps({
   filters: Object,
   cromatografiaLiquidas: Object,
 })
+
+const swal = inject('$swal')
 
 const selected = ref([])
 const selectAll = ref(false)
@@ -31,6 +33,11 @@ watch(
   },
 )
 
+const filesize = (size) => {
+  let i = Math.floor(Math.log(size) / Math.log(1024))
+  return (size / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'][i]
+}
+
 const select = () => {
   selected.value = []
   if (!selectAll.value) {
@@ -42,6 +49,38 @@ const select = () => {
 
 const reset = () => {
   form.value = mapValues(form.value, () => null)
+}
+
+const removeSelectedItems = () => {
+  if (selected.value.length === 1) {
+    swal({
+      title: '¿Estás seguro de querer eliminar este documento?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Confirmar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        //props.cromatografiaLiquidas.data
+      }
+    })
+  } else {
+    swal({
+      title: '¿Estás seguro de querer eliminar estos documentos?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Confirmar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        //props.cromatografiaLiquidas.data
+      }
+    })
+  }
 }
 </script>
 
@@ -58,10 +97,16 @@ const reset = () => {
           <option value="only">Solo Eliminado</option>
         </select>
       </SearchFilter>
-      <Link class="btn-yellow mr-4" href="/cromatografia-liquidas/crear">
+    </div>
+    <div class="flex items-center mb-6">
+      <Link class="btn-yellow mr-2" href="/cromatografia-liquidas/crear">
         <span>Subir</span>
         <span class="hidden md:inline">&nbsp;Documentos</span>
       </Link>
+      <button v-if="cromatografiaLiquidas.data.length !== 0" class="btn-secondary" type="button" :disabled="!selectAll && !selected.length" @click="removeSelectedItems">
+        <span>Borrar Elementos</span>
+        <span class="hidden md:inline">&nbsp;Seleccionados</span>
+      </button>
     </div>
     <div class="mt-6 bg-white rounded shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
@@ -79,17 +124,22 @@ const reset = () => {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="cromatografiaLiquida in props.cromatografiaLiquidas.data" :key="cromatografiaLiquida.id" class="bg-white hover:bg-gray-100 focus-within:bg-gray-100 border-b">
+          <tr v-for="cromatografiaLiquida in cromatografiaLiquidas.data" :key="cromatografiaLiquida.id" class="bg-white hover:bg-gray-100 focus-within:bg-gray-100 border-b">
             <td class="w-4 p-4">
               <div class="flex items-center">
                 <input :id="`checkbox-cromatografiaLiquida-${cromatografiaLiquida.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="cromatografiaLiquida.id" />
                 <label :for="`checkbox-cromatografiaLiquida-${cromatografiaLiquida.id}`" class="sr-only">checkbox</label>
               </div>
             </td>
-            <td>
-              <Link class="flex items-center px-6 py-4" :href="`/cromatografia-liquidas/${cromatografiaLiquida.id}/editar`">
-                {{ cromatografiaLiquida.documento }}
-              </Link>
+            <td class="flex items-center px-6 py-4">
+              <div class="leading-snug">
+                <Link class="text-yellow-400 hover:underline focus:text-yellow-500" :href="`/cromatografia-liquidas/${cromatografiaLiquida.id}/editar`">
+                  {{ cromatografiaLiquida.documento[0].usrName }}
+                </Link>
+                <span class="text-xs ml-2">
+                  {{ filesize(cromatografiaLiquida.documento[0].size) }}
+                </span>
+              </div>
             </td>
             <td>
               <Link class="flex items-center px-6 py-4 focus:text-yellow-500" :href="`/cromatografia-liquidas/${cromatografiaLiquida.id}/editar`">
@@ -105,13 +155,13 @@ const reset = () => {
               </Link>
             </td>
           </tr>
-          <tr v-if="props.cromatografiaLiquidas.data.length === 0">
-            <td class="px-6 py-4" colspan="5">No se encontraron cromatografias líquidas registradas.</td>
+          <tr v-if="cromatografiaLiquidas.data.length === 0">
+            <td class="px-6 py-4" colspan="5">No se encontraron documentos registradas.</td>
           </tr>
         </tbody>
       </table>
     </div>
     <!-- Paginator -->
-    <Pagination class="mt-4" :links="props.cromatografiaLiquidas.links" :total="props.cromatografiaLiquidas.total" />
+    <Pagination class="mt-4" :links="cromatografiaLiquidas.links" :total="cromatografiaLiquidas.total" />
   </div>
 </template>

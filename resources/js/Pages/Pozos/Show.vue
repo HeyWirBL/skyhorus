@@ -1,12 +1,19 @@
 <script setup>
-import { ref } from 'vue'
-import { Head, Link } from '@inertiajs/vue3'
+import { nextTick, ref } from 'vue'
+import { Head, Link, useForm } from '@inertiajs/vue3'
 import Icon from '@/Components/Icon.vue'
+import LoadingButton from '@/Components/LoadingButton.vue'
+import Modal from '@/Components/Modal.vue'
+import TextareaInput from '@/Components/TextareaInput.vue'
+import TextInput from '@/Components/TextInput.vue'
+import TrashedMessage from '@/Shared/TrashedMessage.vue'
 
 const props = defineProps({
   pozo: Object,
 })
 
+const editPozoModal = ref(false)
+const firstInput = ref(null)
 const tabSelect = ref('')
 const selected = ref([])
 const selectAllDocPozos = ref(false)
@@ -14,12 +21,51 @@ const selectAllComponentePozos = ref(false)
 const selectAllCromatografiaGases = ref(false)
 const selectAllCromatografiaLiquidas = ref(false)
 
+const form = useForm({
+  _method: 'put',
+  punto_muestreo: props.pozo.punto_muestreo,
+  fecha_hora: props.pozo.fecha_hora,
+  identificador: props.pozo.identificador,
+  presion_kgcm2: props.pozo.presion_kgcm2,
+  presion_psi: props.pozo.presion_psi,
+  temp_C: props.pozo.temp_C,
+  temp_F: props.pozo.temp_F,
+  volumen_cm3: props.pozo.volumen_cm3,
+  volumen_lts: props.pozo.volumen_lts,
+  observaciones: props.pozo.observaciones,
+  nombre_pozo: props.pozo.nombre_pozo,
+})
+
 const makeActive = (value) => {
   tabSelect.value = value
 }
 
 const isActiveTab = (value) => {
   return tabSelect.value === value
+}
+
+const openModal = () => {
+  editPozoModal.value = true
+
+  nextTick(() => firstInput.value.focus())
+}
+
+const updatePozo = () => {
+  form.post(`/pozos/${props.pozo.id}`, {
+    preserveScroll: true,
+    onSuccess: () => (editPozoModal.value = false),
+    onError: () => firstInput.value.focus(),
+    onFinish: () => {
+      if (!form.hasErrors) {
+        form.reset()
+      }
+    },
+  })
+}
+
+const closeModal = () => {
+  editPozoModal.value = false
+  form.reset()
 }
 
 const selectDocPozos = () => {
@@ -67,11 +113,49 @@ const selectCromatografiaLiquidas = () => {
         <Link class="text-yellow-400 hover:text-yellow-600" href="/pozos">Pozos</Link>
         <span class="text-yellow-400 font-medium">&nbsp;/</span> {{ pozo.nombre_pozo }}
       </h1>
-      <Link class="btn-yellow ml-auto" :href="`/pozos/${pozo.id}/editar`">
+      <button class="btn-yellow ml-auto" @click="openModal">
         <span>Editar</span>
         <span class="hidden md:inline">&nbsp;Pozo</span>
-      </Link>
+      </button>
     </div>
+
+    <TrashedMessage v-if="pozo.deleted_at" class="mb-6" @restore="restore">Este pozo ha sido eliminado.</TrashedMessage>
+
+    <Modal :show="editPozoModal" style="max-width: 900px">
+      <div class="relative">
+        <!-- Modal Header -->
+        <div class="flex items-start justify-between p-4 border-b rounded-t">
+          <h2 class="text-xl font-semibold">Pozo, Editar [{{ pozo.id }}]</h2>
+
+          <button class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" type="button" @click="closeModal">
+            <Icon class="w-4 h-4" name="close" aria-hidden="true" />
+            <span class="sr-only">Cerrar modal</span>
+          </button>
+        </div>
+        <!-- Modal Body -->
+        <div class="p-6 space-y-6">
+          <form @submit.prevent="updatePozo">
+            <div class="flex flex-wrap text-sm leading-relaxed">
+              <TextInput ref="firstInput" v-model="form.nombre_pozo" :error="form.errors.nombre_pozo" class="pb-4 pr-6 w-full lg:w-1/2" label="Pozo o Instalación" />
+              <TextInput v-model="form.temp_C" :error="form.errors.temp_C" class="pb-4 pr-6 w-full lg:w-1/2" label="°C" />
+              <TextInput v-model="form.punto_muestreo" :error="form.errors.punto_muestreo" class="pb-4 pr-6 w-full lg:w-1/2" label="Punto de muestreo" />
+              <TextInput v-model="form.temp_F" :error="form.errors.temp_F" class="pb-4 pr-6 w-full lg:w-1/2" label="°F" />
+              <TextInput v-model="form.fecha_hora" :error="form.errors.fecha_hora" class="pb-4 pr-6 w-full lg:w-1/2" label="Fecha" type="date" />
+              <TextInput v-model="form.volumen_cm3" :error="form.errors.volumen_cm3" class="pb-4 pr-6 w-full lg:w-1/2" label="CM3" />
+              <TextInput v-model="form.identificador" :error="form.errors.identificador" class="pb-4 pr-6 w-full lg:w-1/2" label="Identificador" />
+              <TextInput v-model="form.volumen_lts" :error="form.errors.volumen_lts" class="pb-4 pr-6 w-full lg:w-1/2" label="Volumen LTS" />
+              <TextInput v-model="form.presion_kgcm2" :error="form.errors.presion_kgcm2" class="pb-4 pr-6 w-full lg:w-1/2" label="KG/CM2" />
+              <TextInput v-model="form.presion_psi" :error="form.errors.presion_psi" class="pb-4 pr-6 w-full lg:w-1/2" label="PSIA" />
+              <TextareaInput v-model="form.observaciones" :error="form.errors.observaciones" class="pb-4 pr-6 w-full" label="Observaciones" placeholder="Ingresar observaciones adicionales" />
+            </div>
+            <div class="mt-6 flex justify-end">
+              <button class="btn-secondary" type="button" @click="closeModal">Cancelar</button>
+              <LoadingButton :loading="form.processing" class="btn-yellow ml-3" type="submit">Guardar</LoadingButton>
+            </div>
+          </form>
+        </div>
+      </div>
+    </Modal>
     <div class="overflow-hidden bg-white shadow sm:rounded-lg">
       <div class="px-4 py-5 sm:px-6">
         <h3 class="text-lg font-medium leading-6 text-gray-900">Datos del muestreo</h3>
