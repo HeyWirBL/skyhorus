@@ -13,7 +13,8 @@ class CromatografiaLiquidaController extends Controller
     {
         return Inertia::render('CromatografiaLiquidas/Index', [
             'filters' => $request->all('search', 'trashed'),
-            'cromatografiaLiquidas' => $cromatografiaLiquida->query()
+            '
+            ' => $cromatografiaLiquida->query()
                 ->filter($request->only(['search', 'trashed']))
                 ->paginate(10)
                 ->withQueryString()

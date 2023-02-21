@@ -142,4 +142,10 @@ class DocumentoController extends Controller
 
         return Redirect::back()->with('success', 'Carpeta restablecida.');
     }
+
+    //public function downloadFile(Documento $documento)
+    //{
+    //    $file = $documento->id;
+    //    $subjectCode = $file->documento()->get()->map()->only('documento');
+    //}
 }

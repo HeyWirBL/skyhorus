@@ -104,7 +104,6 @@ const removeSelectedItems = () => {
     <div class="flex items-center mb-6">
       <button class="btn-secondary" type="button" :disabled="!selectAll" @click="removeSelectedItems">Borrar Elementos Seleccionados</button>
     </div>
-    id selected: {{ selected }}
     <div class="bg-white rounded-md shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
         <thead class="text-sm text-left font-bold uppercase bg-white border-b">
