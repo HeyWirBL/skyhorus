@@ -118,4 +118,28 @@ class DocumentoController extends Controller
             return redirect(route('documentos'));
         }
     }
+
+    /**
+     * Delete temporary an specific document.
+     */
+
+    /**
+     * Delete multiple documents.
+     */
+    public function destroyMultiple(Request $request, Documento $documento): RedirectResponse
+    {
+        $documento->query()->whereIn('id', $request->get('selected'))->delete();
+
+        return Redirect::back()->with('success', 'Documentos eliminados.');
+    }
+
+    /**
+     * Restore documents.
+     */
+    public function restore(Documento $documento): RedirectResponse
+    {
+        $documento->restore();
+
+        return Redirect::back()->with('success', 'Carpeta restablecida.');
+    }
 }

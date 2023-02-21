@@ -2,8 +2,8 @@
 import { Link } from '@inertiajs/vue3'
 import Dropdown from '@/Components/Dropdown.vue'
 import Icon from '@/Components/Icon.vue'
-import MainMenu from './MainMenu.vue'
-import FlashMessages from './FlashMessages.vue'
+import MainMenu from '../Shared/MainMenu.vue'
+import FlashMessages from '../Shared/FlashMessages.vue'
 
 /* defineProps({auth: Object}); */
 </script>

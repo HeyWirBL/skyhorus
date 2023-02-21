@@ -2,7 +2,10 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "vite build"
+    "build": "vite build",
+    "fix:eslint": "eslint --ext .js,.vue resources/js/ --fix",
+    "fix:prettier": "prettier --write --loglevel warn \"resources/js/**/*.vue\"",
+    "fix-code-style": "npm run fix:prettier && npm run fix:eslint"
   },
   "devDependencies": {
     "@inertiajs/vue3": "^1.0.0",

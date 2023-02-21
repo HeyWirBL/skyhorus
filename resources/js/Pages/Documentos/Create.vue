@@ -3,8 +3,7 @@ import { Head, Link, useForm } from '@inertiajs/vue3'
 import DropZone from '@/Components/DropZone.vue'
 import SelectInput from '@/Components/SelectInput.vue'
 import LoadingButton from '@/Components/LoadingButton.vue'
-import { ref, watch } from 'vue';
-import debounce from 'lodash/debounce';
+import { ref } from 'vue';
 
 defineProps({
   directorios: Array,

@@ -25,7 +25,7 @@ const customPreview = `
         </div>
     </div>
 `
-const emit = defineEmits(['files']);
+const emit = defineEmits(['files'])
 
 onMounted(() => {
   if (dropRef.value !== null) {
@@ -33,9 +33,9 @@ onMounted(() => {
       previewTemplate: customPreview,
       url: '/documentos',
       method: 'GET',
-      addedfiles: files => {
-        emit('files', files);
-      }
+      addedfiles: (files) => {
+        emit('files', files)
+      },
     })
 
     if (dropRef.value.querySelector('.dz-default')) {
