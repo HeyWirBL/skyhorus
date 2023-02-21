@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
+use League\CommonMark\Node\Block\Document;
 
 class DocumentoController extends Controller
 {
@@ -74,7 +75,7 @@ class DocumentoController extends Controller
      * 
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request, Documento $documento): RedirectResponse
+    /* public function store(Request $request, Documento $documento): RedirectResponse
     {
         $validated = $request->validate([
             'documento' => 'required',
@@ -86,6 +87,36 @@ class DocumentoController extends Controller
         $documento->create($validated);
 
         return redirect(route('documentos'));
+    }  */
+
+    public function store(Request $request): RedirectResponse 
+    {
+        $validated = $request->validate([
+            'documento' => 'required',
+            'directorio_id' => ['required', Rule::exists('directorios', 'id')],
+            'ano_id' => ['required', Rule::exists('anos', 'id')],
+            'mes_id' => ['required', Rule::exists('meses', 'id')],
+        ]);
+
+        $counter = 0;
+
+        if ($validated) {
+            for ($i = 0; $i < count($request->documento); $i++) {
+                $document = new Documento();
+                $document->documento = json_encode($request->documento[$i]);
+                $document->directorio_id = $request->directorio_id;
+                $document->ano_id = $request->ano_id;
+                $document->mes_id = $request->mes_id;
+    
+                $document->save();
+    
+                $counter++;
+            }
+        }
+        
+        if ($counter = count($request->documento)) {
+            return redirect(route('documentos'));
+        }
     }
 
     /**
