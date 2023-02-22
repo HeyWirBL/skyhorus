@@ -5,21 +5,20 @@ namespace App\Http\Controllers;
 use App\Models\Ano;
 use App\Models\Directorio;
 use App\Models\Documento;
-use App\Models\Mes;
+use App\Models\MesDetalle;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
-use League\CommonMark\Node\Block\Document;
 
 class DocumentoController extends Controller
 {
     /**
      * Display a listing of documents.
      */
-    public function index(Request $request, Documento $documento, Ano $ano, Mes $mes): Response
+    public function index(Request $request, Documento $documento, Ano $ano, MesDetalle $mes): Response
     {
         return Inertia::render('Documentos/Index', [
             'filters' => $request->all('search', 'year', 'month', 'trashed'),
@@ -56,7 +55,7 @@ class DocumentoController extends Controller
     /**
      * Show the form for creating a new document.
      */
-    public function create(Directorio $directorio, Ano $ano, Mes $mes): Response
+    public function create(Directorio $directorio, Ano $ano, MesDetalle $mes): Response
     {
         return Inertia::render('Documentos/Create', [
             'directorios' => $directorio->query()

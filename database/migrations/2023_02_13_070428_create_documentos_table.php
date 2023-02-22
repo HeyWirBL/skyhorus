@@ -23,7 +23,7 @@ return new class extends Migration
             $table->foreignId('ano_id')
                   ->constrained()
                   ->cascadeOnDelete();     
-            $table->foreignId('mes_id')
+            $table->foreignId('mes_detalle_id')
                   ->constrained()
                   ->cascadeOnDelete();
             $table->timestamps();

@@ -33,12 +33,8 @@ class Ano extends Model
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {
             $query->where('ano', 'like', '%'.$search.'%');
-        })->when($filters['trashed'] ?? null, function ($query, $trashed) {
-            if ($trashed === 'with') {
-                $query->withTrashed();
-            } elseif ($trashed === 'only') {
-                $query->onlyTrashed();
-            }
+        })->when($filters['trashed'] ?? null, function ($query, $trashed) {            
+            $trashed === 'only' ? $query->onlyTrashed() : '';
         });
     }
 }

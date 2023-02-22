@@ -34,12 +34,18 @@ watch(
   },
 )
 
-const select = () => {
+const toggleAll = () => {
   selected.value = []
   if (!selectAll.value) {
-    for (let i in props.directorios.data) {
-      selected.value.push(props.directorios.data[i].id)
-    }
+    selected.value = selected.value.length === props.directorios.data.length ? [] : props.directorios.data.map((dir) => dir.id)
+  }
+}
+
+const changeToggleAll = () => {
+  if (props.directorios.data.length === selected.value.length) {
+    selectAll.value = true
+  } else {
+    selectAll.value = false
   }
 }
 
@@ -59,7 +65,7 @@ const removeSelectedItems = () => {
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        //props.documentos.data
+        //
       }
     })
   } else {
@@ -89,7 +95,6 @@ const removeSelectedItems = () => {
         <label class="block mt-4 text-gray-700">Eliminado:</label>
         <select v-model="form.trashed" class="form-select mt-1 w-full">
           <option :value="null" />
-          <option value="with">Con Modificación</option>
           <option value="only">Solo Eliminado</option>
         </select>
       </SearchFilter>
@@ -110,7 +115,7 @@ const removeSelectedItems = () => {
           <tr>
             <th v-if="can.editDirectorio" scope="col" class="p-4">
               <div class="flex items-center">
-                <input id="checkbox-all-directorios" v-model="selectAll" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="select" />
+                <input id="checkbox-all-directorios" v-model="selectAll" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="toggleAll" />
                 <label for="checkbox-all-directorios" class="sr-only">checkbox</label>
               </div>
             </th>
@@ -123,7 +128,7 @@ const removeSelectedItems = () => {
           <tr v-for="dir in directorios.data" :key="dir.id" class="bg-white hover:bg-gray-100 focus-within:bg-gray-100 border-b">
             <td v-if="can.editDirectorio" class="w-4 p-4">
               <div class="flex items-center">
-                <input :id="`checkbox-directorio-${dir.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="dir.id" />
+                <input :id="`checkbox-directorio-${dir.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="dir.id" @change="changeToggleAll" />
                 <label :for="`checkbox-directorio-${dir.id}`" class="sr-only">checkbox</label>
               </div>
             </td>
@@ -156,7 +161,7 @@ const removeSelectedItems = () => {
             </td>
           </tr>
           <tr v-if="directorios.data.length === 0">
-            <td class="px-6 py-4" colspan="5">No se encontraron carpetas registradas.</td>
+            <td class="px-6 py-4" colspan="5">No se encontraron carpetas {{ form.trashed === 'only' ? 'eliminadas' : 'registradas' }}.</td>
           </tr>
         </tbody>
       </table>

@@ -51,7 +51,7 @@ const destroy = () => {
 const restore = () => {
   swal({
     title: '¿Estás seguro de querer restablecer este usuario?',
-    text: 'Este usuario se restablecerá del modo "Solo Eliminado" y pasará al estado "Con Modificación".',
+    text: 'Este usuario se restablecerá del modo "Solo Eliminado".',
     icon: 'warning',
     showCancelButton: true,
     confirmButtonColor: '#3085d6',

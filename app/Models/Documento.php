@@ -19,7 +19,7 @@ class Documento extends Model
         'documento',
         'directorio_id',
         'ano_id',
-        'mes_id',
+        'mes_detalle_id',
     ];
 
     public function resolveRouteBinding($value, $field = null)
@@ -37,9 +37,9 @@ class Documento extends Model
         return $this->belongsTo(Ano::class)->withTrashed();
     }
 
-    public function mes()
+    public function mesDetalle()
     {
-        return $this->belongsTo(Mes::class)->withTrashed();
+        return $this->belongsTo(MesDetalle::class)->withTrashed();
     }
 
     public function scopeFilter($query, array $filters)
@@ -51,7 +51,7 @@ class Documento extends Model
                         $query->where('nombre_dir', 'like', '%'.$search.'%');
                       })->orWhereHas('ano', function ($query) use ($search) {
                         $query->where('ano', 'like', '%'.$search.'%');
-                      })->orWhereHas('mes', function ($query) use ($search) {
+                      })->orWhereHas('mesDetalle', function ($query) use ($search) {
                         $query->where('nombre', 'like', '%'.$search.'%');
                       });
             });

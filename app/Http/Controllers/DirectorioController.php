@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Directorio;
 use App\Models\Ano;
-use App\Models\Mes;
+use App\Models\MesDetalle;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Http\Request;
@@ -81,7 +81,7 @@ class DirectorioController extends Controller
     /**
      * Show the form for editing an specific folder.
      */
-    public function edit(Request $request, Directorio $directorio, Ano $ano, Mes $mes): Response
+    public function edit(Request $request, Directorio $directorio, Ano $ano, MesDetalle $mes): Response
     {
         return Inertia::render('Directorios/Edit', [
             'filters' => $request->all('search', 'year', 'month', 'trashed'),
@@ -138,7 +138,6 @@ class DirectorioController extends Controller
     public function destroy(Directorio $directorio): RedirectResponse
     {
         $directorio->delete();
-
         return Redirect::back()->with('success', 'Carpeta eliminada.');
     }
 

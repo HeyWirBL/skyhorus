@@ -42,7 +42,6 @@ const reset = () => {
         <label class="block mt-4 text-gray-700">Eliminado:</label>
         <select v-model="form.trashed" class="form-select mt-1 w-full">
           <option :value="null" />
-          <option value="with">Con Modificación</option>
           <option value="only">Solo Eliminado</option>
         </select>
       </SearchFilter>
@@ -59,7 +58,7 @@ const reset = () => {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="ano in props.anos.data" :key="ano.id" class="bg-white hover:bg-gray-100 focus-within:bg-gray-100 border-b">
+          <tr v-for="ano in anos.data" :key="ano.id" class="bg-white hover:bg-gray-100 focus-within:bg-gray-100 border-b">
             <td>
               <Link class="flex items-center px-6 py-4 focus:text-yellow-500" :href="`/anos/${ano.id}/editar`" tabindex="-1">
                 {{ ano.ano }}
@@ -72,13 +71,13 @@ const reset = () => {
               </Link>
             </td>
           </tr>
-          <tr v-if="props.anos.data.length === 0">
-            <td class="px-6 py-4" colspan="3">No se encontraron años registrados.</td>
+          <tr v-if="anos.data.length === 0">
+            <td class="px-6 py-4" colspan="3">No se encontraron años {{ form.trashed === 'only' ? 'eliminados' : 'registrados' }}.</td>
           </tr>
         </tbody>
       </table>
     </div>
     <!-- Paginator -->
-    <Pagination class="mt-4" :links="props.anos.links" :total="props.anos.total" />
+    <Pagination class="mt-4" :links="anos.links" :total="anos.total" />
   </div>
 </template>

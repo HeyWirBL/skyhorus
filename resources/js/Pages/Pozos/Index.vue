@@ -43,9 +43,16 @@ const reset = () => {
 
 const toggleAll = () => {
   selected.value = []
-
   if (!selectAll.value) {
     selected.value = selected.value.length === props.pozos.data.length ? [] : props.pozos.data.map((pozo) => pozo.id)
+  }
+}
+
+const changeToggleAll = () => {
+  if (props.pozos.data.length === selected.value.length) {
+    selectAll.value = true
+  } else {
+    selectAll.value = false
   }
 }
 
@@ -155,7 +162,6 @@ const restoreSelectedItems = () => {
         <span class="hidden md:inline">&nbsp;Seleccionados</span>
       </button>
     </div>
-    {{ selected }}
     <div class="bg-white rounded-md shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
         <thead class="text-sm text-left font-bold uppercase bg-white border-b">
@@ -173,10 +179,10 @@ const restoreSelectedItems = () => {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="pozo in props.pozos.data" :key="pozo.id" class="bg-white hover:bg-gray-100 focus-within:bg-gray-100 border-b">
+          <tr v-for="pozo in pozos.data" :key="pozo.id" class="bg-white hover:bg-gray-100 focus-within:bg-gray-100 border-b">
             <td v-if="can.editPozo" class="w-4 p-4">
               <div class="flex items-center">
-                <input :id="`checkbox-pozo-${pozo.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="pozo.id" />
+                <input :id="`checkbox-pozo-${pozo.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="pozo.id" @change="changeToggleAll" />
                 <label :for="`checkbox-pozo-${pozo.id}`" class="sr-only">checkbox</label>
               </div>
             </td>
@@ -220,13 +226,13 @@ const restoreSelectedItems = () => {
               </Link>
             </td>
           </tr>
-          <tr v-if="props.pozos.data.length === 0">
-            <td class="px-6 py-4" colspan="5">No se encontraron pozos registrados.</td>
+          <tr v-if="pozos.data.length === 0">
+            <td class="px-6 py-4" colspan="5">No se encontraron pozos {{ form.trashed === 'only' ? 'eliminados' : 'registrados' }}.</td>
           </tr>
         </tbody>
       </table>
     </div>
     <!-- Paginator -->
-    <Pagination class="mt-4" :links="props.pozos.links" :total="props.pozos.total" />
+    <Pagination class="mt-4" :links="pozos.links" :total="pozos.total" />
   </div>
 </template>

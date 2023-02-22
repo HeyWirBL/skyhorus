@@ -53,7 +53,6 @@ const reset = () => {
         <label class="block mt-4 text-gray-700">Eliminado:</label>
         <select v-model="form.trashed" class="form-select mt-1 w-full">
           <option :value="null" />
-          <option value="with">Con Modificación</option>
           <option value="only">Solo Eliminado</option>
           usuarios
         </select>
@@ -75,15 +74,15 @@ const reset = () => {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="user in props.users.data" :key="user.id" class="bg-white hover:bg-gray-100 focus-within:bg-gray-100 border-b">
+          <tr v-for="user in users.data" :key="user.id" class="bg-white hover:bg-gray-100 focus-within:bg-gray-100 border-b">
             <td>
               <Link v-if="can.editUser" class="flex items-center px-6 py-4" :href="`/users/${user.id}/editar`" tabindex="-1">
                 {{ user.nombre }}
-                <Icon v-if="user.deleted_at" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" name="trash" />
+                <Icon v-if="user.deleted_at" class="flex-shrink-0 ml-2 w-3 h-3 fill-yellow-400" name="trash" />
               </Link>
               <div v-else class="flex items-center px-6 py-4">
                 {{ user.nombre }}
-                <Icon v-if="user.deleted_at" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" name="trash" />
+                <Icon v-if="user.deleted_at" class="flex-shrink-0 ml-2 w-3 h-3 fill-yellow-400" name="trash" />
               </div>
             </td>
             <td>
@@ -124,13 +123,13 @@ const reset = () => {
               </Link>
             </td>
           </tr>
-          <tr v-if="props.users.data.length === 0">
-            <td class="px-6 py-4" colspan="7">No se encontraron usuarios registrados.</td>
+          <tr v-if="users.data.length === 0">
+            <td class="px-6 py-4" colspan="7">No se encontraron usuarios {{ form.trashed === 'only' ? 'eliminados' : 'registrados' }}.</td>
           </tr>
         </tbody>
       </table>
     </div>
     <!-- Paginator -->
-    <Pagination class="mt-4" :links="props.users.links" :total="props.users.total" />
+    <Pagination class="mt-4" :links="users.links" :total="users.total" />
   </div>
 </template>
