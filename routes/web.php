@@ -170,6 +170,9 @@ Route::middleware('auth')->group(function () {
     Route::get('doc-pozos/crear', [DocPozoController::class, 'create'])
         ->name('doc-pozos.create');
 
+    Route::post('doc-pozos', [DocPozoController::class, 'store'])
+        ->name('doc-pozos.store');
+
     /* Catálogo de Pozos: Componentes */
     //Route::resource('componentespozos', ComponentePozoController::class)->only(['index']);
 
