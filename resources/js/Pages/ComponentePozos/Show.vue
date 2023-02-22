@@ -121,7 +121,7 @@ const download = () => {
 
     <TrashedMessage v-if="componentePozo.deleted_at" class="mb-6" @restore="restore">Estos componentes de pozo han sido eliminados.</TrashedMessage>
 
-    <Modal :show="editComponenteModal" style="max-width: 985px !important">
+    <Modal :show="editComponenteModal" style="max-width: 1000px;">
       <div class="relative">
         <!-- Modal Header -->
         <div class="flex items-start justify-between p-4 border-b rounded-t">
@@ -134,7 +134,7 @@ const download = () => {
         </div>
 
         <!-- Modal Body -->
-        <div class="p-6 space-y-6">
+        <div class="p-6 space-y-6" style="height: 600px; overflow: auto;">
           <form @submit.prevent="updateComponentePozo">
             <div class="flex flex-wrap text-sm leading-relaxed">
               <TextInput ref="firstInput" v-model="form.nombre_componente" :error="form.errors.nombre_componente" class="pb-8 pr-6 w-full lg:w-1/2" label="Nombre del grupo de componentes" />

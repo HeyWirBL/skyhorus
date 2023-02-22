@@ -41,13 +41,11 @@ const reset = () => {
   form.value = mapValues(form.value, () => null)
 }
 
-const select = () => {
+const toggleAll = () => {
   selected.value = []
 
   if (!selectAll.value) {
-    props.pozos.data.forEach((pozo) => {
-      selected.value.push(pozo.id)
-    })
+    selected.value = selected.value.length === props.pozos.data.length ? [] : props.pozos.data.map((pozo) => pozo.id)
   }
 }
 
@@ -80,7 +78,15 @@ const removeSelectedItems = () => {
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        // TODO: remove every item selected
+        formPozo.post('/pozos/destroy-all', {
+          data: {
+            ids: selected.value,
+          },
+          onSuccess: () => (selected.value = []),
+          onFinish: () => (selectAll.value = false),
+        })
+        selected.value = props.pozos.data.filter((pozo) => !selected.value.includes(pozo.id))
+        selected.value = []
       }
     })
   }
@@ -149,13 +155,14 @@ const restoreSelectedItems = () => {
         <span class="hidden md:inline">&nbsp;Seleccionados</span>
       </button>
     </div>
+    {{ selected }}
     <div class="bg-white rounded-md shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
         <thead class="text-sm text-left font-bold uppercase bg-white border-b">
           <tr>
             <th v-if="can.editPozo" scope="col" class="p-4">
               <div class="flex items-center">
-                <input id="checkbox-all-pozos" v-model="selectAll" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="select" />
+                <input id="checkbox-all-pozos" v-model="selectAll" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="toggleAll" />
                 <label for="checkbox-all-pozos" class="sr-only">checkbox</label>
               </div>
             </th>

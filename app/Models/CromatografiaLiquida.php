@@ -17,7 +17,7 @@ class CromatografiaLiquida extends Model
 
     public function pozo()
     {
-        return $this->belongsTo(Pozo::class);
+        return $this->belongsTo(Pozo::class)->withTrashed();
     }
 
     public function scopeFilter($query, array $filters)

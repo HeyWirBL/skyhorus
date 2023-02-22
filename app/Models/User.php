@@ -83,7 +83,7 @@ class User extends Authenticatable
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {
-            $query->where(function ($query) use ($search) {
+            $query->where(function ($query) use ($search) {                
                 $query->where('nombre', 'like', '%'.$search.'%')
                       ->orWhere('apellidos', 'like', '%'.$search.'%')
                       ->orWhere('usuario', 'like', '%'.$search.'%')

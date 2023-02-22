@@ -9,11 +9,11 @@ use App\Http\Controllers\DirectorioController;
 use App\Http\Controllers\DocPozoController;
 use App\Http\Controllers\DocumentoController;
 use App\Http\Controllers\GraficaController;
-use App\Http\Controllers\ImageController;
 use App\Http\Controllers\PozoController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 /*
 |--------------------------------------------------------------------------
@@ -162,6 +162,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('pozos/{pozo}', [PozoController::class, 'destroy'])
         ->name('pozos.destroy');
 
+    Route::post('pozos/destroy-all', [PozoController::class, 'destroyAll'])
+        ->name('pozos.destroyAll');
+
     /* Catálogo de Pozos: Documentos */
     // Route::resource('docpozos', DocPozoController::class)->only(['index']);
     Route::get('doc-pozos', [DocPozoController::class, 'index'])
@@ -194,8 +197,22 @@ Route::middleware('auth')->group(function () {
     Route::delete('componente-pozos/{componentePozo}', [ComponentePozoController::class, 'destroy'])
         ->name('componente-pozos.destroy');
 
-    Route::post('componente-pozos/import', [ComponentePozoController::class, 'import'])
-        ->name('componente-pozos.import');
+    Route::post('/componente-pozos', function (Request $request) {
+            $file = $request->file('file');
+        
+            // Parse the Excel file and extract the data
+            // Here, we're using the PHPExcel library to do this
+            $reader = IOFactory::createReaderForFile($file);
+            $reader->setReadDataOnly(true);
+            $excel = $reader->load($file);
+            $worksheet = $excel->getActiveSheet();
+            $rows = $worksheet->toArray();
+        
+            // Insert the data into the database
+            DB::table('componente-pozos')->insert($rows);
+        
+            return response()->json(['success' => true]);
+        });
 
     Route::get('componente-pozos/export/{componentePozo}', [ComponentePozoController::class, 'export'])
         ->name('componente-pozos.export');

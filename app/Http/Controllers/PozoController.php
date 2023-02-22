@@ -175,10 +175,9 @@ class PozoController extends Controller
     /**
      * Delete multiple wells.
      */
-    public function destroyAll(): RedirectResponse
+    public function destroyAll(Request $request): RedirectResponse
     {
-        //
-        
+        Pozo::whereIn('id', $request->ids)->delete();
         return Redirect::back()->with('success', 'Pozos eliminados.');
     }
 

@@ -14,6 +14,7 @@ use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 use Maatwebsite\Excel\Facades\Excel;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class ComponentePozoController extends Controller
 {
@@ -233,15 +234,49 @@ class ComponentePozoController extends Controller
     }
 
     /**
+     * Read data for component wells.
+     */
+    public function read(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv',
+        ]);
+
+        $file = $request->file('file')->getRealPath();
+        $spreadsheet = IOFactory::load($file);
+        $worksheet = $spreadsheet->getActiveSheet();
+
+        $data = [];
+
+        foreach ($worksheet->getRowIterator() as $row) {
+            $rowData = [];
+
+            foreach ($row->getCellIterator() as $cell) {
+                $rowData[] = $cell->getValue();
+            }
+
+            $data[] = $rowData;
+        }
+
+        return response()->json($data);
+    }
+
+    /**
      * Import data for componente wells.
      */
     public function import(Request $request): RedirectResponse
     {
-        $file = $request->file('file');
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv',
+        ]);
 
-        Excel::import(new ComponentePozosImport, $file);
+        $path = $request->file('file')->getRealPath();
+        $import = new ComponentePozosImport();
 
-        return Redirect::back()->with('success', 'Archivo importado!');
+
+        Excel::import($import, $path);
+
+        return Redirect::back()->with('success', 'Documento importado.');
     }
 
     /**

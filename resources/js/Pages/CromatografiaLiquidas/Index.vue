@@ -107,7 +107,7 @@ const removeSelectedItems = () => {
         <span>Borrar Elementos</span>
         <span class="hidden md:inline">&nbsp;Seleccionados</span>
       </button>
-    </div>
+    </div>    
     <div class="mt-6 bg-white rounded shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
         <thead class="text-sm text-left font-bold uppercase bg-white border-b">

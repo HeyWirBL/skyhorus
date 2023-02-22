@@ -59,7 +59,7 @@ class ComponentePozosImport implements ToModel
             'pe_n_exano' => $row[41],
             'mo_n_exano' => $row[42],
             'den_n_exano' => $row[43], 
-            // 'pozo_id' => '1',
+            'pozo_id' => '1',
             'fecha_recep' => $row[44],
             'fecha_analisis' => $row[45],
             'no_determinacion' => $row[46],
