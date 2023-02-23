@@ -9,6 +9,7 @@ use App\Http\Controllers\DirectorioController;
 use App\Http\Controllers\DocPozoController;
 use App\Http\Controllers\DocumentoController;
 use App\Http\Controllers\GraficaController;
+use App\Http\Controllers\MenuController;
 use App\Http\Controllers\PozoController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
@@ -237,6 +238,9 @@ Route::middleware('auth')->group(function () {
 
     /* Gráficas Generales */
     Route::resource('graficas', GraficaController::class)->only(['index']);
+
+    /* Menús */
+    Route::resource('menu', MenuController::class)->only(['index']);
 });
 
 /* Autenticación */

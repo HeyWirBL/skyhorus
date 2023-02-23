@@ -76,7 +76,7 @@ export default {
         <!-- Years Catalog -->
         <div class="mb-2">
           <Link class="group flex text-base items-center p-2 pl-11 rounded-md" :class="isUrl('anos') ? 'bg-yellow-500' : 'hover:bg-zinc-700'" href="/anos">
-            <Icon class="w-6 h-6" :class="isUrl('anos') ? 'fill-white' : 'fill-zinc-300 group-hover:fill-white'" name="circle-stack" />
+            <Icon class="w-6 h-6" :class="isUrl('anos') ? 'fill-white' : 'fill-zinc-300 group-hover:fill-white'" name="calendar" />
             <div class="ml-2" :class="isUrl('anos') ? 'text-white group-hover:text-white' : 'text-zinc-300 group-hover:text-white'">Años</div>
           </Link>
         </div>
