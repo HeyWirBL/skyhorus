@@ -35,7 +35,7 @@ const store = () => {
     <div class="mb-4">
       <p class="text-sm text-gray-900">
         <span class="font-semibold">Sugerencia:</span>
-        <span>&nbsp;Arrastre un fichero separado por comas (.csv), Excel (.xlsx) o elija otra opción.</span>
+        <span>&nbsp;Arrastre un fichero separado por comas (.csv), Excel (.xlsx).</span>
       </p>
     </div>
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">

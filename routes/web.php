@@ -227,6 +227,12 @@ Route::middleware('auth')->group(function () {
     Route::get('cromatografia-gases/crear', [CromatografiaGasController::class, 'create'])
         ->name('cromatografia-gases.create');
 
+    Route::put('cromatografia-gases/{cromatografiaGas}/restore', [CromatografiaGasController::class, 'restore'])
+        ->name('cromatografia-gases.restore')->middleware('can:restore,App\Models\CromatografiaGas');
+
+    Route::delete('cromatografia-gases/{cromatografiaGas}', [CromatografiaGasController::class, 'destroy'])
+        ->name('cromatografia-gases.destroy');
+
     /* Cromatografías: Liquída */
     //Route::resource('cromatografialiquida', CromatografiaLiquidaController::class)->only(['index']);
 
@@ -235,6 +241,12 @@ Route::middleware('auth')->group(function () {
 
     Route::get('cromatografia-liquidas/crear', [CromatografiaLiquidaController::class, 'create'])
         ->name('cromatografia-liquidas.create');
+
+    Route::put('cromatografia-liquidas/{cromatografiaLiquida}/restore', [CromatografiaLiquidaController::class, 'restore'])
+        ->name('cromatografia-liquidas.restore')->middleware('can:restore,App\Models\CromatografiaLiquida');
+
+    Route::delete('cromatografia-liquidas/{cromatografiaLiquida}', [CromatografiaLiquidaController::class, 'destroy'])
+        ->name('cromatografia-liquidas.destroy');
 
     /* Gráficas Generales */
     Route::resource('graficas', GraficaController::class)->only(['index']);

@@ -1,6 +1,6 @@
 <script setup>
-import { inject, ref, watch } from 'vue'
-import { Head, Link, router } from '@inertiajs/vue3'
+import { computed, inject, ref, watch } from 'vue'
+import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3'
 import debounce from 'lodash/debounce'
 import mapValues from 'lodash/mapValues'
 import pickBy from 'lodash/pickBy'
@@ -9,6 +9,7 @@ import SearchFilter from '@/Components/SearchFilter.vue'
 import Pagination from '@/Components/Pagination.vue'
 
 const props = defineProps({
+  can: Object,
   filters: Object,
   cromatografiaGases: Object,
 })
@@ -22,6 +23,9 @@ const form = ref({
   search: props.filters.search,
   trashed: props.filters.trashed,
 })
+
+const formCromatografiaGas = useForm({})
+const isTrashed = computed(() => usePage().url.includes('trashed=only'))
 
 watch(
   () => form.value,
@@ -69,7 +73,10 @@ const removeSelectedItems = () => {
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        //props.cromatografiaGases.data
+        formCromatografiaGas.delete(`/cromatografia-gases/${selected.value}`, {
+          onSuccess: () => (selected.value = []),
+          onFinish: () => (selectAll.value = false),
+        })
       }
     })
   } else {
@@ -84,6 +91,41 @@ const removeSelectedItems = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         //props.cromatografiaGases.data
+      }
+    })
+  }
+}
+
+const restoreSelectedItems = () => {
+  if (selected.value.length === 1) {
+    swal({
+      title: '¿Estás seguro de querer restablecer este documento?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Confirmar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        formCromatografiaGas.put(`/cromatografia-gases/${selected.value}/restore`, {
+          onSuccess: () => (selected.value = []),
+          onFinish: () => (selectAll.value = false),
+        })
+      }
+    })
+  } else {
+    swal({
+      title: '¿Estás seguro de querer restablecer estos documentos?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Confirmar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // TODO: restore every item selected
       }
     })
   }
@@ -108,8 +150,12 @@ const removeSelectedItems = () => {
         <span>Subir</span>
         <span class="hidden md:inline">&nbsp;Documentos</span>
       </Link>
-      <button v-if="cromatografiaGases.data.length !== 0" class="btn-secondary" type="button" :disabled="!selectAll && !selected.length" @click="removeSelectedItems">
+      <button v-if="cromatografiaGases.data.length !== 0 && !isTrashed" class="btn-secondary" type="button" :disabled="!selectAll && !selected.length" @click="removeSelectedItems">
         <span>Borrar Elementos</span>
+        <span class="hidden md:inline">&nbsp;Seleccionados</span>
+      </button>
+      <button v-if="cromatografiaGases.data.length !== 0 && can.restoreCromatografiaGas && isTrashed" class="btn-secondary" type="button" :disabled="!selectAll && !selected.length" @click="restoreSelectedItems">
+        <span>Restablecer Elementos</span>
         <span class="hidden md:inline">&nbsp;Seleccionados</span>
       </button>
     </div>
@@ -137,18 +183,18 @@ const removeSelectedItems = () => {
               </div>
             </td>
             <td class="flex items-center px-6 py-4">
-              <div class="leading-snug">
-                <Link class="text-yellow-400 hover:underline focus:text-yellow-500" :href="`/cromatografia-gases/${cromatografiaGas.id}/editar`">
-                  {{ cromatografiaGas.documento[0].usrName }}
-                </Link>
-                <span class="text-xs ml-2">
-                  {{ filesize(cromatografiaGas.documento[0].size) }}
-                </span>
-              </div>
+              <Link class="text-yellow-400 hover:underline focus:text-yellow-500 leading-snug" :href="`/cromatografia-gases/${cromatografiaGas.id}/editar`">
+                {{ cromatografiaGas.documento[0].usrName }}
+              </Link>
+              <span class="text-xs ml-2 leading-snug">
+                {{ filesize(cromatografiaGas.documento[0].size) }}
+              </span>
+              <Icon v-if="cromatografiaGas.deleted_at" class="ml-2 w-3 h-3 fill-yellow-400" name="trash" />
             </td>
             <td>
               <Link class="flex items-center px-6 py-4 focus:text-yellow-500" :href="`/cromatografia-gases/${cromatografiaGas.id}/editar`">
                 {{ cromatografiaGas.pozo.nombre_pozo }}
+                <Icon v-if="cromatografiaGas.pozo.deleted_at" class="ml-2 w-3 h-3 fill-yellow-400" name="trash" />
               </Link>
             </td>
             <td>

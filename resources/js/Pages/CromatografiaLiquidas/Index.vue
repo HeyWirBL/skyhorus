@@ -1,6 +1,6 @@
 <script setup>
-import { inject, ref, watch } from 'vue'
-import { Head, Link, router } from '@inertiajs/vue3'
+import { computed, inject, ref, watch } from 'vue'
+import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3'
 import debounce from 'lodash/debounce'
 import mapValues from 'lodash/mapValues'
 import pickBy from 'lodash/pickBy'
@@ -9,6 +9,7 @@ import SearchFilter from '@/Components/SearchFilter.vue'
 import Pagination from '@/Components/Pagination.vue'
 
 const props = defineProps({
+  can: Object,
   filters: Object,
   cromatografiaLiquidas: Object,
 })
@@ -22,6 +23,9 @@ const form = ref({
   search: props.filters.search,
   trashed: props.filters.trashed,
 })
+
+const formCromatografiaLiquida = useForm({})
+const isTrashed = computed(() => usePage().url.includes('trashed=only'))
 
 watch(
   () => form.value,
@@ -69,7 +73,10 @@ const removeSelectedItems = () => {
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        //props.cromatografiaLiquidas.data
+        formCromatografiaLiquida.delete(`/cromatografia-liquidas/${selected.value}`, {
+          onSuccess: () => (selected.value = []),
+          onFinish: () => (selectAll.value = false),
+        })
       }
     })
   } else {
@@ -88,6 +95,41 @@ const removeSelectedItems = () => {
     })
   }
 }
+
+const restoreSelectedItems = () => {
+  if (selected.value.length === 1) {
+    swal({
+      title: '¿Estás seguro de querer restablecer este documento?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Confirmar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        formCromatografiaLiquida.put(`/cromatografia-liquidas/${selected.value}/restore`, {
+          onSuccess: () => (selected.value = []),
+          onFinish: () => (selectAll.value = false),
+        })
+      }
+    })
+  } else {
+    swal({
+      title: '¿Estás seguro de querer restablecer estos documentos?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Confirmar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // TODO: restore every item selected
+      }
+    })
+  }
+}
 </script>
 
 <template>
@@ -99,7 +141,6 @@ const removeSelectedItems = () => {
         <label class="block mt-4 text-gray-700">Eliminado:</label>
         <select v-model="form.trashed" class="form-select mt-1 w-full">
           <option :value="null" />
-          <option value="with">Con Modificación</option>
           <option value="only">Solo Eliminado</option>
         </select>
       </SearchFilter>
@@ -109,11 +150,15 @@ const removeSelectedItems = () => {
         <span>Subir</span>
         <span class="hidden md:inline">&nbsp;Documentos</span>
       </Link>
-      <button v-if="cromatografiaLiquidas.data.length !== 0" class="btn-secondary" type="button" :disabled="!selectAll && !selected.length" @click="removeSelectedItems">
+      <button v-if="cromatografiaLiquidas.data.length !== 0 && !isTrashed" class="btn-secondary" type="button" :disabled="!selectAll && !selected.length" @click="removeSelectedItems">
         <span>Borrar Elementos</span>
         <span class="hidden md:inline">&nbsp;Seleccionados</span>
       </button>
-    </div>    
+      <button v-if="cromatografiaLiquidas.data.length !== 0 && can.restoreCromatografiaLiquida && isTrashed" class="btn-secondary" type="button" :disabled="!selectAll && !selected.length" @click="restoreSelectedItems">
+        <span>Restablecer Elementos</span>
+        <span class="hidden md:inline">&nbsp;Seleccionados</span>
+      </button>
+    </div>
     <div class="mt-6 bg-white rounded shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
         <thead class="text-sm text-left font-bold uppercase bg-white border-b">
@@ -138,18 +183,18 @@ const removeSelectedItems = () => {
               </div>
             </td>
             <td class="flex items-center px-6 py-4">
-              <div class="leading-snug">
-                <Link class="text-yellow-400 hover:underline focus:text-yellow-500" :href="`/cromatografia-liquidas/${cromatografiaLiquida.id}/editar`">
-                  {{ cromatografiaLiquida.documento[0].usrName }}
-                </Link>
-                <span class="text-xs ml-2">
-                  {{ filesize(cromatografiaLiquida.documento[0].size) }}
-                </span>
-              </div>
+              <Link class="text-yellow-400 hover:underline focus:text-yellow-500 leading-snug" :href="`/cromatografia-liquidas/${cromatografiaLiquida.id}/editar`">
+                {{ cromatografiaLiquida.documento[0].usrName }}
+              </Link>
+              <span class="text-xs ml-2 leading-snug">
+                {{ filesize(cromatografiaLiquida.documento[0].size) }}
+              </span>
+              <Icon v-if="cromatografiaLiquida.deleted_at" class="ml-2 w-3 h-3 fill-yellow-400" name="trash" />
             </td>
             <td>
               <Link class="flex items-center px-6 py-4 focus:text-yellow-500" :href="`/cromatografia-liquidas/${cromatografiaLiquida.id}/editar`">
                 {{ cromatografiaLiquida.pozo.nombre_pozo }}
+                <Icon v-if="cromatografiaLiquida.pozo.deleted_at" class="ml-2 w-3 h-3 fill-yellow-400" name="trash" />
               </Link>
             </td>
             <td>

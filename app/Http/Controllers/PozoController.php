@@ -7,7 +7,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -194,7 +193,6 @@ class PozoController extends Controller
     public function restore(Pozo $pozo): RedirectResponse
     {
         $pozo->restore();
-
         return Redirect::back()->with('success', 'Pozo restablecido.');
     }
 }
