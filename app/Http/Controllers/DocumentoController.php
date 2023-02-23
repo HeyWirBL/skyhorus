@@ -6,6 +6,7 @@ use App\Models\Ano;
 use App\Models\Directorio;
 use App\Models\Documento;
 use App\Models\Mes;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Http\Request;
@@ -92,31 +93,32 @@ class DocumentoController extends Controller
     public function store(Request $request): RedirectResponse 
     {
         $validated = $request->validate([
-            'documento' => 'required',
+            'files' => 'required',
             'directorio_id' => ['required', Rule::exists('directorios', 'id')],
             'ano_id' => ['required', Rule::exists('anos', 'id')],
             'mes_id' => ['required', Rule::exists('meses', 'id')],
         ]);
-
         $counter = 0;
 
         if ($validated) {
-            for ($i = 0; $i < count($request->documento); $i++) {
+
+            foreach($request->file('files') as $file){
+                $filename = $file->getClientOriginalName();
+                $filesize = $file->getSize();
+                $filetype = $file->getClientOriginalExtension();
+                $file->storeAs('files', $filename);
+
                 $document = new Documento();
-                $document->documento = json_encode($request->documento[$i]);
+                $document->documento = '{"name": "'.$filename.'", "size": "'.$filesize.'", "type": "'.$filetype.'" }';
                 $document->directorio_id = $request->directorio_id;
                 $document->ano_id = $request->ano_id;
                 $document->mes_id = $request->mes_id;
-    
+                
                 $document->save();
-    
-                $counter++;
             }
         }
-        
-        if ($counter = count($request->documento)) {
-            return redirect(route('documentos'));
-        }
+
+        return redirect(route('documentos'));
     }
 
     /**

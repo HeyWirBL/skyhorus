@@ -131,10 +131,10 @@ const removeSelectedItems = () => {
             <td class="flex items-center px-6 py-4">
               <span class="leading-snug">
                 <Link class="text-yellow-400 hover:underline focus:text-yellow-500" :href="`/documentos/${documento.id}`">
-                  {{ documento.documento[0].usrName }}
+                  {{ documento.documento }}
                 </Link>
                 <span class="text-xs ml-2">
-                  {{ filesize(documento.documento[0].size) }}
+                  {{ filesize(documento.documento.size) }}
                 </span>
               </span>
             </td>
