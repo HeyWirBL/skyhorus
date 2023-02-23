@@ -175,10 +175,10 @@ const selectCromatografiaLiquidas = () => {
         </div>
       </div>
     </Modal>
-
+    
     <div class="bg-white shadow rounded-md overflow-x-auto">
       <table class="w-full whitespace-nowrap">
-        <thead class="text-sm text-left font-bold uppercase bg-white border-b">
+        <thead class="bg-white border-b">
           <tr>
             <th scope="col" class="border px-6 py-4" colspan="2" />
             <th scope="col" class="border px-6 py-4" />
@@ -189,7 +189,7 @@ const selectCromatografiaLiquidas = () => {
         <tbody>
           <tr class="bg-gray-50">
             <td class="border px-6 py-4" colspan="2" />
-            <td class="border text-center px-6 py-4 align-top" colspan="4">
+            <td class="border text-center px-6 py-4" colspan="4">
               <span class="block bg-gray-400 text-white font-bold leading-6">Datos del muestreo</span>
             </td>
           </tr>
