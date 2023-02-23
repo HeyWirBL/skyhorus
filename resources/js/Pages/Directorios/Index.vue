@@ -85,7 +85,14 @@ const removeSelectedItems = () => {
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        //props.documentos.data
+        formDirectorio.delete(`/directorios?ids=${selected.value.join(',')}`, {
+          onSuccess: () => {
+            selected.value = []
+          },
+          onFinish: () => {
+            selectAll.value = false
+          },
+        })
       }
     })
   }
@@ -94,7 +101,7 @@ const removeSelectedItems = () => {
 const restoreSelectedItems = () => {
   if (selected.value.length === 1) {
     swal({
-      title: '¿Estás seguro de querer restablecer este pozo?',
+      title: '¿Estás seguro de querer restablecer este directorio?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -111,7 +118,7 @@ const restoreSelectedItems = () => {
     })
   } else {
     swal({
-      title: '¿Estás seguro de querer restablecer estos pozos?',
+      title: '¿Estás seguro de querer restablecer estos directorios?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -120,7 +127,10 @@ const restoreSelectedItems = () => {
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        // TODO: restore every item selected
+        formDirectorio.put(`/directorios?ids=${selected.value.join(',')}`, {
+          onSuccess: () => (selected.value = []),
+          onFinish: () => (selectAll.value = false),
+        })
       }
     })
   }
@@ -184,11 +194,11 @@ const restoreSelectedItems = () => {
             <td>
               <Link v-if="can.editDirectorio" class="flex items-center px-6 py-4 focus:text-yellow-500" :href="`/directorios/${dir.id}/editar`" tabindex="-1">
                 {{ dir.nombre_dir }}
-                <Icon v-if="dir.deleted_at" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" name="trash" />
+                <Icon v-if="dir.deleted_at" class="flex-shrink-0 ml-2 w-3 h-3 fill-yellow-400" name="trash" />
               </Link>
               <div v-else class="flex items-center px-6 py-4">
                 {{ dir.nombre_dir }}
-                <Icon v-if="dir.deleted_at" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" name="trash" />
+                <Icon v-if="dir.deleted_at" class="flex-shrink-0 ml-2 w-3 h-3 fill-yellow-400" name="trash" />
               </div>
             </td>
             <td>

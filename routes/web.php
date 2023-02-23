@@ -75,16 +75,22 @@ Route::middleware('auth')->group(function () {
         ->name('directorios.edit')->middleware('can:update,App\Models\Directorio');
 
     Route::post('directorios', [DirectorioController::class, 'store'])
-        ->name('directorios.store')->middleware('can:create,App\Models\Directorio');;
+        ->name('directorios.store')->middleware('can:create,App\Models\Directorio');
         
     Route::put('directorios/{directorio}', [DirectorioController::class, 'update'])
         ->name('directorios.update')->middleware('can:update,App\Models\Directorio');
 
     Route::put('directorios/{directorio}/restore', [DirectorioController::class, 'restore'])
-        ->name('directorios.restore')->middleware('can:restore,App\Models\Directorio');;
+        ->name('directorios.restore')->middleware('can:restore,App\Models\Directorio');
+        
+    Route::put('directorios', [DirectorioController::class, 'restoreAll'])
+        ->name('directorios.restoreAll')->middleware('can:restore,App\Models\Directorio');
 
     Route::delete('directorios/{directorio}', [DirectorioController::class, 'destroy'])
-        ->name('directorios.destroy')->middleware('can:delete,App\Models\Directorio');;
+        ->name('directorios.destroy')->middleware('can:delete,App\Models\Directorio');
+
+    Route::delete('directorios', [DirectorioController::class, 'destroyAll'])
+        ->name('directorios.destroyAll')->middleware('can:delete,App\Models\Directorio');
 
     /* Catálogo de Años */
     /*Route::resource('anos', AnoController::class)->only([

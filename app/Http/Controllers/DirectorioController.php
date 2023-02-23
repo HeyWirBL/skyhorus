@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Directorio;
 use App\Models\Ano;
 use App\Models\MesDetalle;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -144,12 +146,31 @@ class DirectorioController extends Controller
     }
 
     /**
-     * Restore the user's account.
+     * Delete multiple folders.
+     */
+    public function destroyAll(Request $request, Directorio $directorio): RedirectResponse
+    {
+        $ids = explode(',', $request->query('ids', ''));
+        $directorio->whereIn('id', $ids)->delete();
+        return Redirect::back()->with('success', 'Carpetas eliminadas.');
+    }
+
+    /**
+     * Restore the an specific folder.
      */
     public function restore(Directorio $directorio): RedirectResponse
     {
         $directorio->restore();
-
         return Redirect::back()->with('success', 'Carpeta restablecida.');
+    }
+
+    /**
+     * Restore mutliple folders.
+     */
+    public function restoreAll(Request $request, Directorio $directorio): RedirectResponse
+    {        
+        $ids = explode(',', $request->query('ids', ''));
+        $directorio->whereIn('id', $ids)->restore();       
+        return Redirect::back()->with('success', 'Carpetas restablecidas.');
     }
 }
