@@ -9,6 +9,7 @@ import TextInput from '@/Components/TextInput.vue'
 import TrashedMessage from '@/Shared/TrashedMessage.vue'
 
 const props = defineProps({
+  can: Object,
   pozo: Object,
 })
 
@@ -65,6 +66,22 @@ const updatePozo = () => {
   })
 }
 
+const restore = () => {
+  swal({
+    title: '¿Estás seguro de querer restablecer este pozo?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Restablecer',
+    cancelButtonText: 'Cancelar',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      form.put(`/pozos/${props.pozo.id}/restore`)
+    }
+  })
+}
+
 const closeModal = () => {
   editPozoModal.value = false
   form.reset()
@@ -77,23 +94,6 @@ const selectDocPozos = () => {
       selected.value.push(props.pozo.docPozos[i].id)
     }
   }
-}
-
-const restore = () => {
-  swal({
-    title: '¿Estás seguro de querer restablecer este pozo?',
-    text: 'Este pozo se restablecerá del modo "Solo Eliminado" y pasará al estado "Con Modificación".',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
-    confirmButtonText: 'Restablecer',
-    cancelButtonText: 'Cancelar',
-  }).then((result) => {
-    if (result.isConfirmed) {
-      form.put(`/pozos/${props.pozo.id}/restore`)
-    }
-  })
 }
 
 const selectComponentePozos = () => {
@@ -132,13 +132,13 @@ const selectCromatografiaLiquidas = () => {
         <Link class="text-yellow-400 hover:text-yellow-600" href="/pozos">Pozos</Link>
         <span class="text-yellow-400 font-medium">&nbsp;/</span> {{ pozo.nombre_pozo }}
       </h1>
-      <button class="btn-yellow ml-auto" @click="openModal">
+      <button v-if="can.editPozo" class="btn-yellow ml-auto" @click="openModal">
         <span>Editar</span>
         <span class="hidden md:inline">&nbsp;Pozo</span>
       </button>
     </div>
 
-    <TrashedMessage v-if="pozo.deleted_at" class="mb-6" @restore="restore">Este pozo ha sido eliminado.</TrashedMessage>
+    <TrashedMessage v-if="pozo.deleted_at && can.restorePozo" class="mb-6" @restore="restore">Este pozo ha sido eliminado.</TrashedMessage>
 
     <Modal :show="editPozoModal" style="max-width: 900px">
       <div class="relative">
@@ -175,7 +175,7 @@ const selectCromatografiaLiquidas = () => {
         </div>
       </div>
     </Modal>
-    
+
     <div class="bg-white shadow rounded-md overflow-x-auto">
       <table class="w-full whitespace-nowrap">
         <thead class="bg-white border-b">

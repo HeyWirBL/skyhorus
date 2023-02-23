@@ -22,6 +22,8 @@ class PozoController extends Controller
             'can' => [
                 'createPozo' => Auth::user()->can('create', Pozo::class),
                 'editPozo' => Auth::user()->can('update', Pozo::class),
+                'deletePozo' => Auth::user()->can('delete', Pozo::class),
+                'restorePozo' => Auth::user()->can('restore', Pozo::class),
             ],
             'filters' => $request->all('search','trashed'),
             'pozos' => $pozo->query()
@@ -79,6 +81,11 @@ class PozoController extends Controller
     public function show(Pozo $pozo): Response
     {
         return Inertia::render('Pozos/Show', [
+            'can' => [
+                'editPozo' => Auth::user()->can('update', Pozo::class),
+                'deletePozo' => Auth::user()->can('delete', Pozo::class),
+                'restorePozo' => Auth::user()->can('restore', Pozo::class),
+            ],
             'pozo' => [
                 'id' => $pozo->id,
                 'punto_muestreo' => $pozo->punto_muestreo,

@@ -75,16 +75,16 @@ Route::middleware('auth')->group(function () {
         ->name('directorios.edit')->middleware('can:update,App\Models\Directorio');
 
     Route::post('directorios', [DirectorioController::class, 'store'])
-        ->name('directorios.store');
+        ->name('directorios.store')->middleware('can:create,App\Models\Directorio');;
         
     Route::put('directorios/{directorio}', [DirectorioController::class, 'update'])
         ->name('directorios.update')->middleware('can:update,App\Models\Directorio');
 
     Route::put('directorios/{directorio}/restore', [DirectorioController::class, 'restore'])
-        ->name('directorios.restore');
+        ->name('directorios.restore')->middleware('can:restore,App\Models\Directorio');;
 
     Route::delete('directorios/{directorio}', [DirectorioController::class, 'destroy'])
-        ->name('directorios.destroy');
+        ->name('directorios.destroy')->middleware('can:delete,App\Models\Directorio');;
 
     /* Catálogo de Años */
     /*Route::resource('anos', AnoController::class)->only([
@@ -152,16 +152,16 @@ Route::middleware('auth')->group(function () {
         ->name('pozos.show');
 
     Route::post('pozos', [PozoController::class, 'store'])
-        ->name('pozos.store');
+        ->name('pozos.store')->middleware('can:create,App\Models\Pozo');
 
     Route::put('pozos/{pozo}', [PozoController::class, 'update'])
         ->name('pozos.update')->middleware('can:update,App\Models\Pozo');
 
     Route::put('pozos/{pozo}/restore', [PozoController::class, 'restore'])
-        ->name('pozos.restore');
+        ->name('pozos.restore')->middleware('can:restore,App\Models\Pozo');
 
     Route::delete('pozos/{pozo}', [PozoController::class, 'destroy'])
-        ->name('pozos.destroy');
+        ->name('pozos.destroy')->middleware('can:delete,App\Models\Pozo');
 
     Route::post('pozos/destroy-all', [PozoController::class, 'destroyAll'])
         ->name('pozos.destroyAll');
@@ -193,10 +193,10 @@ Route::middleware('auth')->group(function () {
         ->name('componente-pozos.update')->middleware('can:update,App\Models\ComponentePozo');
 
     Route::put('componente-pozos/{componentePozo}/restore', [ComponentePozoController::class, 'restore'])
-        ->name('pocomponente-pozoszos.restore');
+        ->name('pocomponente-pozoszos.restore')->middleware('can:restore,App\Models\ComponentePozo');
 
     Route::delete('componente-pozos/{componentePozo}', [ComponentePozoController::class, 'destroy'])
-        ->name('componente-pozos.destroy');
+        ->name('componente-pozos.destroy')->middleware('can:delete,App\Models\ComponentePozo');
 
     Route::post('/componente-pozos', function (Request $request) {
             $file = $request->file('file');

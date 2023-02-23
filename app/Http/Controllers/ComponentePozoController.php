@@ -27,6 +27,8 @@ class ComponentePozoController extends Controller
             'can' => [
                 'createComponentePozo' => Auth::user()->can('create', ComponentePozo::class),
                 'editComponentePozo' => Auth::user()->can('update', ComponentePozo::class),
+                'deleteComponentePozo' => Auth::user()->can('delete', ComponentePozo::class),
+                'restoreComponentePozo' => Auth::user()->can('restore', ComponentePozo::class),
             ],
             'filters' => $request->all('search', 'trashed'),
             'componentePozos' => $componentePozo->query()
@@ -41,7 +43,7 @@ class ComponentePozoController extends Controller
                     'nombre_componente' => $cp->nombre_componente,
                     'fecha_recep' => $cp->fecha_recep,
                     'deleted_at' => $cp->deleted_at,
-                    'pozo' => $cp->pozo ? $cp->pozo->only('nombre_pozo') : null,
+                    'pozo' => $cp->pozo ? $cp->pozo->only('nombre_pozo', 'deleted_at') : null,
                 ]),
         ]);
     }
@@ -67,6 +69,8 @@ class ComponentePozoController extends Controller
         return Inertia::render('ComponentePozos/Show', [
             'can' => [
                 'editComponentePozo' => Auth::user()->can('update', ComponentePozo::class),
+                'deleteComponentePozo' => Auth::user()->can('delete', ComponentePozo::class),
+                'restoreComponentePozo' => Auth::user()->can('restore', ComponentePozo::class),
             ],
             'componentePozo' => [
                 'id' => $componentePozo->id,
@@ -219,7 +223,6 @@ class ComponentePozoController extends Controller
     public function destroy(ComponentePozo $componentePozo): RedirectResponse
     {
         $componentePozo->delete();
-
         return Redirect::back()->with('success', 'Componentes de pozo eliminados.');
     }
 

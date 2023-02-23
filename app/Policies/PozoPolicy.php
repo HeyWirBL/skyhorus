@@ -67,35 +67,29 @@ class PozoPolicy
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Pozo  $pozo
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Pozo $pozo)
+    public function delete(User $user)
     {
-        //
+        switch ($user->rol) {
+            case 'Administrador': return $user->rol;
+            case 'Colaborador': return $user->rol;
+            case 'Editor': return $user->rol;
+        }
     }
 
     /**
      * Determine whether the user can restore the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Pozo  $pozo
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, Pozo $pozo)
+    public function restore(User $user)
     {
-        //
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Pozo  $pozo
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function forceDelete(User $user, Pozo $pozo)
-    {
-        //
+        switch ($user->rol) {
+            case 'Administrador': return $user->rol;
+            case 'Colaborador': return $user->rol;
+            case 'Editor': return $user->rol;
+        }
     }
 }

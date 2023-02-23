@@ -67,24 +67,30 @@ class ComponentePozoPolicy
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\ComponentePozo  $componentePozo
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, ComponentePozo $componentePozo)
+    public function delete(User $user)
     {
-        //
+        switch ($user->rol) {
+            case 'Administrador': return $user->rol;
+            case 'Colaborador': return $user->rol;
+            case 'Editor': return $user->rol;
+        }
     }
 
     /**
      * Determine whether the user can restore the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\ComponentePozo  $componentePozo
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, ComponentePozo $componentePozo)
+    public function restore(User $user)
     {
-        //
+        switch ($user->rol) {
+            case 'Administrador': return $user->rol;
+            case 'Colaborador': return $user->rol;
+            case 'Editor': return $user->rol;
+        }
     }
 
     /**

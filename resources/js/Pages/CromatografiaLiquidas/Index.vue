@@ -38,12 +38,18 @@ const filesize = (size) => {
   return (size / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'][i]
 }
 
-const select = () => {
+const toggleAll = () => {
   selected.value = []
   if (!selectAll.value) {
-    for (let i in props.cromatografiaLiquidas.data) {
-      selected.value.push(props.cromatografiaLiquidas.data[i].id)
-    }
+    selected.value = selected.value.length === props.cromatografiaLiquidas.data.length ? [] : props.cromatografiaLiquidas.data.map((cromatografiaLiquida) => cromatografiaLiquida.id)
+  }
+}
+
+const changeToggleAll = () => {
+  if (props.cromatografiaLiquidas.data.length === selected.value.length) {
+    selectAll.value = true
+  } else {
+    selectAll.value = false
   }
 }
 
@@ -114,7 +120,7 @@ const removeSelectedItems = () => {
           <tr>
             <th scope="col" class="p-4">
               <div class="flex items-center">
-                <input id="checkbox-all-cromliquidas" v-model="selectAll" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="select" />
+                <input id="checkbox-all-cromliquidas" v-model="selectAll" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="toggleAll" />
                 <label for="checkbox-all-cromliquidas" class="sr-only">checkbox</label>
               </div>
             </th>
@@ -127,7 +133,7 @@ const removeSelectedItems = () => {
           <tr v-for="cromatografiaLiquida in cromatografiaLiquidas.data" :key="cromatografiaLiquida.id" class="bg-white hover:bg-gray-100 focus-within:bg-gray-100 border-b">
             <td class="w-4 p-4">
               <div class="flex items-center">
-                <input :id="`checkbox-cromatografiaLiquida-${cromatografiaLiquida.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="cromatografiaLiquida.id" />
+                <input :id="`checkbox-cromatografiaLiquida-${cromatografiaLiquida.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="cromatografiaLiquida.id" @change="changeToggleAll" />
                 <label :for="`checkbox-cromatografiaLiquida-${cromatografiaLiquida.id}`" class="sr-only">checkbox</label>
               </div>
             </td>
@@ -156,7 +162,7 @@ const removeSelectedItems = () => {
             </td>
           </tr>
           <tr v-if="cromatografiaLiquidas.data.length === 0">
-            <td class="px-6 py-4" colspan="5">No se encontraron documentos registradas.</td>
+            <td class="px-6 py-4" colspan="5">No se encontraron documentos {{ form.trashed === 'only' ? 'eliminados' : 'registrados' }}.</td>
           </tr>
         </tbody>
       </table>

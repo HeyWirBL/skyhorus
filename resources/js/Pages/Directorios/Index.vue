@@ -1,6 +1,6 @@
 <script setup>
-import { inject, ref, watch } from 'vue'
-import { Head, Link, router } from '@inertiajs/vue3'
+import { computed, inject, ref, watch } from 'vue'
+import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3'
 import debounce from 'lodash/debounce'
 import mapValues from 'lodash/mapValues'
 import pickBy from 'lodash/pickBy'
@@ -23,6 +23,9 @@ const form = ref({
   search: props.filters.search,
   trashed: props.filters.trashed,
 })
+
+const formDirectorio = useForm({})
+const isTrashed = computed(() => usePage().url.includes('trashed=only'))
 
 watch(
   () => form.value,
@@ -65,7 +68,10 @@ const removeSelectedItems = () => {
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        //
+        formDirectorio.delete(`/directorios/${selected.value}`, {
+          onSuccess: () => (selected.value = []),
+          onFinish: () => (selectAll.value = false),
+        })
       }
     })
   } else {
@@ -80,6 +86,41 @@ const removeSelectedItems = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         //props.documentos.data
+      }
+    })
+  }
+}
+
+const restoreSelectedItems = () => {
+  if (selected.value.length === 1) {
+    swal({
+      title: '¿Estás seguro de querer restablecer este pozo?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Confirmar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        formDirectorio.put(`/directorios/${selected.value}/restore`, {
+          onSuccess: () => (selected.value = []),
+          onFinish: () => (selectAll.value = false),
+        })
+      }
+    })
+  } else {
+    swal({
+      title: '¿Estás seguro de querer restablecer estos pozos?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Confirmar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // TODO: restore every item selected
       }
     })
   }
@@ -104,8 +145,12 @@ const removeSelectedItems = () => {
         <span>Crear</span>
         <span class="hidden md:inline">&nbsp;Directorio</span>
       </Link>
-      <button v-if="directorios.data.length !== 0" class="btn-secondary" type="button" :disabled="!selectAll && !selected.length" @click="removeSelectedItems">
+      <button v-if="directorios.data.length !== 0 && can.deleteDirectorio && !isTrashed" class="btn-secondary" type="button" :disabled="!selectAll && !selected.length" @click="removeSelectedItems">
         <span>Borrar Elementos</span>
+        <span class="hidden md:inline">&nbsp;Seleccionados</span>
+      </button>
+      <button v-if="directorios.data.length !== 0 && can.restoreDirectorio && isTrashed" class="btn-secondary" type="button" :disabled="!selectAll && !selected.length" @click="restoreSelectedItems">
+        <span>Restablecer Elementos</span>
         <span class="hidden md:inline">&nbsp;Seleccionados</span>
       </button>
     </div>

@@ -153,11 +153,11 @@ const restoreSelectedItems = () => {
         <span>Crear</span>
         <span class="hidden md:inline">&nbsp;Pozo</span>
       </Link>
-      <button v-if="pozos.data.length !== 0 && !isTrashed" class="btn-secondary" type="button" :disabled="!selectAll && !selected.length" @click="removeSelectedItems">
+      <button v-if="pozos.data.length !== 0 && can.deletePozo && !isTrashed" class="btn-secondary" type="button" :disabled="!selectAll && !selected.length" @click="removeSelectedItems">
         <span>Borrar Elementos</span>
         <span class="hidden md:inline">&nbsp;Seleccionados</span>
       </button>
-      <button v-if="pozos.data.length !== 0 && isTrashed" class="btn-secondary" type="button" :disabled="!selectAll && !selected.length" @click="restoreSelectedItems">
+      <button v-if="pozos.data.length !== 0 && can.restorePozo && isTrashed" class="btn-secondary" type="button" :disabled="!selectAll && !selected.length" @click="restoreSelectedItems">
         <span>Restablecer Elementos</span>
         <span class="hidden md:inline">&nbsp;Seleccionados</span>
       </button>
@@ -187,40 +187,27 @@ const restoreSelectedItems = () => {
               </div>
             </td>
             <td>
-              <Link v-if="can.editPozo" class="flex items-center px-6 py-4" :href="`/pozos/${pozo.id}`">
+              <Link class="flex items-center px-6 py-4" :href="`/pozos/${pozo.id}`">
                 {{ pozo.id }}
               </Link>
-              <div v-else class="flex items-center px-6 py-4">
-                {{ pozo.id }}
-              </div>
             </td>
             <td>
-              <Link v-if="can.editPozo" class="flex items-center px-6 py-4 focus:text-yellow-500" :href="`/pozos/${pozo.id}`" tabindex="-1">
+              <Link class="flex items-center px-6 py-4 focus:text-yellow-500" :href="`/pozos/${pozo.id}`" tabindex="-1">
                 {{ pozo.nombre_pozo }}
-                <Icon v-if="pozo.deleted_at" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" name="trash" />
+                <Icon v-if="pozo.deleted_at" class="flex-shrink-0 ml-2 w-3 h-3 fill-yellow-400" name="trash" />
               </Link>
-              <div v-else class="flex items-center px-6 py-4">
-                {{ pozo.nombre_pozo }}
-                <Icon v-if="pozo.deleted_at" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" name="trash" />
-              </div>
             </td>
             <td>
-              <Link v-if="can.editPozo" class="flex items-center px-6 py-4" :href="`/pozos/${pozo.id}`" tabindex="-1">
+              <Link class="flex items-center px-6 py-4" :href="`/pozos/${pozo.id}`" tabindex="-1">
                 {{ pozo.identificador === '' ? 'No hay identificador' : pozo.identificador }}
               </Link>
-              <div v-else class="flex items-center px-6 py-4">
-                {{ pozo.identificador === '' ? 'No hay identificador' : pozo.identificador }}
-              </div>
             </td>
             <td>
-              <Link v-if="can.editPozo" class="flex items-center px-6 py-4" :href="`/pozos/${pozo.id}`" tabindex="-1">
+              <Link class="flex items-center px-6 py-4" :href="`/pozos/${pozo.id}`" tabindex="-1">
                 {{ pozo.fecha_hora }}
               </Link>
-              <div v-else class="flex items-center px-6 py-4">
-                {{ pozo.fecha_hora }}
-              </div>
             </td>
-            <td v-if="can.editPozo" class="w-px">
+            <td class="w-px">
               <Link class="flex items-center px-6" :href="`/pozos/${pozo.id}`" tabindex="-1">
                 <Icon class="block w-6 h-6 fill-gray-400" name="cheveron-right" />
               </Link>

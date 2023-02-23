@@ -24,6 +24,8 @@ class DirectorioController extends Controller
             'can' => [
                 'createDirectorio' => Auth::user()->can('create', Directorio::class),
                 'editDirectorio' => Auth::user()->can('update', Directorio::class),
+                'deleteDirectorio' => Auth::user()->can('delete', Directorio::class),
+                'restoreDirectorio' => Auth::user()->can('restore', Directorio::class),
             ],
             'filters' => $request->all('search', 'trashed'),
             'directorios' => $directorio->query()

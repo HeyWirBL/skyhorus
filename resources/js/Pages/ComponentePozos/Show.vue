@@ -1,5 +1,5 @@
 <script setup>
-import { computed, nextTick, ref } from 'vue'
+import { computed, inject, nextTick, ref } from 'vue'
 import { Head, Link, useForm } from '@inertiajs/vue3'
 import Icon from '@/Components/Icon.vue'
 import LoadingButton from '@/Components/LoadingButton.vue'
@@ -14,6 +14,8 @@ const props = defineProps({
   componentePozo: Object,
   pozos: Array,
 })
+
+const swal = inject('$swal')
 
 const editComponenteModal = ref(false)
 const showMessageMetLab = ref(false)
@@ -107,6 +109,22 @@ const updateComponentePozo = () => {
   })
 }
 
+const restore = () => {
+  swal({
+    title: '¿Estás seguro de querer restablecer estos componentes de este pozo?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Restablecer',
+    cancelButtonText: 'Cancelar',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      form.put(`/componente-pozos/${props.componentePozo.id}/restore`)
+    }
+  })
+}
+
 const closeModal = () => {
   editComponenteModal.value = false
   form.reset()
@@ -156,7 +174,7 @@ const truncateMessageObs = computed(() => {
       </button>
     </div>
 
-    <TrashedMessage v-if="componentePozo.deleted_at" class="mb-6" @restore="restore">Estos componentes de pozo han sido eliminados.</TrashedMessage>
+    <TrashedMessage v-if="componentePozo.deleted_at && can.restoreComponentePozo" class="mb-6" @restore="restore">Estos componentes de pozo han sido eliminados.</TrashedMessage>
 
     <Modal :show="editComponenteModal" style="max-width: 1000px">
       <div class="relative">

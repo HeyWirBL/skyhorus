@@ -17,7 +17,7 @@ class CromatografiaGas extends Model
 
     public function pozo()
     {
-        return $this->belongsTo(Pozo::class);
+        return $this->belongsTo(Pozo::class)->withTrashed();
     }
 
     public function scopeFilter($query, array $filters)
@@ -30,11 +30,7 @@ class CromatografiaGas extends Model
                     });
             });
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {
-            if ($trashed === 'with') {
-                $query->withTrashed();
-            } elseif ($trashed === 'only') {
-                $query->onlyTrashed();
-            }
+            $trashed === 'only' ? $query->onlyTrashed() : '';
         });
     }
 }

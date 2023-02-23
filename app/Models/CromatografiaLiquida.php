@@ -30,11 +30,7 @@ class CromatografiaLiquida extends Model
                     });
             });
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {
-            if ($trashed === 'with') {
-                $query->withTrashed();
-            } elseif ($trashed === 'only') {
-                $query->onlyTrashed();
-            }
+            $trashed === 'only' ? $query->onlyTrashed() : '';
         });
     }
 }
