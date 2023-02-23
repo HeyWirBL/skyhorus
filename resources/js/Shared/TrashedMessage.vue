@@ -1,10 +1,6 @@
 <script setup>
 import Icon from '@/Components/Icon.vue'
 
-defineProps({
-  can: Object,
-})
-
 defineEmits(['restore'])
 </script>
 
