@@ -258,7 +258,7 @@ const selectCromatografiaLiquidas = () => {
               <span class="block leading-6">{{ pozo.punto_muestreo }}</span>
             </td>
             <td class="text-left border px-6 py-4" colspan="2">
-              <span class="block">{{ pozo.observaciones === '' ? 'Aún no hay observaciones.' : pozo.observaciones }}</span>
+              <span class="block">{{ pozo.observaciones === '' || pozo.observaciones === null ? 'Aún no hay observaciones.' : pozo.observaciones }}</span>
             </td>
           </tr>
           <tr class="bg-white">
@@ -296,7 +296,7 @@ const selectCromatografiaLiquidas = () => {
               <span class="block leading-6">{{ pozo.volumen_cm3 }} CM3 {{ pozo.volumen_lts }} LTS</span>
             </td>
             <td class="text-center border px-6 py-4">
-              <span class="block leading-6">{{ pozo.identificador === '' ? 'Sin identificador.' : pozo.identificador }}</span>
+              <span class="block leading-6">{{ pozo.identificador === '' || pozo.identificador === null ? 'Sin identificador.' : pozo.identificador }}</span>
             </td>
           </tr>
         </tbody>

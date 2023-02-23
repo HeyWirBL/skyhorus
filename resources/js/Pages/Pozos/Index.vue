@@ -199,7 +199,7 @@ const restoreSelectedItems = () => {
             </td>
             <td>
               <Link class="flex items-center px-6 py-4" :href="`/pozos/${pozo.id}`" tabindex="-1">
-                {{ pozo.identificador === '' ? 'No hay identificador' : pozo.identificador }}
+                {{ pozo.identificador === '' || pozo.identificador === null ? 'Sin identificador.' : pozo.identificador }}
               </Link>
             </td>
             <td>
