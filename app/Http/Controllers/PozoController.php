@@ -25,6 +25,7 @@ class PozoController extends Controller
             ],
             'filters' => $request->all('search','trashed'),
             'pozos' => $pozo->query()
+                ->orderBy('id', 'desc')
                 ->filter($request->only('search', 'trashed'))
                 ->paginate(10)
                 ->withQueryString()
@@ -168,8 +169,17 @@ class PozoController extends Controller
     public function destroy(Pozo $pozo): RedirectResponse
     {
         $pozo->delete();
-
         return Redirect::back()->with('success', 'Pozo eliminado.');
+    }
+
+    /**
+     * Delete multiple wells.
+     */
+    public function destroyAll(): RedirectResponse
+    {
+        //
+        
+        return Redirect::back()->with('success', 'Pozos eliminados.');
     }
 
     /**

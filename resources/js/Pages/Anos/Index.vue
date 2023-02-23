@@ -13,9 +13,6 @@ const props = defineProps({
   anos: Object,
 })
 
-const selected = ref([])
-const selectAll = ref(false)
-
 const form = ref({
   search: props.filters.search,
   trashed: props.filters.trashed,
@@ -30,15 +27,6 @@ watch(
     deep: true,
   },
 )
-
-const select = () => {
-  selected.value = []
-  if (!selectAll.value) {
-    for (let i in props.anos.data) {
-      selected.value.push(props.anos.data[i].id)
-    }
-  }
-}
 
 const reset = () => {
   form.value = mapValues(form.value, () => null)
@@ -67,23 +55,11 @@ const reset = () => {
       <table class="w-full whitespace-nowrap">
         <thead class="text-sm text-left font-bold uppercase bg-white border-b">
           <tr>
-            <th scope="col" class="p-4">
-              <div class="flex items-center">
-                <input id="checkbox-all-anos" v-model="selectAll" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="select" />
-                <label for="checkbox-all-anos" class="sr-only">checkbox</label>
-              </div>
-            </th>
             <th scope="col" class="px-6 py-3" colspan="2">Año</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="ano in props.anos.data" :key="ano.id" class="bg-white hover:bg-gray-100 focus-within:bg-gray-100 border-b">
-            <td class="w-4 p-4">
-              <div class="flex items-center">
-                <input :id="`checkbox-ano-${ano.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="ano.id" />
-                <label :for="`checkbox-ano-${ano.id}`" class="sr-only">checkbox</label>
-              </div>
-            </td>
             <td>
               <Link class="flex items-center px-6 py-4 focus:text-yellow-500" :href="`/anos/${ano.id}/editar`" tabindex="-1">
                 {{ ano.ano }}

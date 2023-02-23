@@ -1,16 +1,15 @@
 <script setup>
 import { Head, Link, useForm } from '@inertiajs/vue3'
-import DropZone from '@/Components/DropZone.vue'
 import SelectInput from '@/Components/SelectInput.vue'
 import LoadingButton from '@/Components/LoadingButton.vue'
-import { ref } from 'vue';
+import { ref } from 'vue'
 
 defineProps({
   directorios: Array,
   anos: Array,
   meses: Array,
 })
-var files = ref([]);
+var files = ref([])
 
 const form = useForm({
   directorio_id: '',
@@ -46,15 +45,15 @@ function store() {
       <form @submit.prevent="store">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
             <input type="file" @:input="files = $event.target.files" multiple>
-          <SelectInput class="pb-8 pr-6 w-full" label="Carpeta" v-model="form.directorio_id">
+            <SelectInput class="pb-8 pr-6 w-full" label="Carpeta" v-model="form.directorio_id">
             <option :value="null" />
             <option v-for="directorio in directorios" :key="directorio.id" :value="directorio.id">{{ directorio.nombre_dir }}</option>
           </SelectInput>
-          <SelectInput class="pb-8 pr-6 w-full lg:w-1/2" label="Año" v-model="form.ano_id">
+          <SelectInput v-model="form.ano_id" class="pb-8 pr-6 w-full lg:w-1/2" label="Año">
             <option :value="null" />
             <option v-for="ano in anos" :key="ano.id" :value="ano.id">{{ ano.ano }}</option>
           </SelectInput>
-          <SelectInput class="pb-8 pr-6 w-full lg:w-1/2" label="Mes" v-model="form.mes_id">
+          <SelectInput v-model="form.mes_id" class="pb-8 pr-6 w-full lg:w-1/2" label="Mes">
             <option :value="null" />
             <option v-for="mes in meses" :key="mes.id" :value="mes.id">{{ mes.nombre }}</option>
           </SelectInput>

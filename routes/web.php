@@ -150,9 +150,6 @@ Route::middleware('auth')->group(function () {
     Route::get('pozos/{pozo}', [PozoController::class, 'show'])
         ->name('pozos.show');
 
-    Route::get('pozos/{pozo}/editar', [PozoController::class, 'edit'])
-        ->name('pozos.edit')->middleware('can:update,App\Models\Pozo');
-
     Route::post('pozos', [PozoController::class, 'store'])
         ->name('pozos.store');
 
@@ -169,6 +166,9 @@ Route::middleware('auth')->group(function () {
     // Route::resource('docpozos', DocPozoController::class)->only(['index']);
     Route::get('doc-pozos', [DocPozoController::class, 'index'])
         ->name('doc-pozos');
+
+    Route::get('doc-pozos/crear', [DocPozoController::class, 'create'])
+        ->name('doc-pozos.create');
 
     /* Catálogo de Pozos: Componentes */
     //Route::resource('componentespozos', ComponentePozoController::class)->only(['index']);
@@ -203,11 +203,17 @@ Route::middleware('auth')->group(function () {
     Route::get('cromatografia-gases', [CromatografiaGasController::class, 'index'])
         ->name('cromatografia-gases');
 
+    Route::get('cromatografia-gases/crear', [CromatografiaGasController::class, 'create'])
+        ->name('cromatografia-gases.create');
+
     /* Cromatografías: Liquída */
     //Route::resource('cromatografialiquida', CromatografiaLiquidaController::class)->only(['index']);
 
     Route::get('cromatografia-liquidas', [CromatografiaLiquidaController::class, 'index'])
         ->name('cromatografia-liquidas');
+
+    Route::get('cromatografia-liquidas/crear', [CromatografiaLiquidaController::class, 'create'])
+        ->name('cromatografia-liquidas.create');
 
     /* Gráficas Generales */
     Route::resource('graficas', GraficaController::class)->only(['index']);

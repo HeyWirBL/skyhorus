@@ -29,6 +29,7 @@ class ComponentePozoController extends Controller
             ],
             'filters' => $request->all('search', 'trashed'),
             'componentePozos' => $componentePozo->query()
+                ->orderBy('id', 'desc')
                 ->with('pozo')
                 ->filter($request->only('search', 'trashed'))
                 ->paginate(10)
@@ -125,6 +126,7 @@ class ComponentePozoController extends Controller
                 'pozo' => $componentePozo->pozo->only('id', 'nombre_pozo'),
             ],
             'pozos' => $pozo->query()
+                ->orderBy('id', 'desc')
                 ->get()
                 ->map
                 ->only('id', 'nombre_pozo'),

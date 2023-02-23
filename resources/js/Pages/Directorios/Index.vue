@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { inject, ref, watch } from 'vue'
 import { Head, Link, router } from '@inertiajs/vue3'
 import debounce from 'lodash/debounce'
 import mapValues from 'lodash/mapValues'
@@ -13,6 +13,8 @@ const props = defineProps({
   filters: Object,
   directorios: Object,
 })
+
+const swal = inject('$swal')
 
 const selected = ref([])
 const selectAll = ref(false)
@@ -44,6 +46,38 @@ const select = () => {
 const reset = () => {
   form.value = mapValues(form.value, () => null)
 }
+
+const removeSelectedItems = () => {
+  if (selected.value.length === 1) {
+    swal({
+      title: '¿Estás seguro de querer eliminar este directorio?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Confirmar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        //props.documentos.data
+      }
+    })
+  } else {
+    swal({
+      title: '¿Estás seguro de querer eliminar estos directorios?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Confirmar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        //props.documentos.data
+      }
+    })
+  }
+}
 </script>
 
 <template>
@@ -59,13 +93,16 @@ const reset = () => {
           <option value="only">Solo Eliminado</option>
         </select>
       </SearchFilter>
-      <Link v-if="can.createDirectorio" class="btn-yellow" href="/directorios/crear">
+    </div>
+    <div class="flex items-center mb-6">
+      <Link v-if="can.createDirectorio" class="btn-yellow mr-2" href="/directorios/crear">
         <span>Crear</span>
         <span class="hidden md:inline">&nbsp;Directorio</span>
       </Link>
-    </div>
-    <div class="flex items-center mb-6">
-      <button class="btn-secondary" type="button" style="cursor: not-allowed" disabled>Borrar Elementos Seleccionados</button>
+      <button v-if="directorios.data.length !== 0" class="btn-secondary" type="button" :disabled="!selectAll && !selected.length" @click="removeSelectedItems">
+        <span>Borrar Elementos</span>
+        <span class="hidden md:inline">&nbsp;Seleccionados</span>
+      </button>
     </div>
     <div class="bg-white rounded-md shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">

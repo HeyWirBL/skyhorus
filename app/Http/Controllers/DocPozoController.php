@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\DocPozo;
+use App\Models\Pozo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -22,6 +23,7 @@ class DocPozoController extends Controller
             ],
             'filters' => $request->all('search', 'trashed'),
             'docPozos' => $docPozo->query()
+                ->orderBy('id', 'desc')
                 ->filter($request->only(['search', 'trashed']))
                 ->paginate(10)
                 ->withQueryString()
@@ -32,6 +34,20 @@ class DocPozoController extends Controller
                     'deleted_at' => $dp->deleted_at,
                     'pozo' => $dp->pozo ? $dp->pozo->only('nombre_pozo') : null,
                 ]),
+        ]);
+    }
+
+    /**
+     * Show the form for uploading a new well documents.
+     */
+    public function create(Pozo $pozo): Response
+    {
+        return Inertia::render('DocPozos/Create', [
+            'pozos' => $pozo->query()
+                ->orderBy('id', 'desc') 
+                ->get()
+                ->map
+                ->only('id', 'nombre_pozo'),
         ]);
     }
 }

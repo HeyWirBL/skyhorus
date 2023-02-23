@@ -25,6 +25,7 @@ class DocumentoController extends Controller
         return Inertia::render('Documentos/Index', [
             'filters' => $request->all('search', 'year', 'month', 'trashed'),
             'documentos' => $documento->query()
+                ->orderBy('id', 'desc')
                 ->with('directorio')
                 ->with('ano')
                 ->with('mes')
@@ -59,7 +60,9 @@ class DocumentoController extends Controller
     public function create(Directorio $directorio, Ano $ano, Mes $mes): Response
     {
         return Inertia::render('Documentos/Create', [
-            'directorios' => $directorio->get()
+            'directorios' => $directorio->query()
+                ->orderBy('id', 'desc')
+                ->get()
                 ->map
                 ->only('id', 'nombre_dir'),
             'anos' => $ano->get()
@@ -98,7 +101,6 @@ class DocumentoController extends Controller
             'ano_id' => ['required', Rule::exists('anos', 'id')],
             'mes_id' => ['required', Rule::exists('meses', 'id')],
         ]);
-        $counter = 0;
 
         if ($validated) {
 

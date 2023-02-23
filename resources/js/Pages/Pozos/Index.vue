@@ -1,6 +1,6 @@
 <script setup>
-import { ref, watch } from 'vue'
-import { Head, Link, router } from '@inertiajs/vue3'
+import { computed, inject, ref, watch } from 'vue'
+import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3'
 import debounce from 'lodash/debounce'
 import mapValues from 'lodash/mapValues'
 import pickBy from 'lodash/pickBy'
@@ -14,6 +14,8 @@ const props = defineProps({
   pozos: Object,
 })
 
+const swal = inject('$swal')
+
 const selected = ref([])
 const selectAll = ref(false)
 
@@ -21,6 +23,9 @@ const form = ref({
   search: props.filters.search,
   trashed: props.filters.trashed,
 })
+
+const formPozo = useForm({})
+const isTrashed = computed(() => usePage().url.includes('trashed=only'))
 
 watch(
   () => form.value,
@@ -32,17 +37,88 @@ watch(
   },
 )
 
+const reset = () => {
+  form.value = mapValues(form.value, () => null)
+}
+
 const select = () => {
   selected.value = []
+
   if (!selectAll.value) {
-    for (let i in props.pozos.data) {
-      selected.value.push(props.pozos.data[i].id)
-    }
+    props.pozos.data.forEach((pozo) => {
+      selected.value.push(pozo.id)
+    })
   }
 }
 
-const reset = () => {
-  form.value = mapValues(form.value, () => null)
+const removeSelectedItems = () => {
+  if (selected.value.length === 1) {
+    swal({
+      title: '¿Estás seguro de querer eliminar este pozo?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Confirmar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        formPozo.delete(`/pozos/${selected.value}`, {
+          onSuccess: () => (selected.value = []),
+          onFinish: () => (selectAll.value = false),
+        })
+      }
+    })
+  } else {
+    swal({
+      title: '¿Estás seguro de querer eliminar estos pozos?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Confirmar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // TODO: remove every item selected
+      }
+    })
+  }
+}
+
+const restoreSelectedItems = () => {
+  if (selected.value.length === 1) {
+    swal({
+      title: '¿Estás seguro de querer restablecer este pozo?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Confirmar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        formPozo.put(`/pozos/${selected.value}/restore`, {
+          onSuccess: () => (selected.value = []),
+          onFinish: () => (selectAll.value = false),
+        })
+      }
+    })
+  } else {
+    swal({
+      title: '¿Estás seguro de querer restablecer estos pozos?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Confirmar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // TODO: restore every item selected
+      }
+    })
+  }
 }
 </script>
 
@@ -55,14 +131,23 @@ const reset = () => {
         <label class="block mt-4 text-gray-700">Eliminado:</label>
         <select v-model="form.trashed" class="form-select mt-1 w-full">
           <option :value="null" />
-          <option value="with">Con Modificación</option>
           <option value="only">Solo Eliminado</option>
         </select>
       </SearchFilter>
-      <Link v-if="can.createPozo" class="btn-yellow" href="/pozos/crear">
+    </div>
+    <div class="flex items-center mb-6">
+      <Link v-if="can.createPozo" class="btn-yellow mr-2" href="/pozos/crear">
         <span>Crear</span>
         <span class="hidden md:inline">&nbsp;Pozo</span>
       </Link>
+      <button v-if="pozos.data.length !== 0 && !isTrashed" class="btn-secondary" type="button" :disabled="!selectAll && !selected.length" @click="removeSelectedItems">
+        <span>Borrar Elementos</span>
+        <span class="hidden md:inline">&nbsp;Seleccionados</span>
+      </button>
+      <button v-if="pozos.data.length !== 0 && isTrashed" class="btn-secondary" type="button" :disabled="!selectAll && !selected.length" @click="restoreSelectedItems">
+        <span>Restablecer Elementos</span>
+        <span class="hidden md:inline">&nbsp;Seleccionados</span>
+      </button>
     </div>
     <div class="bg-white rounded-md shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
@@ -108,10 +193,10 @@ const reset = () => {
             </td>
             <td>
               <Link v-if="can.editPozo" class="flex items-center px-6 py-4" :href="`/pozos/${pozo.id}`" tabindex="-1">
-                {{ pozo.identificador }}
+                {{ pozo.identificador === '' ? 'No hay identificador' : pozo.identificador }}
               </Link>
               <div v-else class="flex items-center px-6 py-4">
-                {{ pozo.identificador }}
+                {{ pozo.identificador === '' ? 'No hay identificador' : pozo.identificador }}
               </div>
             </td>
             <td>

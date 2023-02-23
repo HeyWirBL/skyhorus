@@ -61,9 +61,7 @@ class Pozo extends Model
                   ->orWhere('identificador', 'like', '%'.$search.'%')
                   ->orWhere('nombre_pozo', 'like', '%'.$search.'%');
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {
-            if ($trashed === 'with') {
-                $query->withTrashed();
-            } elseif ($trashed === 'only') {
+            if ($trashed === 'only') {
                 $query->onlyTrashed();
             }
         });
