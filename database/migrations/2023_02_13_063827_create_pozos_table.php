@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('punto_muestreo', 150);
             $table->date('fecha_hora');
-            $table->string('identificador', 150);
+            $table->string('identificador', 150)->nullable();
             $table->string('presion_kgcm2', 150);
             $table->string('presion_psi', 150);
             $table->string('temp_C', 150);

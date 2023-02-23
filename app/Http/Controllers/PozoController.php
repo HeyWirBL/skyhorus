@@ -147,7 +147,7 @@ class PozoController extends Controller
         $validated = $request->validate([
             'punto_muestreo' => ['required', 'max:150'],
             'fecha_hora' => ['required', 'date'],
-            'identificador' => ['required', 'max:150'],
+            'identificador' => ['nullable', 'max:150'],
             'presion_kgcm2' => ['required', 'max:150'],
             'presion_psi' => ['required', 'max:150'],
             'temp_C' => ['required', 'max:150'],
