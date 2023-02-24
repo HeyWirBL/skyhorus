@@ -1,7 +1,8 @@
 <script setup>
 import { computed, inject, nextTick, ref } from 'vue'
 import { Head, Link, useForm } from '@inertiajs/vue3'
-import LineChart from './Partials/LineChart.vue'
+import { Line } from 'vue-chartjs'
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js'
 import Icon from '@/Components/Icon.vue'
 import LoadingButton from '@/Components/LoadingButton.vue'
 import Modal from '@/Components/Modal.vue'
@@ -10,10 +11,13 @@ import TextInput from '@/Components/TextInput.vue'
 import TextareaInput from '@/Components/TextareaInput.vue'
 import TrashedMessage from '@/Shared/TrashedMessage.vue'
 
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
+
 const props = defineProps({
   can: Object,
   componentePozo: Object,
   pozos: Array,
+  quimicosData: Array,
 })
 
 const swal = inject('$swal')
@@ -22,6 +26,25 @@ const editComponenteModal = ref(false)
 const showMessageMetLab = ref(false)
 const showMessageObs = ref(false)
 const firstInput = ref(null)
+
+const chartOptions = {
+  responsive: true,
+}
+
+const chartDataFormatted = computed(() => {
+  return {
+    labels: props.quimicosData.map((q) => q.Quimico),
+    datasets: [
+      {
+        label: 'Total Mo',
+        data: props.quimicosData.map((q) => q.Total_mo),
+        backgroundColor: '#64b5f6',
+        borderColor: 'rgba(75, 192, 192, 1)',
+        borderWidth: 1,
+      },
+    ],
+  }
+})
 
 const form = useForm({
   _method: 'put',
@@ -175,7 +198,7 @@ const truncateMessageObs = computed(() => {
       </button>
     </div>
 
-    <LineChart />
+    <Line id="my-chart-id" :options="chartOptions" :data="chartDataFormatted" />
 
     <TrashedMessage v-if="componentePozo.deleted_at && can.restoreComponentePozo" class="mb-6" @restore="restore">Estos componentes de pozo han sido eliminados.</TrashedMessage>
 

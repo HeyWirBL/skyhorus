@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exports\ComponentePozosExport;
 use App\Imports\ComponentePozosImport;
 use App\Models\ComponentePozo;
+use App\Models\ComponentePozoView;
 use App\Models\Pozo;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
@@ -64,8 +65,10 @@ class ComponentePozoController extends Controller
     /**
      * Display the information for specific component well.
      */
-    public function show(ComponentePozo $componentePozo, Pozo $pozo): Response
+    public function show(ComponentePozoView $view, ComponentePozo $componentePozo, Pozo $pozo): Response
     {
+        $quimicosData = $view->query()->where('idComPozo', $componentePozo->id)->get();
+
         return Inertia::render('ComponentePozos/Show', [
             'can' => [
                 'editComponentePozo' => Auth::user()->can('update', ComponentePozo::class),
@@ -134,7 +137,8 @@ class ComponentePozoController extends Controller
                 ->orderBy('id', 'desc')
                 ->get()
                 ->map
-                ->only('id', 'nombre_pozo'),
+                ->only('id', 'nombre_pozo'),   
+            'quimicosData' => $quimicosData,
         ]);
     }
 
