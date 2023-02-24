@@ -86,12 +86,8 @@ const removeSelectedItems = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         formDirectorio.delete(`/directorios?ids=${selected.value.join(',')}`, {
-          onSuccess: () => {
-            selected.value = []
-          },
-          onFinish: () => {
-            selectAll.value = false
-          },
+          onSuccess: () => (selected.value = []),
+          onFinish: () => (selectAll.value = false),
         })
       }
     })

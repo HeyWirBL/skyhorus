@@ -227,6 +227,16 @@ class ComponentePozoController extends Controller
     }
 
     /**
+     * Delete multiple componentes wells.
+     */
+    public function destroyAll(Request $request, ComponentePozo $componentePozo): RedirectResponse
+    {
+        $ids = explode(',', $request->query('ids', ''));
+        $componentePozo->whereIn('id', $ids)->delete();
+        return Redirect::back()->with('success', 'Componentes de pozos eliminados.');
+    }
+
+    /**
      * Restore the components well.
      */
     public function restore(ComponentePozo $componentePozo): RedirectResponse
@@ -234,6 +244,16 @@ class ComponentePozoController extends Controller
         $componentePozo->restore();
 
         return Redirect::back()->with('success', 'Componentes de pozo restablecidos.');
+    }
+
+    /**
+     * Restore mutliple components wells.
+     */
+    public function restoreAll(Request $request, ComponentePozo $componentePozo): RedirectResponse
+    {        
+        $ids = explode(',', $request->query('ids', ''));
+        $componentePozo->whereIn('id', $ids)->restore();       
+        return Redirect::back()->with('success', 'Componentes de pozos restablecidos.');
     }
 
     /**

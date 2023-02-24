@@ -85,15 +85,10 @@ const removeSelectedItems = () => {
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        formPozo.post('/pozos/destroy-all', {
-          data: {
-            ids: selected.value,
-          },
+        formPozo.delete(`/pozos?ids=${selected.value.join(',')}`, {
           onSuccess: () => (selected.value = []),
           onFinish: () => (selectAll.value = false),
         })
-        selected.value = props.pozos.data.filter((pozo) => !selected.value.includes(pozo.id))
-        selected.value = []
       }
     })
   }
@@ -128,7 +123,10 @@ const restoreSelectedItems = () => {
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        // TODO: restore every item selected
+        formPozo.put(`/pozos?ids=${selected.value.join(',')}`, {
+          onSuccess: () => (selected.value = []),
+          onFinish: () => (selectAll.value = false),
+        })
       }
     })
   }

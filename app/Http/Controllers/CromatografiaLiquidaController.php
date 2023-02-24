@@ -62,11 +62,31 @@ class CromatografiaLiquidaController extends Controller
     }
 
     /**
+     * Delete multiple well cromatographies.
+     */
+    public function destroyAll(Request $request, CromatografiaLiquida $cromatografiaLiquida): RedirectResponse
+    {
+        $ids = explode(',', $request->query('ids', ''));
+        $cromatografiaLiquida->whereIn('id', $ids)->delete();
+        return Redirect::back()->with('success', 'Documentos eliminados.');
+    }
+
+    /**
      * Restore the well cromatography.
      */
     public function restore(CromatografiaLiquida $cromatografiaLiquida): RedirectResponse
     {
         $cromatografiaLiquida->restore();
         return Redirect::back()->with('success', 'Documento restablecido.');
+    }
+
+    /**
+     * Restore multiple well cromatographies.
+     */
+    public function restoreAll(Request $request, CromatografiaLiquida $cromatografiaLiquida): RedirectResponse
+    {        
+        $ids = explode(',', $request->query('ids', ''));
+        $cromatografiaLiquida->whereIn('id', $ids)->restore();       
+        return Redirect::back()->with('success', 'Documentos restablecidos.');
     }
 }

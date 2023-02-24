@@ -166,11 +166,14 @@ Route::middleware('auth')->group(function () {
     Route::put('pozos/{pozo}/restore', [PozoController::class, 'restore'])
         ->name('pozos.restore')->middleware('can:restore,App\Models\Pozo');
 
+    Route::put('pozos', [PozoController::class, 'restoreAll'])
+        ->name('pozos.restoreAll')->middleware('can:restore,App\Models\Pozo');
+
     Route::delete('pozos/{pozo}', [PozoController::class, 'destroy'])
         ->name('pozos.destroy')->middleware('can:delete,App\Models\Pozo');
-
-    Route::post('pozos/destroy-all', [PozoController::class, 'destroyAll'])
-        ->name('pozos.destroyAll');
+    
+    Route::delete('pozos', [PozoController::class, 'destroyAll'])
+        ->name('pozos.destroyAll')->middleware('can:delete,App\Models\Pozo');
 
     /* Catálogo de Pozos: Documentos */
     // Route::resource('docpozos', DocPozoController::class)->only(['index']);
@@ -196,13 +199,24 @@ Route::middleware('auth')->group(function () {
         ->name('componente-pozos.show');
 
     Route::put('componente-pozos/{componentePozo}', [ComponentePozoController::class, 'update'])
-        ->name('componente-pozos.update')->middleware('can:update,App\Models\ComponentePozo');
+        ->name('componente-pozos.update')
+        ->middleware('can:update,App\Models\ComponentePozo');
 
     Route::put('componente-pozos/{componentePozo}/restore', [ComponentePozoController::class, 'restore'])
-        ->name('pocomponente-pozoszos.restore')->middleware('can:restore,App\Models\ComponentePozo');
+        ->name('pocomponente-pozoszos.restore')
+        ->middleware('can:restore,App\Models\ComponentePozo');
+
+    Route::put('componente-pozos', [ComponentePozoController::class, 'restoreAll'])
+        ->name('componente-pozos.restoreAll')
+        ->middleware('can:restore,App\Models\ComponentePozo');
 
     Route::delete('componente-pozos/{componentePozo}', [ComponentePozoController::class, 'destroy'])
-        ->name('componente-pozos.destroy')->middleware('can:delete,App\Models\ComponentePozo');
+        ->name('componente-pozos.destroy')
+        ->middleware('can:delete,App\Models\ComponentePozo');
+    
+    Route::delete('componente-pozos', [ComponentePozoController::class, 'destroyAll'])
+        ->name('componente-pozos.destroyAll')
+        ->middleware('can:delete,App\Models\ComponentePozo');
 
     Route::post('/componente-pozos', function (Request $request) {
             $file = $request->file('file');
@@ -234,10 +248,18 @@ Route::middleware('auth')->group(function () {
         ->name('cromatografia-gases.create');
 
     Route::put('cromatografia-gases/{cromatografiaGas}/restore', [CromatografiaGasController::class, 'restore'])
-        ->name('cromatografia-gases.restore')->middleware('can:restore,App\Models\CromatografiaGas');
+        ->name('cromatografia-gases.restore')
+        ->middleware('can:restore,App\Models\CromatografiaGas');
+    
+    Route::put('cromatografia-gases', [CromatografiaGasController::class, 'restoreAll'])
+        ->name('cromatografia-gases.restoreAll')
+        ->middleware('can:restore,App\Models\CromatografiaGas');
 
     Route::delete('cromatografia-gases/{cromatografiaGas}', [CromatografiaGasController::class, 'destroy'])
         ->name('cromatografia-gases.destroy');
+    
+    Route::delete('cromatografia-gases', [CromatografiaGasController::class, 'destroyAll'])
+        ->name('cromatografia-gases.destroyAll');
 
     /* Cromatografías: Liquída */
     //Route::resource('cromatografialiquida', CromatografiaLiquidaController::class)->only(['index']);
@@ -249,10 +271,18 @@ Route::middleware('auth')->group(function () {
         ->name('cromatografia-liquidas.create');
 
     Route::put('cromatografia-liquidas/{cromatografiaLiquida}/restore', [CromatografiaLiquidaController::class, 'restore'])
-        ->name('cromatografia-liquidas.restore')->middleware('can:restore,App\Models\CromatografiaLiquida');
+        ->name('cromatografia-liquidas.restore')
+        ->middleware('can:restore,App\Models\CromatografiaLiquida');
+
+    Route::put('cromatografia-liquidas', [CromatografiaLiquidaController::class, 'restoreAll'])
+        ->name('cromatografia-liquidas.restoreAll')
+        ->middleware('can:restore,App\Models\CromatografiaLiquida');
 
     Route::delete('cromatografia-liquidas/{cromatografiaLiquida}', [CromatografiaLiquidaController::class, 'destroy'])
         ->name('cromatografia-liquidas.destroy');
+
+    Route::delete('cromatografia-liquidas', [CromatografiaLiquidaController::class, 'destroyAll'])
+        ->name('cromatografia-liquidas.destroyAll');
 
     /* Gráficas Generales */
     Route::resource('graficas', GraficaController::class)->only(['index']);

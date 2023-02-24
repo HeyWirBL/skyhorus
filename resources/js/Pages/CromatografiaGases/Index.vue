@@ -90,7 +90,10 @@ const removeSelectedItems = () => {
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        //props.cromatografiaGases.data
+        formCromatografiaGas.delete(`/cromatografia-gases?ids=${selected.value.join(',')}`, {
+          onSuccess: () => (selected.value = []),
+          onFinish: () => (selectAll.value = false),
+        })
       }
     })
   }
@@ -125,7 +128,10 @@ const restoreSelectedItems = () => {
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        // TODO: restore every item selected
+        formCromatografiaGas.put(`/cromatografia-gases?ids=${selected.value.join(',')}`, {
+          onSuccess: () => (selected.value = []),
+          onFinish: () => (selectAll.value = false),
+        })
       }
     })
   }
@@ -184,10 +190,10 @@ const restoreSelectedItems = () => {
             </td>
             <td class="flex items-center px-6 py-4">
               <Link class="text-yellow-400 hover:underline focus:text-yellow-500 leading-snug" :href="`/cromatografia-gases/${cromatografiaGas.id}/editar`">
-                {{ cromatografiaGas.documento[0].usrName }}
+                {{ cromatografiaGas.documento }}
               </Link>
               <span class="text-xs ml-2 leading-snug">
-                {{ filesize(cromatografiaGas.documento[0].size) }}
+                size
               </span>
               <Icon v-if="cromatografiaGas.deleted_at" class="ml-2 w-3 h-3 fill-yellow-400" name="trash" />
             </td>

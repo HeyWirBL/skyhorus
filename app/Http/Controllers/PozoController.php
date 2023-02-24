@@ -181,11 +181,13 @@ class PozoController extends Controller
     /**
      * Delete multiple wells.
      */
-    public function destroyAll(Request $request): RedirectResponse
+    public function destroyAll(Request $request, Pozo $pozo): RedirectResponse
     {
-        Pozo::whereIn('id', $request->ids)->delete();
+        $ids = explode(',', $request->query('ids', ''));
+        $pozo->whereIn('id', $ids)->delete();
         return Redirect::back()->with('success', 'Pozos eliminados.');
     }
+
 
     /**
      * Restore the well.
@@ -194,5 +196,15 @@ class PozoController extends Controller
     {
         $pozo->restore();
         return Redirect::back()->with('success', 'Pozo restablecido.');
+    }
+
+    /**
+     * Restore mutliple wells.
+     */
+    public function restoreAll(Request $request, Pozo $pozo): RedirectResponse
+    {        
+        $ids = explode(',', $request->query('ids', ''));
+        $pozo->whereIn('id', $ids)->restore();       
+        return Redirect::back()->with('success', 'Pozos restablecidos.');
     }
 }

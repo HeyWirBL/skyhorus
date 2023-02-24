@@ -78,7 +78,7 @@ const removeSelectedItems = () => {
     })
   } else {
     swal({
-      title: '¿Estás seguro de querer eliminar estos componentes de pozo?',
+      title: '¿Estás seguro de querer eliminar estos componentes de pozos?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -87,7 +87,10 @@ const removeSelectedItems = () => {
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        //props.cromatografiaGases.data
+        formComponentePozo.delete(`/componente-pozos?ids=${selected.value.join(',')}`, {
+          onSuccess: () => (selected.value = []),
+          onFinish: () => (selectAll.value = false),
+        })
       }
     })
   }
@@ -122,7 +125,10 @@ const restoreSelectedItems = () => {
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        // TODO: restore every item selected
+        formComponentePozo.put(`/componente-pozos?ids=${selected.value.join(',')}`, {
+          onSuccess: () => (selected.value = []),
+          onFinish: () => (selectAll.value = false),
+        })
       }
     })
   }

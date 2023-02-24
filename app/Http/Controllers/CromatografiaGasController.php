@@ -62,11 +62,31 @@ class CromatografiaGasController extends Controller
     }
 
     /**
+     * Delete multiple well cromatographies.
+     */
+    public function destroyAll(Request $request, CromatografiaGas $cromatografiaGas): RedirectResponse
+    {
+        $ids = explode(',', $request->query('ids', ''));
+        $cromatografiaGas->whereIn('id', $ids)->delete();
+        return Redirect::back()->with('success', 'Documentos eliminados.');
+    }
+
+    /**
      * Restore the well cromatography.
      */
     public function restore(CromatografiaGas $cromatografiaGas): RedirectResponse
     {
         $cromatografiaGas->restore();
         return Redirect::back()->with('success', 'Documento restablecido.');
+    }
+
+    /**
+     * Restore multiple well cromatographies.
+     */
+    public function restoreAll(Request $request, CromatografiaGas $cromatografiaGas): RedirectResponse
+    {        
+        $ids = explode(',', $request->query('ids', ''));
+        $cromatografiaGas->whereIn('id', $ids)->restore();       
+        return Redirect::back()->with('success', 'Documentos restablecidos.');
     }
 }
