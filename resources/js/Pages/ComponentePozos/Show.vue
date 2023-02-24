@@ -38,9 +38,12 @@ const chartDataFormatted = computed(() => {
       {
         label: 'Total Mo',
         data: props.quimicosData.map((q) => q.Total_mo),
-        backgroundColor: '#64b5f6',
-        borderColor: 'rgba(75, 192, 192, 1)',
-        borderWidth: 1,
+        backgroundColor: 'rgba(100, 181, 246, 1)',
+        borderColor: 'rgba(105, 183, 246, 1)',
+        borderWidth: 2,
+        pointStyle: 'circle',
+        pointRadius: 6,
+        pointHoverRadius: 12,
       },
     ],
   }
