@@ -1,6 +1,7 @@
 <script setup>
 import { computed, inject, nextTick, ref } from 'vue'
 import { Head, Link, useForm } from '@inertiajs/vue3'
+import LineChart from './Partials/LineChart.vue'
 import Icon from '@/Components/Icon.vue'
 import LoadingButton from '@/Components/LoadingButton.vue'
 import Modal from '@/Components/Modal.vue'
@@ -173,6 +174,8 @@ const truncateMessageObs = computed(() => {
         <span class="hidden md:inline">&nbsp;Componentes</span>
       </button>
     </div>
+
+    <LineChart />
 
     <TrashedMessage v-if="componentePozo.deleted_at && can.restoreComponentePozo" class="mb-6" @restore="restore">Estos componentes de pozo han sido eliminados.</TrashedMessage>
 
