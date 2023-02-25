@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Mes;
+use App\Models\MesDetalle;
 use Illuminate\Http\Request;
 
-class MesController extends Controller
+class MesDetalleController extends Controller
 {
      /**
      * Display a listing of months.
@@ -18,7 +18,7 @@ class MesController extends Controller
     /**
      * Show the form for creating a new month.
      */
-    public function create(Mes $mes)
+    public function create(MesDetalle $mes)
     {
         //
     }
@@ -28,7 +28,7 @@ class MesController extends Controller
      * 
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Mes $mes)
+    public function store(MesDetalle $mes)
     {
         //
     }

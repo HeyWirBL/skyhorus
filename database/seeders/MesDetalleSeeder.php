@@ -6,7 +6,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class MesSeeder extends Seeder
+class MesDetalleSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -15,51 +15,51 @@ class MesSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('meses')->insert([
+        DB::table('mes_detalles')->insert([
             'nombre' => 'Enero',        
         ]);
 
-        DB::table('meses')->insert([
+        DB::table('mes_detalles')->insert([
             'nombre' => 'Febrero',        
         ]);
 
-        DB::table('meses')->insert([
+        DB::table('mes_detalles')->insert([
             'nombre' => 'Marzo',        
         ]);
 
-        DB::table('meses')->insert([
+        DB::table('mes_detalles')->insert([
             'nombre' => 'Abril',        
         ]);
 
-        DB::table('meses')->insert([
+        DB::table('mes_detalles')->insert([
             'nombre' => 'Mayo',        
         ]);
 
-        DB::table('meses')->insert([
+        DB::table('mes_detalles')->insert([
             'nombre' => 'Junio',        
         ]);
 
-        DB::table('meses')->insert([
+        DB::table('mes_detalles')->insert([
             'nombre' => 'Julio',        
         ]);
 
-        DB::table('meses')->insert([
+        DB::table('mes_detalles')->insert([
             'nombre' => 'Agosto',        
         ]);
 
-        DB::table('meses')->insert([
+        DB::table('mes_detalles')->insert([
             'nombre' => 'Septiembre',        
         ]);
 
-        DB::table('meses')->insert([
+        DB::table('mes_detalles')->insert([
             'nombre' => 'Octubre',        
         ]);
 
-        DB::table('meses')->insert([
+        DB::table('mes_detalles')->insert([
             'nombre' => 'Noviembre',        
         ]);
 
-        DB::table('meses')->insert([
+        DB::table('mes_detalles')->insert([
             'nombre' => 'Diciembre',        
         ]);
     }

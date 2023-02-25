@@ -7,7 +7,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -22,6 +21,8 @@ class PozoController extends Controller
             'can' => [
                 'createPozo' => Auth::user()->can('create', Pozo::class),
                 'editPozo' => Auth::user()->can('update', Pozo::class),
+                'deletePozo' => Auth::user()->can('delete', Pozo::class),
+                'restorePozo' => Auth::user()->can('restore', Pozo::class),
             ],
             'filters' => $request->all('search','trashed'),
             'pozos' => $pozo->query()
@@ -79,6 +80,11 @@ class PozoController extends Controller
     public function show(Pozo $pozo): Response
     {
         return Inertia::render('Pozos/Show', [
+            'can' => [
+                'editPozo' => Auth::user()->can('update', Pozo::class),
+                'deletePozo' => Auth::user()->can('delete', Pozo::class),
+                'restorePozo' => Auth::user()->can('restore', Pozo::class),
+            ],
             'pozo' => [
                 'id' => $pozo->id,
                 'punto_muestreo' => $pozo->punto_muestreo,
@@ -147,7 +153,7 @@ class PozoController extends Controller
         $validated = $request->validate([
             'punto_muestreo' => ['required', 'max:150'],
             'fecha_hora' => ['required', 'date'],
-            'identificador' => ['required', 'max:150'],
+            'identificador' => ['nullable', 'max:150'],
             'presion_kgcm2' => ['required', 'max:150'],
             'presion_psi' => ['required', 'max:150'],
             'temp_C' => ['required', 'max:150'],
@@ -175,12 +181,13 @@ class PozoController extends Controller
     /**
      * Delete multiple wells.
      */
-    public function destroyAll(): RedirectResponse
+    public function destroyAll(Request $request, Pozo $pozo): RedirectResponse
     {
-        //
-        
+        $ids = explode(',', $request->query('ids', ''));
+        $pozo->whereIn('id', $ids)->delete();
         return Redirect::back()->with('success', 'Pozos eliminados.');
     }
+
 
     /**
      * Restore the well.
@@ -188,7 +195,16 @@ class PozoController extends Controller
     public function restore(Pozo $pozo): RedirectResponse
     {
         $pozo->restore();
-
         return Redirect::back()->with('success', 'Pozo restablecido.');
+    }
+
+    /**
+     * Restore mutliple wells.
+     */
+    public function restoreAll(Request $request, Pozo $pozo): RedirectResponse
+    {        
+        $ids = explode(',', $request->query('ids', ''));
+        $pozo->whereIn('id', $ids)->restore();       
+        return Redirect::back()->with('success', 'Pozos restablecidos.');
     }
 }

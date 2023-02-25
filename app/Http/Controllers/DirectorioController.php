@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Directorio;
 use App\Models\Ano;
-use App\Models\Mes;
+use App\Models\MesDetalle;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Http\Request;
@@ -24,6 +24,8 @@ class DirectorioController extends Controller
             'can' => [
                 'createDirectorio' => Auth::user()->can('create', Directorio::class),
                 'editDirectorio' => Auth::user()->can('update', Directorio::class),
+                'deleteDirectorio' => Auth::user()->can('delete', Directorio::class),
+                'restoreDirectorio' => Auth::user()->can('restore', Directorio::class),
             ],
             'filters' => $request->all('search', 'trashed'),
             'directorios' => $directorio->query()
@@ -81,7 +83,7 @@ class DirectorioController extends Controller
     /**
      * Show the form for editing an specific folder.
      */
-    public function edit(Request $request, Directorio $directorio, Ano $ano, Mes $mes): Response
+    public function edit(Request $request, Directorio $directorio, Ano $ano, MesDetalle $mes): Response
     {
         return Inertia::render('Directorios/Edit', [
             'filters' => $request->all('search', 'year', 'month', 'trashed'),
@@ -138,17 +140,35 @@ class DirectorioController extends Controller
     public function destroy(Directorio $directorio): RedirectResponse
     {
         $directorio->delete();
-
         return Redirect::back()->with('success', 'Carpeta eliminada.');
     }
 
     /**
-     * Restore the user's account.
+     * Delete multiple folders.
+     */
+    public function destroyAll(Request $request, Directorio $directorio): RedirectResponse
+    {
+        $ids = explode(',', $request->query('ids', ''));
+        $directorio->whereIn('id', $ids)->delete();
+        return Redirect::back()->with('success', 'Carpetas eliminadas.');
+    }
+
+    /**
+     * Restore the an specific folder.
      */
     public function restore(Directorio $directorio): RedirectResponse
     {
         $directorio->restore();
-
         return Redirect::back()->with('success', 'Carpeta restablecida.');
+    }
+
+    /**
+     * Restore mutliple folders.
+     */
+    public function restoreAll(Request $request, Directorio $directorio): RedirectResponse
+    {        
+        $ids = explode(',', $request->query('ids', ''));
+        $directorio->whereIn('id', $ids)->restore();       
+        return Redirect::back()->with('success', 'Carpetas restablecidas.');
     }
 }

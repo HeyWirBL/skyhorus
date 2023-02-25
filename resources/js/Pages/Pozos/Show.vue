@@ -9,6 +9,7 @@ import TextInput from '@/Components/TextInput.vue'
 import TrashedMessage from '@/Shared/TrashedMessage.vue'
 
 const props = defineProps({
+  can: Object,
   pozo: Object,
 })
 
@@ -65,6 +66,22 @@ const updatePozo = () => {
   })
 }
 
+const restore = () => {
+  swal({
+    title: '¿Estás seguro de querer restablecer este pozo?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Restablecer',
+    cancelButtonText: 'Cancelar',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      form.put(`/pozos/${props.pozo.id}/restore`)
+    }
+  })
+}
+
 const closeModal = () => {
   editPozoModal.value = false
   form.reset()
@@ -77,23 +94,6 @@ const selectDocPozos = () => {
       selected.value.push(props.pozo.docPozos[i].id)
     }
   }
-}
-
-const restore = () => {
-  swal({
-    title: '¿Estás seguro de querer restablecer este pozo?',
-    text: 'Este pozo se restablecerá del modo "Solo Eliminado" y pasará al estado "Con Modificación".',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
-    confirmButtonText: 'Restablecer',
-    cancelButtonText: 'Cancelar',
-  }).then((result) => {
-    if (result.isConfirmed) {
-      form.put(`/pozos/${props.pozo.id}/restore`)
-    }
-  })
 }
 
 const selectComponentePozos = () => {
@@ -132,13 +132,13 @@ const selectCromatografiaLiquidas = () => {
         <Link class="text-yellow-400 hover:text-yellow-600" href="/pozos">Pozos</Link>
         <span class="text-yellow-400 font-medium">&nbsp;/</span> {{ pozo.nombre_pozo }}
       </h1>
-      <button class="btn-yellow ml-auto" @click="openModal">
+      <button v-if="can.editPozo" class="btn-yellow ml-auto" @click="openModal">
         <span>Editar</span>
         <span class="hidden md:inline">&nbsp;Pozo</span>
       </button>
     </div>
 
-    <TrashedMessage v-if="pozo.deleted_at" class="mb-6" @restore="restore">Este pozo ha sido eliminado.</TrashedMessage>
+    <TrashedMessage v-if="pozo.deleted_at && can.restorePozo" class="mb-6" @restore="restore">Este pozo ha sido eliminado.</TrashedMessage>
 
     <Modal :show="editPozoModal" style="max-width: 900px">
       <div class="relative">
@@ -175,83 +175,74 @@ const selectCromatografiaLiquidas = () => {
         </div>
       </div>
     </Modal>
-    <div class="overflow-hidden bg-white shadow sm:rounded-lg">
-      <div class="px-4 py-5 sm:px-6">
-        <h3 class="text-lg font-medium leading-6 text-gray-900">Datos del muestreo</h3>
-      </div>
-      <div class="border-t border-gray-200">
-        <dl>
-          <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt class="text-base font-medium text-gray-500">Pozo/Instalación</dt>
-            <dd class="mt-1 text-base text-gray-900 sm:col-span-2 sm:mt-0">{{ pozo.nombre_pozo }}</dd>
-          </div>
-          <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt class="text-base font-medium text-gray-500">Punto de muestreo</dt>
-            <dd class="mt-1 text-base text-gray-900 sm:col-span-2 sm:mt-0">{{ pozo.punto_muestreo }}</dd>
-          </div>
-          <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt class="text-base font-medium text-gray-500">Fecha del muestreo</dt>
-            <dd class="mt-1 text-base text-gray-900 sm:col-span-2 sm:mt-0">{{ pozo.fecha_hora }}</dd>
-          </div>
-          <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt class="text-base font-medium text-gray-500">Presión</dt>
-            <dd class="mt-1 text-base text-gray-900 sm:col-span-2 sm:mt-0">{{ pozo.presion_kgcm2 }} KM/CM2 {{ pozo.presion_psi }} PSIA</dd>
-          </div>
-          <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt class="text-base font-medium text-gray-500">Temperatura</dt>
-            <dd class="mt-1 text-base text-gray-900 sm:col-span-2 sm:mt-0">{{ pozo.temp_C }} °C {{ pozo.temp_F }} °F</dd>
-          </div>
-          <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt class="text-base font-medium text-gray-500">Volúmen</dt>
-            <dd class="mt-1 text-base text-gray-900 sm:col-span-2 sm:mt-0">{{ pozo.volumen_cm3 }} CM3 {{ pozo.volumen_lts }} LTS</dd>
-          </div>
-          <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt class="text-base font-medium text-gray-500">Identificador</dt>
-            <dd class="mt-1 text-base text-gray-900 sm:col-span-2 sm:mt-0">
-              {{ pozo.identificador }}
-            </dd>
-          </div>
-          <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt class="text-base font-medium text-gray-500">Observaciones</dt>
-            <dd v-if="pozo.observaciones" class="mt-1 text-base text-gray-900 sm:col-span-2 sm:mt-0">
-              {{ pozo.observaciones }}
-            </dd>
-            <dd v-else class="mt-1 text-base text-gray-900 sm:col-span-2 sm:mt-0">Aún no hay observaciones.</dd>
-          </div>
-          <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt class="text-base font-medium text-gray-500">Reportes</dt>
-            <dd class="mt-1 text-base text-gray-900 sm:col-span-2 sm:mt-0">
-              <ul role="list" class="divide-y divide-gray-400 rounded-md border border-gray-400">
-                <li class="flex items-center justify-between py-3 pl-3 pr-4 text-base">
-                  <div class="flex w-0 flex-1 items-center">
-                    <Icon class="h-5 w-5 flex-shrink-0 text-gray-500" name="pencil" aria-hidden="true" />
+
+    <div class="bg-white shadow rounded-md overflow-x-auto">
+      <table class="w-full whitespace-nowrap">
+        <thead class="bg-white border-b">
+          <tr>
+            <th scope="col" class="border px-6 py-4" colspan="2" />
+            <th scope="col" class="border px-6 py-4" />
+            <th scope="col" class="border px-6 py-4" />
+            <th scope="col" class="border px-6 py-4" colspan="2" />
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="bg-gray-50">
+            <td class="border px-6 py-4" colspan="2" />
+            <td class="border text-center px-6 py-4" colspan="4">
+              <span class="block bg-gray-400 text-white font-bold leading-6">Datos del muestreo</span>
+            </td>
+          </tr>
+          <tr class="bg-white">
+            <td class="text-center border px-6 py-4">
+              <span class="block bg-yellow-400 text-white leading-6">Identificador</span>
+            </td>
+            <td class="text-center border px-6 py-4">
+              <span class="block bg-yellow-400 text-white leading-6">{{ pozo.id }}</span>
+            </td>
+            <td class="text-center border px-6 py-4">
+              <span class="block bg-yellow-400 text-white leading-6">Pozo/Instalación</span>
+            </td>
+            <td class="text-center border px-6 py-4">
+              <span class="block bg-yellow-400 text-white leading-6">Punto de muestreo</span>
+            </td>
+            <td class="text-center border px-6 py-4" colspan="2">
+              <span class="block bg-yellow-400 text-white leading-6">Observaciones</span>
+            </td>
+          </tr>
+          <tr class="bg-gray-50">
+            <td class="text-left border px-6 py-4" colspan="2" rowspan="5">
+              <ul role="list" class="divide-y divide-gray-400 rounded-md border border-gray-400 w-[20.063rem]">
+                <li class="flex items-center justify-between py-3 pl-3 pr-4 text-sm">
+                  <div class="flex flex-1 items-center">
+                    <Icon class="h-4 w-4 flex-shrink-0 text-gray-500" name="pencil" aria-hidden="true" />
                     <span class="ml-2 w-0 flex-1 truncate">Análisis ({{ pozo.docPozos.length }})</span>
                   </div>
                   <div class="ml-4 flex-shrink-0">
                     <a href="#" class="font-medium text-yellow-600 hover:text-yellow-500" scroll-region @click.prevent="makeActive('docPozos')">Mostrar</a>
                   </div>
                 </li>
-                <li class="flex items-center justify-between py-3 pl-3 pr-4 text-base">
-                  <div class="flex w-0 flex-1 items-center">
-                    <Icon class="h-5 w-5 flex-shrink-0 text-gray-500" name="chart" aria-hidden="true" />
+                <li class="flex items-center justify-between py-3 pl-3 pr-4 text-sm">
+                  <div class="flex flex-1 items-center">
+                    <Icon class="h-4 w-4 flex-shrink-0 text-gray-500" name="chart" aria-hidden="true" />
                     <span class="ml-2 w-0 flex-1 truncate">Componentes ({{ pozo.componentePozos.length }})</span>
                   </div>
                   <div class="ml-4 flex-shrink-0">
                     <a href="#" class="font-medium text-yellow-600 hover:text-yellow-500" scroll-region @click.prevent="makeActive('componentePozos')">Mostrar</a>
                   </div>
                 </li>
-                <li class="flex items-center justify-between py-3 pl-3 pr-4 text-base">
-                  <div class="flex w-0 flex-1 items-center">
-                    <Icon class="h-5 w-5 flex-shrink-0 text-gray-500" name="document-plus" aria-hidden="true" />
+                <li class="flex items-center justify-between py-3 pl-3 pr-4 text-sm">
+                  <div class="flex flex-1 items-center">
+                    <Icon class="h-4 w-4 flex-shrink-0 text-gray-500" name="document-plus" aria-hidden="true" />
                     <span class="ml-2 w-0 flex-1 truncate">Cromatografía de Gas ({{ pozo.cromatografiaGases.length }})</span>
                   </div>
                   <div class="ml-4 flex-shrink-0">
                     <a href="#" class="font-medium text-yellow-600 hover:text-yellow-500" scroll-region @click.prevent="makeActive('cromatografiaGases')">Mostrar</a>
                   </div>
                 </li>
-                <li class="flex items-center justify-between py-3 pl-3 pr-4 text-base">
-                  <div class="flex w-0 flex-1 items-center">
-                    <Icon class="h-5 w-5 flex-shrink-0 text-gray-500" name="document-plus" aria-hidden="true" />
+                <li class="flex items-center justify-between py-3 pl-3 pr-4 text-sm">
+                  <div class="flex flex-1 items-center">
+                    <Icon class="h-4 w-4 flex-shrink-0 text-gray-500" name="document-plus" aria-hidden="true" />
                     <span class="ml-2 w-0 flex-1 truncate"> Cromatografía Líquida ({{ pozo.cromatografiaLiquidas.length }})</span>
                   </div>
                   <div class="ml-4 flex-shrink-0">
@@ -259,11 +250,59 @@ const selectCromatografiaLiquidas = () => {
                   </div>
                 </li>
               </ul>
-            </dd>
-          </div>
-        </dl>
-      </div>
+            </td>
+            <td class="text-center border px-6 py-4">
+              <span class="block leading-6">{{ pozo.nombre_pozo }}</span>
+            </td>
+            <td class="text-center border px-6 py-4">
+              <span class="block leading-6">{{ pozo.punto_muestreo }}</span>
+            </td>
+            <td class="text-left border px-6 py-4" colspan="2">
+              <span class="block">{{ pozo.observaciones === '' || pozo.observaciones === null ? 'Aún no hay observaciones.' : pozo.observaciones }}</span>
+            </td>
+          </tr>
+          <tr class="bg-white">
+            <td class="text-center border px-6 py-4" colspan="2">
+              <span class="block bg-yellow-400 font-bold text-white leading-6">Fecha del muestreo</span>
+            </td>
+            <td class="text-center border px-6 py-4" colspan="2">
+              <span class="block bg-yellow-400 font-bold text-white leading-6">Presión</span>
+            </td>
+          </tr>
+          <tr class="bg-gray-50">
+            <td class="text-center border px-6 py-4" colspan="2">
+              <span class="block leading-6">{{ pozo.fecha_hora }}</span>
+            </td>
+            <td class="text-center border px-6 py-4" colspan="2">
+              <span class="block leading-6">{{ pozo.presion_kgcm2 }} KM/CM2 {{ pozo.presion_psi }} PSIA</span>
+            </td>
+          </tr>
+          <tr class="bg-white">
+            <td class="text-center border px-6 py-4" colspan="2">
+              <span class="block bg-yellow-400 font-bold text-white leading-6">Temperatura</span>
+            </td>
+            <td class="text-center border px-6 py-4">
+              <span class="block bg-yellow-400 font-bold text-white leading-6">Volúmen</span>
+            </td>
+            <td class="text-center border px-6 py-4">
+              <span class="block bg-yellow-400 font-bold text-white leading-6">Identificador</span>
+            </td>
+          </tr>
+          <tr class="bg-gray-50">
+            <td class="text-center border px-6 py-4" colspan="2">
+              <span class="block leading-6">{{ pozo.temp_C }} °C {{ pozo.temp_F }} °F</span>
+            </td>
+            <td class="text-center border px-6 py-4">
+              <span class="block leading-6">{{ pozo.volumen_cm3 }} CM3 {{ pozo.volumen_lts }} LTS</span>
+            </td>
+            <td class="text-center border px-6 py-4">
+              <span class="block leading-6">{{ pozo.identificador === '' || pozo.identificador === null ? 'Sin identificador.' : pozo.identificador }}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
+
     <!-- Análisis de Documentos -->
     <div v-show="isActiveTab('docPozos')" class="mt-12">
       <h2 class="text-2xl font-bold">Documentos del Pozo</h2>

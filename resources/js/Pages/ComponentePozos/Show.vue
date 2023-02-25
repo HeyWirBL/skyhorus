@@ -1,6 +1,9 @@
 <script setup>
-import { nextTick, ref } from 'vue'
+import { computed, inject, nextTick, ref } from 'vue'
 import { Head, Link, useForm } from '@inertiajs/vue3'
+import { Line } from 'vue-chartjs'
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js'
+import chartjsPluginDatalabels from 'chartjs-plugin-datalabels'
 import Icon from '@/Components/Icon.vue'
 import LoadingButton from '@/Components/LoadingButton.vue'
 import Modal from '@/Components/Modal.vue'
@@ -9,14 +12,91 @@ import TextInput from '@/Components/TextInput.vue'
 import TextareaInput from '@/Components/TextareaInput.vue'
 import TrashedMessage from '@/Shared/TrashedMessage.vue'
 
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, chartjsPluginDatalabels)
+
 const props = defineProps({
   can: Object,
   componentePozo: Object,
   pozos: Array,
+  quimicosData: Array,
 })
 
+const swal = inject('$swal')
+
 const editComponenteModal = ref(false)
+const showMessageMetLab = ref(false)
+const showMessageObs = ref(false)
+const showChart = ref(false)
 const firstInput = ref(null)
+
+const chartOptions = {
+  plugins: {
+    datalabels: {
+      align: 'end',
+      anchor: 'end',
+      color: '#555555',
+      font: {
+        size: 14,
+        weight: 'bold',
+      },
+      formatter: (value, context) => {
+        return context.chart.data.labels[context.dataIndex].label
+      },
+    },
+  },
+  responsive: true,
+  scales: {
+    x: {
+      display: true,
+      title: {
+        display: true,
+        text: 'Componentes',
+        color: '#555555',
+        font: {
+          size: 15,
+          weight: 'bold',
+          lineHeight: 1.2,
+        },
+      },
+    },
+    y: {
+      display: true,
+      title: {
+        display: true,
+        text: 'Total Mo',
+        color: '#555555',
+        font: {
+          size: 15,
+          weight: 'bold',
+          lineHeight: 1.2,
+        },
+      },
+    },
+  },
+}
+
+/**
+ * Computed Property: Formats the data received from the props in a format
+ * that can be used by the chart. This includes mapping the `quimicosData`
+ * array to generate the chart labels and data.
+ */
+const chartDataFormatted = computed(() => {
+  return {
+    labels: props.quimicosData.map((q) => q.Quimico),
+    datasets: [
+      {
+        label: 'Total Mo',
+        data: props.quimicosData.map((q) => q.Total_mo),
+        backgroundColor: 'rgba(100, 181, 246, 1)',
+        borderColor: 'rgba(105, 183, 246, 1)',
+        borderWidth: 2,
+        pointStyle: 'circle',
+        pointRadius: 6,
+        pointHoverRadius: 12,
+      },
+    ],
+  }
+})
 
 const form = useForm({
   _method: 'put',
@@ -75,10 +155,25 @@ const form = useForm({
   fecha_muestreo: props.componentePozo.fecha_muestreo,
 })
 
+const messageMetLab = computed(() => props.componentePozo.met_laboratorio)
+const messageObs = computed(() => props.componentePozo.observaciones)
+
 const openModal = () => {
   editComponenteModal.value = true
 
   nextTick(() => firstInput.value.focus())
+}
+
+const openModalMessageMet = () => {
+  showMessageMetLab.value = true
+}
+
+const openModalObs = () => {
+  showMessageObs.value = true
+}
+
+const openModalChart = () => {
+  showChart.value = true
 }
 
 const updateComponentePozo = () => {
@@ -94,14 +189,74 @@ const updateComponentePozo = () => {
   })
 }
 
+const destroy = () => {
+  swal({
+    title: '¿Estás seguro de querer eliminar estos componentes de este pozo?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Confirmar',
+    cancelButtonText: 'Cancelar',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      form.delete(`/componente-pozos/${props.componentePozo.id}`)
+    }
+  })
+}
+
+const restore = () => {
+  swal({
+    title: '¿Estás seguro de querer restablecer estos componentes de este pozo?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Restablecer',
+    cancelButtonText: 'Cancelar',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      form.put(`/componente-pozos/${props.componentePozo.id}/restore`)
+    }
+  })
+}
+
 const closeModal = () => {
   editComponenteModal.value = false
   form.reset()
 }
 
+const closeModalMessageMet = () => {
+  showMessageMetLab.value = false
+}
+
+const closeModalMessageObs = () => {
+  showMessageObs.value = false
+}
+
+const closeModalChart = () => {
+  showChart.value = false
+}
+
 const download = () => {
   return window.open('/componente-pozos/export/' + props.componentePozo.id, '_blank')
 }
+
+const truncateMessageMetLab = computed(() => {
+  const maxLength = 30
+  if (messageMetLab.value.length <= maxLength) {
+    return messageMetLab.value
+  }
+  return messageMetLab.value.substring(0, maxLength)
+})
+
+const truncateMessageObs = computed(() => {
+  const maxLength = 30
+  if (messageObs.value.length <= maxLength) {
+    return messageObs.value
+  }
+  return messageObs.value.substring(0, maxLength)
+})
 </script>
 
 <template>
@@ -119,9 +274,9 @@ const download = () => {
       </button>
     </div>
 
-    <TrashedMessage v-if="componentePozo.deleted_at" class="mb-6" @restore="restore">Estos componentes de pozo han sido eliminados.</TrashedMessage>
+    <TrashedMessage v-if="componentePozo.deleted_at && can.restoreComponentePozo" class="mb-6" @restore="restore">Estos componentes de pozo han sido eliminados.</TrashedMessage>
 
-    <Modal :show="editComponenteModal" style="max-width: 985px !important">
+    <Modal :show="editComponenteModal" style="max-width: 1000px">
       <div class="relative">
         <!-- Modal Header -->
         <div class="flex items-start justify-between p-4 border-b rounded-t">
@@ -134,7 +289,7 @@ const download = () => {
         </div>
 
         <!-- Modal Body -->
-        <div class="p-6 space-y-6">
+        <div class="p-6 space-y-6" style="height: 600px; overflow: auto">
           <form @submit.prevent="updateComponentePozo">
             <div class="flex flex-wrap text-sm leading-relaxed">
               <TextInput ref="firstInput" v-model="form.nombre_componente" :error="form.errors.nombre_componente" class="pb-8 pr-6 w-full lg:w-1/2" label="Nombre del grupo de componentes" />
@@ -216,265 +371,401 @@ const download = () => {
       </div>
     </Modal>
 
-    <div class="overflow-hidden bg-white shadow sm:rounded-lg">
-      <div class="px-4 py-5 sm:px-6">
-        <h3 class="text-lg font-medium leading-6 text-gray-900">Datos de análisis en laboratorio</h3>
+    <Modal :show="showMessageMetLab" @close="closeModalMessageMet">
+      <div class="relative">
+        <!-- Modal Header -->
+        <div class="flex items-start justify-between p-4 border-b rounded-t">
+          <h2 class="text-xl font-semibold">Método de laboratorio</h2>
+
+          <button class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" type="button" @click="closeModalMessageMet">
+            <Icon class="w-4 h-4" name="close" aria-hidden="true" />
+            <span class="sr-only">Cerrar modal</span>
+          </button>
+        </div>
+        <!-- Modal Body -->
+        <div class="p-6 space-y-6" style="height: 150px">
+          <p class="text-base text-gray-600">{{ componentePozo.met_laboratorio }}</p>
+        </div>
+        <div class="flex items-center justify-end p-4 space-x-2 border-t border-gray-200 rounded-b">
+          <button class="btn-secondary" type="button" @click="closeModalMessageMet">Cerrar</button>
+        </div>
       </div>
-      <div class="border-t border-gray-200">
-        <dl>
-          <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt class="text-base font-medium text-gray-500">Pozo/Instalación</dt>
-            <dd class="mt-1 text-base text-gray-900 sm:col-span-2 sm:mt-0">{{ componentePozo.pozo.nombre_pozo }}</dd>
-          </div>
-          <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt class="text-base font-medium text-gray-500">Nombre del grupo</dt>
-            <dd class="mt-1 text-base text-gray-900 sm:col-span-2 sm:mt-0">{{ componentePozo.nombre_componente }}</dd>
-          </div>
-          <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt class="text-base font-medium text-gray-500">Equipo utilizado</dt>
-            <dd class="mt-1 text-base text-gray-900 sm:col-span-2 sm:mt-0">{{ componentePozo.equipo_utilizado }}</dd>
-          </div>
-          <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt class="text-base font-medium text-gray-500">Método del laboratorio</dt>
-            <dd class="mt-1 text-base text-gray-900 sm:col-span-2 sm:mt-0">{{ componentePozo.met_laboratorio }}</dd>
-          </div>
-          <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt class="text-base font-medium text-gray-500">Número de determinación</dt>
-            <dd class="mt-1 text-base text-gray-900 sm:col-span-2 sm:mt-0">{{ componentePozo.no_determinacion }}</dd>
-          </div>
-          <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt class="text-base font-medium text-gray-500">Fecha de recepción</dt>
-            <dd class="mt-1 text-base text-gray-900 sm:col-span-2 sm:mt-0">{{ componentePozo.fecha_recep }}</dd>
-          </div>
-          <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt class="text-base font-medium text-gray-500">Fecha de análisis</dt>
-            <dd class="mt-1 text-base text-gray-900 sm:col-span-2 sm:mt-0">{{ componentePozo.fecha_analisis }}</dd>
-          </div>
-          <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt class="text-base font-medium text-gray-500">Fecha de muestreo</dt>
-            <dd class="mt-1 text-base text-gray-900 sm:col-span-2 sm:mt-0">{{ componentePozo.fecha_muestreo }}</dd>
-          </div>
-          <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt class="text-base font-medium text-gray-500">Observaciones</dt>
-            <dd class="mt-1 text-base text-gray-900 sm:col-span-2 sm:mt-0">{{ componentePozo.observaciones }}</dd>
-          </div>
-          <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt class="text-base font-medium text-gray-500">Componentes</dt>
-            <dd class="mt-1 text-base text-gray-900 sm:col-span-2 sm:mt-0 rounded-md shadow overflow-x-auto">
-              <table class="whitespace-nowrap">
-                <thead class="text-sm text-left font-bold uppercase bg-white border-b">
-                  <tr>
-                    <th scope="col" class="px-6 py-3">Información</th>
-                    <th scope="col" class="px-6 py-3">PM</th>
-                    <th scope="col" class="px-6 py-3">% Peso</th>
-                    <th scope="col" class="px-6 py-3">% MOL</th>
-                    <th scope="col" class="px-6 py-3">Densidad</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr class="bg-white border-b">
-                    <td>
-                      <span class="flex items-center px-6 py-4">Dióxido de carbono</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">{{ componentePozo.dioxido_carbono }}</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">43</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">34</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">{{ componentePozo.den_dioxido_carbono }}</span>
-                    </td>
-                  </tr>
-                  <tr class="bg-white border-b">
-                    <td>
-                      <span class="flex items-center px-6 py-4">Ácido sulfhídrico</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">{{ componentePozo.acido_sulfidrico }}</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">43</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">34</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">{{ componentePozo.den_acido_sulfidrico }}</span>
-                    </td>
-                  </tr>
-                  <tr class="bg-white border-b">
-                    <td>
-                      <span class="flex items-center px-6 py-4">Nitrógeno</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">{{ componentePozo.nitrogeno }}</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">43</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">34</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">{{ componentePozo.den_nitrogeno }}</span>
-                    </td>
-                  </tr>
-                  <tr class="bg-white border-b">
-                    <td>
-                      <span class="flex items-center px-6 py-4">Metano</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">{{ componentePozo.metano }}</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">43</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">34</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">{{ componentePozo.den_metano }}</span>
-                    </td>
-                  </tr>
-                  <tr class="bg-white border-b">
-                    <td>
-                      <span class="flex items-center px-6 py-4">Etano</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">{{ componentePozo.etano }}</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">43</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">34</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">{{ componentePozo.den_etano }}</span>
-                    </td>
-                  </tr>
-                  <tr class="bg-white border-b">
-                    <td>
-                      <span class="flex items-center px-6 py-4">Propano</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">{{ componentePozo.propano }}</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">43</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">34</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">{{ componentePozo.den_propano }}</span>
-                    </td>
-                  </tr>
-                  <tr class="bg-white border-b">
-                    <td>
-                      <span class="flex items-center px-6 py-4">Isobutano</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">{{ componentePozo.iso_butano }}</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">43</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">34</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">{{ componentePozo.den_iso_butano }}</span>
-                    </td>
-                  </tr>
-                  <tr class="bg-white border-b">
-                    <td>
-                      <span class="flex items-center px-6 py-4">Butano</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">{{ componentePozo.n_butano }}</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">43</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">34</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">{{ componentePozo.den_n_butano }}</span>
-                    </td>
-                  </tr>
-                  <tr class="bg-white border-b">
-                    <td>
-                      <span class="flex items-center px-6 py-4">Isopentano</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">{{ componentePozo.iso_pentano }}</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">43</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">34</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">{{ componentePozo.den_iso_pentano }}</span>
-                    </td>
-                  </tr>
-                  <tr class="bg-white border-b">
-                    <td>
-                      <span class="flex items-center px-6 py-4">Pentano</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">{{ componentePozo.n_pentano }}</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">43</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">34</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">{{ componentePozo.den_n_pentano }}</span>
-                    </td>
-                  </tr>
-                  <tr class="bg-white border-b">
-                    <td>
-                      <span class="flex items-center px-6 py-4">Hexano</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">{{ componentePozo.n_exano }}</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">43</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">34</span>
-                    </td>
-                    <td>
-                      <span class="flex items-center px-6 py-4">{{ componentePozo.den_n_exano }}</span>
-                    </td>
-                  </tr>
-                </tbody>
-                <tfoot class="text-sm text-left font-bold uppercase bg-white border-b">
-                  <tr>
-                    <th scope="row" class="px-6 py-3">Total</th>
-                    <th class="px-6 py-3">540.86</th>
-                    <th class="px-6 py-3">100.00</th>
-                    <th class="px-6 py-3">100</th>
-                    <th class="px-6 py-3">0</th>
-                  </tr>
-                </tfoot>
-              </table>
-            </dd>
-          </div>
-          <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt class="text-base font-medium text-gray-500">Reportes</dt>
-            <dd class="mt-1 text-base text-gray-900 sm:col-span-2 sm:mt-0">
+    </Modal>
+
+    <Modal :show="showMessageObs" @close="closeModalMessageObs">
+      <div class="relative">
+        <!-- Modal Header -->
+        <div class="flex items-start justify-between p-4 border-b rounded-t">
+          <h2 class="text-xl font-semibold">Observaciones</h2>
+
+          <button class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" type="button" @click="closeModalMessageObs">
+            <Icon class="w-4 h-4" name="close" aria-hidden="true" />
+            <span class="sr-only">Cerrar modal</span>
+          </button>
+        </div>
+        <!-- Modal Body -->
+        <div class="p-6 space-y-6" style="height: 150px">
+          <p class="text-base text-gray-600">{{ componentePozo.observaciones }}</p>
+        </div>
+        <div class="flex items-center justify-end p-4 space-x-2 border-t border-gray-200 rounded-b">
+          <button class="btn-secondary" type="button" @click="closeModalMessageObs">Cerrar</button>
+        </div>
+      </div>
+    </Modal>
+
+    <Modal :show="showChart" style="max-width: 1000px" @close="closeModalChart">
+      <div class="relative">
+        <!-- Modal Header -->
+        <div class="flex items-start justify-between p-4 border-b rounded-t">
+          <h2 class="text-xl font-semibold">Gráfica de Líneas - % MOL</h2>
+
+          <button class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" type="button" @click="closeModalChart">
+            <Icon class="w-4 h-4" name="close" aria-hidden="true" />
+            <span class="sr-only">Cerrar modal</span>
+          </button>
+        </div>
+        <!-- Modal Body -->
+        <div class="p-6 space-y-6">
+          <Line id="my-chart-id" :options="chartOptions" :data="chartDataFormatted" />
+        </div>
+        <div class="flex items-center justify-end p-4 space-x-2 border-t border-gray-200 rounded-b">
+          <button class="btn-secondary" type="button" @click="closeModalChart">Cerrar</button>
+        </div>
+      </div>
+    </Modal>
+
+    <div class="bg-white shadow rounded-md overflow-x-auto">
+      <table class="w-full whitespace-nowrap">
+        <thead class="bg-white border-b-2">
+          <tr>
+            <th scope="col" class="border px-6 py-4">
+              <button v-if="!componentePozo.deleted_at" class="text-red-600 hover:underline" tabindex="-1" type="button" @click="destroy">Eliminar</button>
+            </th>
+            <th scope="col" class="border px-6 py-4" />
+            <th scope="col" class="border px-6 py-4" />
+            <th scope="col" class="border px-6 py-4" />
+            <th scope="col" class="border px-6 py-4" />
+            <th scope="col" class="border px-6 py-4" />
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="bg-gray-50">
+            <td class="border text-center px-6 py-4">
+              <span class="block bg-gray-400 text-white font-normal leading-6">{{ componentePozo.pozo.nombre_pozo }}</span>
+            </td>
+            <td class="border text-center px-6 py-4" colspan="3">
+              <span class="block bg-gray-400 text-white font-normal leading-6">Datos de análisis en laboratorio</span>
+            </td>
+            <td class="border text-center px-6 py-4" colspan="2">
+              <span class="block bg-gray-400 text-white font-normal leading-6">Nombre del grupo</span>
+            </td>
+          </tr>
+          <tr class="bg-white">
+            <td class="text-center border px-6 py-4" />
+            <td class="text-center border px-6 py-4">
+              <span class="block bg-yellow-400 text-white underline cursor-pointer leading-6">Fecha de recepción</span>
+            </td>
+            <td class="text-center border px-6 py-4">
+              <span class="block bg-yellow-400 text-white underline cursor-pointer leading-6">Fecha de análisis</span>
+            </td>
+            <td class="text-center border px-6 py-4">
+              <span class="block bg-yellow-400 text-white underline cursor-pointer leading-6">Número de determinación</span>
+            </td>
+            <td class="text-center border px-6 py-4" colspan="2">
+              <span class="block leading-6">{{ componentePozo.nombre_componente }}</span>
+            </td>
+          </tr>
+          <tr class="bg-gray-50">
+            <td class="border text-center px-6 py-4" />
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">{{ componentePozo.fecha_recep }}</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">{{ componentePozo.fecha_analisis }}</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">{{ componentePozo.no_determinacion }}</span>
+            </td>
+            <td class="border text-center px-6 py-4" />
+            <td class="border text-center px-6 py-4" />
+          </tr>
+          <tr class="bg-white">
+            <td class="text-center border px-6 py-4" />
+            <td class="text-center border px-6 py-4">
+              <span class="block bg-yellow-400 text-white underline cursor-pointer leading-6">Equipo utilizado</span>
+            </td>
+            <td class="text-center border px-6 py-4" colspan="2">
+              <span class="block bg-yellow-400 text-white underline cursor-pointer leading-6">Método de laboratorio</span>
+            </td>
+            <td class="text-center border px-6 py-4">
+              <span class="block bg-yellow-400 text-white underline cursor-pointer leading-6">Fecha de muestreo</span>
+            </td>
+            <td class="text-center border px-6 py-4">
+              <span class="block leading-6">{{ componentePozo.fecha_muestreo }}</span>
+            </td>
+          </tr>
+          <tr class="bg-gray-50">
+            <td class="border text-center px-6 py-4" />
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">{{ componentePozo.equipo_utilizado }}</span>
+            </td>
+            <td class="border text-center px-6 py-4" colspan="2">
+              <span class="block leading-6">
+                {{ truncateMessageMetLab }}
+                <a class="text-yellow-400 hover:underline" href="#" @click="openModalMessageMet">Ver Más...</a>
+              </span>
+            </td>
+            <td class="border text-center px-6 py-4" />
+            <td class="border text-center px-6 py-4" />
+          </tr>
+          <tr class="bg-white">
+            <td class="text-center border px-6 py-4" />
+            <td class="text-center border px-6 py-4">
+              <span class="block bg-yellow-400 text-white underline cursor-pointer leading-6">Observaciones</span>
+            </td>
+            <td class="text-left border px-6 py-4" colspan="2">
+              <span class="block leading-6">{{ truncateMessageObs }} <a class="text-yellow-400 hover:underline" href="#" @click="openModalObs">Ver Más...</a></span>
+            </td>
+            <td class="text-center border px-6 py-4" />
+            <td class="text-center border px-6 py-4" />
+          </tr>
+          <tr class="bg-gray-50">
+            <td class="border text-center px-6 py-4" />
+            <td class="border text-center px-6 py-4">
+              <span class="block bg-gray-400 text-white font-normal leading-6">Información</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block bg-gray-400 text-white font-normal leading-6">PM</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block bg-gray-400 text-white font-normal leading-6">% Peso</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block bg-gray-400 text-white font-normal leading-6">% MOL</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block bg-gray-400 text-white font-normal leading-6">Densidad</span>
+            </td>
+          </tr>
+          <tr class="bg-white">
+            <td class="border text-center px-6 py-4" />
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">Dióxido de carbono</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">{{ componentePozo.dioxido_carbono }}</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">43</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">54</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">{{ componentePozo.den_dioxido_carbono }}</span>
+            </td>
+          </tr>
+          <tr class="bg-gray-50">
+            <td class="border text-center px-6 py-4" />
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">Ácido sulfhídrico</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">{{ componentePozo.acido_sulfidrico }}</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">43</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">54</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">{{ componentePozo.den_acido_sulfidrico }}</span>
+            </td>
+          </tr>
+          <tr class="bg-white">
+            <td class="border text-center px-6 py-4" />
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">Nitrógeno</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">{{ componentePozo.nitrogeno }}</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">43</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">54</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">{{ componentePozo.den_nitrogeno }}</span>
+            </td>
+          </tr>
+          <tr class="bg-gray-50">
+            <td class="border text-center px-6 py-4" />
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">Metano</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">{{ componentePozo.metano }}</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">43</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">54</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">{{ componentePozo.den_metano }}</span>
+            </td>
+          </tr>
+          <tr class="bg-white">
+            <td class="border text-center px-6 py-4" />
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">Etano</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">{{ componentePozo.etano }}</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">43</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">54</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">{{ componentePozo.den_etano }}</span>
+            </td>
+          </tr>
+          <tr class="bg-gray-50">
+            <td class="border text-center px-6 py-4" />
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">Propano</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">{{ componentePozo.propano }}</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">43</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">54</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">{{ componentePozo.den_propano }}</span>
+            </td>
+          </tr>
+          <tr class="bg-white">
+            <td class="border text-center px-6 py-4" />
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">Iso-Butano</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">{{ componentePozo.iso_butano }}</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">43</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">54</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">{{ componentePozo.den_iso_butano }}</span>
+            </td>
+          </tr>
+          <tr class="bg-gray-50">
+            <td class="border text-center px-6 py-4" />
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">n-Butano</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">{{ componentePozo.n_butano }}</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">43</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">54</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">{{ componentePozo.den_n_butano }}</span>
+            </td>
+          </tr>
+          <tr class="bg-white">
+            <td class="border text-center px-6 py-4" />
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">Iso-Pentano</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">{{ componentePozo.iso_pentano }}</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">43</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">54</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">{{ componentePozo.den_iso_pentano }}</span>
+            </td>
+          </tr>
+          <tr class="bg-gray-50">
+            <td class="border text-center px-6 py-4" />
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">n-Petano</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">{{ componentePozo.n_pentano }}</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">43</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">54</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">{{ componentePozo.den_n_pentano }}</span>
+            </td>
+          </tr>
+          <tr class="bg-white">
+            <td class="border text-center px-6 py-4" />
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">**n-Exano</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">{{ componentePozo.n_exano }}</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">43</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">54</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block leading-6">{{ componentePozo.den_n_exano }}</span>
+            </td>
+          </tr>
+          <tr class="bg-gray-50">
+            <td class="border text-center px-6 py-4" />
+            <td class="border text-center px-6 py-4">
+              <span class="block bg-gray-400 text-white font-normal leading-6">Total</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block bg-yellow-400 text-white font-bold leading-6">540.86</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block bg-yellow-400 text-white font-bold leading-6">100.00</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block bg-yellow-400 text-white font-bold leading-6">100</span>
+            </td>
+            <td class="border text-center px-6 py-4">
+              <span class="block bg-yellow-400 text-white font-bold leading-6">0</span>
+            </td>
+          </tr>
+          <tr class="bg-white">
+            <td class="border text-center px-6 py-4" />
+            <td class="border text-left px-6 py-4" colspan="5">
               <ul role="list" class="divide-y divide-gray-400 rounded-md border border-gray-400">
                 <li class="flex items-center justify-between py-3 pl-3 pr-4 text-base">
                   <div class="flex w-0 flex-1 items-center">
@@ -482,7 +773,7 @@ const download = () => {
                     <span class="ml-2 w-0 flex-1 truncate">Documento PDF</span>
                   </div>
                   <div class="ml-4 flex-shrink-0">
-                    <Link href="" class="font-medium text-yellow-600 hover:text-yellow-500" type="button" @click.prevent="download">Descargar</Link>
+                    <Link href="#" class="font-medium text-yellow-600 hover:text-yellow-500" type="button" @click.prevent="download">Descargar</Link>
                   </div>
                 </li>
                 <li class="flex items-center justify-between py-3 pl-3 pr-4 text-base">
@@ -491,14 +782,14 @@ const download = () => {
                     <span class="ml-2 w-0 flex-1 truncate">Gráfica de líneas % MOL</span>
                   </div>
                   <div class="ml-4 flex-shrink-0">
-                    <Link href="#" class="font-medium text-yellow-600 hover:text-yellow-500">Visualizar</Link>
+                    <a href="#" class="font-medium text-yellow-600 hover:text-yellow-500" @click="openModalChart">Visualizar</a>
                   </div>
                 </li>
               </ul>
-            </dd>
-          </div>
-        </dl>
-      </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </template>

@@ -70,9 +70,13 @@ class DirectorioPolicy
      * @param  \App\Models\Directorio  $directorio
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Directorio $directorio)
+    public function delete(User $user)
     {
-        //
+        switch ($user->rol) {
+            case 'Administrador': return $user->rol;
+            case 'Colaborador': return $user->rol;
+            case 'Editor': return $user->rol;
+        }
     }
 
     /**
@@ -82,8 +86,12 @@ class DirectorioPolicy
      * @param  \App\Models\Directorio  $directorio
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, Directorio $directorio)
+    public function restore(User $user)
     {
-        //
+        switch ($user->rol) {
+            case 'Administrador': return $user->rol;
+            case 'Colaborador': return $user->rol;
+            case 'Editor': return $user->rol;
+        }
     }
 }

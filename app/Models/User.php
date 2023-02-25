@@ -83,7 +83,7 @@ class User extends Authenticatable
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {
-            $query->where(function ($query) use ($search) {
+            $query->where(function ($query) use ($search) {                
                 $query->where('nombre', 'like', '%'.$search.'%')
                       ->orWhere('apellidos', 'like', '%'.$search.'%')
                       ->orWhere('usuario', 'like', '%'.$search.'%')
@@ -92,11 +92,7 @@ class User extends Authenticatable
         })->when($filters['role'] ?? null, function ($query, $role) {
             $query->whereRole($role);
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {
-            if ($trashed === 'with') {
-                $query->withTrashed();
-            } elseif ($trashed === 'only') {
-                $query->onlyTrashed();
-            }
+            $trashed === 'only' ? $query->onlyTrashed() : '';
         });
     }
 }

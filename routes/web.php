@@ -9,11 +9,12 @@ use App\Http\Controllers\DirectorioController;
 use App\Http\Controllers\DocPozoController;
 use App\Http\Controllers\DocumentoController;
 use App\Http\Controllers\GraficaController;
-use App\Http\Controllers\ImageController;
+use App\Http\Controllers\MenuController;
 use App\Http\Controllers\PozoController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 /*
 |--------------------------------------------------------------------------
@@ -74,16 +75,22 @@ Route::middleware('auth')->group(function () {
         ->name('directorios.edit')->middleware('can:update,App\Models\Directorio');
 
     Route::post('directorios', [DirectorioController::class, 'store'])
-        ->name('directorios.store');
+        ->name('directorios.store')->middleware('can:create,App\Models\Directorio');
         
     Route::put('directorios/{directorio}', [DirectorioController::class, 'update'])
         ->name('directorios.update')->middleware('can:update,App\Models\Directorio');
 
     Route::put('directorios/{directorio}/restore', [DirectorioController::class, 'restore'])
-        ->name('directorios.restore');
+        ->name('directorios.restore')->middleware('can:restore,App\Models\Directorio');
+        
+    Route::put('directorios', [DirectorioController::class, 'restoreAll'])
+        ->name('directorios.restoreAll')->middleware('can:restore,App\Models\Directorio');
 
     Route::delete('directorios/{directorio}', [DirectorioController::class, 'destroy'])
-        ->name('directorios.destroy');
+        ->name('directorios.destroy')->middleware('can:delete,App\Models\Directorio');
+
+    Route::delete('directorios', [DirectorioController::class, 'destroyAll'])
+        ->name('directorios.destroyAll')->middleware('can:delete,App\Models\Directorio');
 
     /* Catálogo de Años */
     /*Route::resource('anos', AnoController::class)->only([
@@ -154,16 +161,22 @@ Route::middleware('auth')->group(function () {
         ->name('pozos.show');
 
     Route::post('pozos', [PozoController::class, 'store'])
-        ->name('pozos.store');
+        ->name('pozos.store')->middleware('can:create,App\Models\Pozo');
 
     Route::put('pozos/{pozo}', [PozoController::class, 'update'])
         ->name('pozos.update')->middleware('can:update,App\Models\Pozo');
 
     Route::put('pozos/{pozo}/restore', [PozoController::class, 'restore'])
-        ->name('pozos.restore');
+        ->name('pozos.restore')->middleware('can:restore,App\Models\Pozo');
+
+    Route::put('pozos', [PozoController::class, 'restoreAll'])
+        ->name('pozos.restoreAll')->middleware('can:restore,App\Models\Pozo');
 
     Route::delete('pozos/{pozo}', [PozoController::class, 'destroy'])
-        ->name('pozos.destroy');
+        ->name('pozos.destroy')->middleware('can:delete,App\Models\Pozo');
+    
+    Route::delete('pozos', [PozoController::class, 'destroyAll'])
+        ->name('pozos.destroyAll')->middleware('can:delete,App\Models\Pozo');
 
     /* Catálogo de Pozos: Documentos */
     // Route::resource('docpozos', DocPozoController::class)->only(['index']);
@@ -172,6 +185,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('doc-pozos/crear', [DocPozoController::class, 'create'])
         ->name('doc-pozos.create');
+
+    Route::post('doc-pozos', [DocPozoController::class, 'store'])
+        ->name('doc-pozos.store');
 
     /* Catálogo de Pozos: Componentes */
     //Route::resource('componentespozos', ComponentePozoController::class)->only(['index']);
@@ -186,16 +202,41 @@ Route::middleware('auth')->group(function () {
         ->name('componente-pozos.show');
 
     Route::put('componente-pozos/{componentePozo}', [ComponentePozoController::class, 'update'])
-        ->name('componente-pozos.update')->middleware('can:update,App\Models\ComponentePozo');
+        ->name('componente-pozos.update')
+        ->middleware('can:update,App\Models\ComponentePozo');
 
     Route::put('componente-pozos/{componentePozo}/restore', [ComponentePozoController::class, 'restore'])
-        ->name('pocomponente-pozoszos.restore');
+        ->name('pocomponente-pozoszos.restore')
+        ->middleware('can:restore,App\Models\ComponentePozo');
+
+    Route::put('componente-pozos', [ComponentePozoController::class, 'restoreAll'])
+        ->name('componente-pozos.restoreAll')
+        ->middleware('can:restore,App\Models\ComponentePozo');
 
     Route::delete('componente-pozos/{componentePozo}', [ComponentePozoController::class, 'destroy'])
-        ->name('componente-pozos.destroy');
+        ->name('componente-pozos.destroy')
+        ->middleware('can:delete,App\Models\ComponentePozo');
+    
+    Route::delete('componente-pozos', [ComponentePozoController::class, 'destroyAll'])
+        ->name('componente-pozos.destroyAll')
+        ->middleware('can:delete,App\Models\ComponentePozo');
 
-    Route::post('componente-pozos/import', [ComponentePozoController::class, 'import'])
-        ->name('componente-pozos.import');
+    Route::post('/componente-pozos', function (Request $request) {
+            $file = $request->file('file');
+        
+            // Parse the Excel file and extract the data
+            // Here, we're using the PHPExcel library to do this
+            $reader = IOFactory::createReaderForFile($file);
+            $reader->setReadDataOnly(true);
+            $excel = $reader->load($file);
+            $worksheet = $excel->getActiveSheet();
+            $rows = $worksheet->toArray();
+        
+            // Insert the data into the database
+            DB::table('componente-pozos')->insert($rows);
+        
+            return response()->json(['success' => true]);
+        });
 
     Route::get('componente-pozos/export/{componentePozo}', [ComponentePozoController::class, 'export'])
         ->name('componente-pozos.export');
@@ -209,6 +250,20 @@ Route::middleware('auth')->group(function () {
     Route::get('cromatografia-gases/crear', [CromatografiaGasController::class, 'create'])
         ->name('cromatografia-gases.create');
 
+    Route::put('cromatografia-gases/{cromatografiaGas}/restore', [CromatografiaGasController::class, 'restore'])
+        ->name('cromatografia-gases.restore')
+        ->middleware('can:restore,App\Models\CromatografiaGas');
+    
+    Route::put('cromatografia-gases', [CromatografiaGasController::class, 'restoreAll'])
+        ->name('cromatografia-gases.restoreAll')
+        ->middleware('can:restore,App\Models\CromatografiaGas');
+
+    Route::delete('cromatografia-gases/{cromatografiaGas}', [CromatografiaGasController::class, 'destroy'])
+        ->name('cromatografia-gases.destroy');
+    
+    Route::delete('cromatografia-gases', [CromatografiaGasController::class, 'destroyAll'])
+        ->name('cromatografia-gases.destroyAll');
+
     /* Cromatografías: Liquída */
     //Route::resource('cromatografialiquida', CromatografiaLiquidaController::class)->only(['index']);
 
@@ -218,8 +273,25 @@ Route::middleware('auth')->group(function () {
     Route::get('cromatografia-liquidas/crear', [CromatografiaLiquidaController::class, 'create'])
         ->name('cromatografia-liquidas.create');
 
+    Route::put('cromatografia-liquidas/{cromatografiaLiquida}/restore', [CromatografiaLiquidaController::class, 'restore'])
+        ->name('cromatografia-liquidas.restore')
+        ->middleware('can:restore,App\Models\CromatografiaLiquida');
+
+    Route::put('cromatografia-liquidas', [CromatografiaLiquidaController::class, 'restoreAll'])
+        ->name('cromatografia-liquidas.restoreAll')
+        ->middleware('can:restore,App\Models\CromatografiaLiquida');
+
+    Route::delete('cromatografia-liquidas/{cromatografiaLiquida}', [CromatografiaLiquidaController::class, 'destroy'])
+        ->name('cromatografia-liquidas.destroy');
+
+    Route::delete('cromatografia-liquidas', [CromatografiaLiquidaController::class, 'destroyAll'])
+        ->name('cromatografia-liquidas.destroyAll');
+
     /* Gráficas Generales */
     Route::resource('graficas', GraficaController::class)->only(['index']);
+
+    /* Menús */
+    Route::resource('menu', MenuController::class)->only(['index']);
 });
 
 /* Autenticación */

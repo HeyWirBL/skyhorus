@@ -1,6 +1,6 @@
 <script setup>
-import { inject, ref, watch } from 'vue'
-import { Head, Link, router } from '@inertiajs/vue3'
+import { computed, inject, ref, watch } from 'vue'
+import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3'
 import debounce from 'lodash/debounce'
 import mapValues from 'lodash/mapValues'
 import pickBy from 'lodash/pickBy'
@@ -24,6 +24,9 @@ const form = ref({
   trashed: props.filters.trashed,
 })
 
+const formDirectorio = useForm({})
+const isTrashed = computed(() => usePage().url.includes('trashed=only'))
+
 watch(
   () => form.value,
   debounce(function () {
@@ -34,12 +37,18 @@ watch(
   },
 )
 
-const select = () => {
+const toggleAll = () => {
   selected.value = []
   if (!selectAll.value) {
-    for (let i in props.directorios.data) {
-      selected.value.push(props.directorios.data[i].id)
-    }
+    selected.value = selected.value.length === props.directorios.data.length ? [] : props.directorios.data.map((dir) => dir.id)
+  }
+}
+
+const changeToggleAll = () => {
+  if (props.directorios.data.length === selected.value.length) {
+    selectAll.value = true
+  } else {
+    selectAll.value = false
   }
 }
 
@@ -59,7 +68,10 @@ const removeSelectedItems = () => {
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        //props.documentos.data
+        formDirectorio.delete(`/directorios/${selected.value}`, {
+          onSuccess: () => (selected.value = []),
+          onFinish: () => (selectAll.value = false),
+        })
       }
     })
   } else {
@@ -73,7 +85,48 @@ const removeSelectedItems = () => {
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        //props.documentos.data
+        formDirectorio.delete(`/directorios?ids=${selected.value.join(',')}`, {
+          onSuccess: () => (selected.value = []),
+          onFinish: () => (selectAll.value = false),
+        })
+      }
+    })
+  }
+}
+
+const restoreSelectedItems = () => {
+  if (selected.value.length === 1) {
+    swal({
+      title: '¿Estás seguro de querer restablecer este directorio?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Confirmar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        formDirectorio.put(`/directorios/${selected.value}/restore`, {
+          onSuccess: () => (selected.value = []),
+          onFinish: () => (selectAll.value = false),
+        })
+      }
+    })
+  } else {
+    swal({
+      title: '¿Estás seguro de querer restablecer estos directorios?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Confirmar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        formDirectorio.put(`/directorios?ids=${selected.value.join(',')}`, {
+          onSuccess: () => (selected.value = []),
+          onFinish: () => (selectAll.value = false),
+        })
       }
     })
   }
@@ -89,7 +142,6 @@ const removeSelectedItems = () => {
         <label class="block mt-4 text-gray-700">Eliminado:</label>
         <select v-model="form.trashed" class="form-select mt-1 w-full">
           <option :value="null" />
-          <option value="with">Con Modificación</option>
           <option value="only">Solo Eliminado</option>
         </select>
       </SearchFilter>
@@ -99,8 +151,12 @@ const removeSelectedItems = () => {
         <span>Crear</span>
         <span class="hidden md:inline">&nbsp;Directorio</span>
       </Link>
-      <button v-if="directorios.data.length !== 0" class="btn-secondary" type="button" :disabled="!selectAll && !selected.length" @click="removeSelectedItems">
+      <button v-if="directorios.data.length !== 0 && can.deleteDirectorio && !isTrashed" class="btn-secondary" type="button" :disabled="!selectAll && !selected.length" @click="removeSelectedItems">
         <span>Borrar Elementos</span>
+        <span class="hidden md:inline">&nbsp;Seleccionados</span>
+      </button>
+      <button v-if="directorios.data.length !== 0 && can.restoreDirectorio && isTrashed" class="btn-secondary" type="button" :disabled="!selectAll && !selected.length" @click="restoreSelectedItems">
+        <span>Restablecer Elementos</span>
         <span class="hidden md:inline">&nbsp;Seleccionados</span>
       </button>
     </div>
@@ -110,7 +166,7 @@ const removeSelectedItems = () => {
           <tr>
             <th v-if="can.editDirectorio" scope="col" class="p-4">
               <div class="flex items-center">
-                <input id="checkbox-all-directorios" v-model="selectAll" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="select" />
+                <input id="checkbox-all-directorios" v-model="selectAll" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="toggleAll" />
                 <label for="checkbox-all-directorios" class="sr-only">checkbox</label>
               </div>
             </th>
@@ -123,7 +179,7 @@ const removeSelectedItems = () => {
           <tr v-for="dir in directorios.data" :key="dir.id" class="bg-white hover:bg-gray-100 focus-within:bg-gray-100 border-b">
             <td v-if="can.editDirectorio" class="w-4 p-4">
               <div class="flex items-center">
-                <input :id="`checkbox-directorio-${dir.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="dir.id" />
+                <input :id="`checkbox-directorio-${dir.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="dir.id" @change="changeToggleAll" />
                 <label :for="`checkbox-directorio-${dir.id}`" class="sr-only">checkbox</label>
               </div>
             </td>
@@ -134,11 +190,11 @@ const removeSelectedItems = () => {
             <td>
               <Link v-if="can.editDirectorio" class="flex items-center px-6 py-4 focus:text-yellow-500" :href="`/directorios/${dir.id}/editar`" tabindex="-1">
                 {{ dir.nombre_dir }}
-                <Icon v-if="dir.deleted_at" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" name="trash" />
+                <Icon v-if="dir.deleted_at" class="flex-shrink-0 ml-2 w-3 h-3 fill-yellow-400" name="trash" />
               </Link>
               <div v-else class="flex items-center px-6 py-4">
                 {{ dir.nombre_dir }}
-                <Icon v-if="dir.deleted_at" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" name="trash" />
+                <Icon v-if="dir.deleted_at" class="flex-shrink-0 ml-2 w-3 h-3 fill-yellow-400" name="trash" />
               </div>
             </td>
             <td>
@@ -156,7 +212,7 @@ const removeSelectedItems = () => {
             </td>
           </tr>
           <tr v-if="directorios.data.length === 0">
-            <td class="px-6 py-4" colspan="5">No se encontraron carpetas registradas.</td>
+            <td class="px-6 py-4" colspan="5">No se encontraron carpetas {{ form.trashed === 'only' ? 'eliminadas' : 'registradas' }}.</td>
           </tr>
         </tbody>
       </table>

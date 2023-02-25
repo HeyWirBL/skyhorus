@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\DocPozo;
 use App\Models\Pozo;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -49,5 +50,21 @@ class DocPozoController extends Controller
                 ->map
                 ->only('id', 'nombre_pozo'),
         ]);
+    }
+
+    public function store(Request $request)
+    {
+        $file = $request->file('file');
+        $data = [];
+        $handle = fopen($file, 'r');
+
+        if ($handle) {
+            while (($line = fgets($handle)) !== false) {
+                $object = ''; // your code to convert the line into an object
+                $data[] = $object;
+            }
+            fclose($handle);
+        }
+        return $data;
     }
 }

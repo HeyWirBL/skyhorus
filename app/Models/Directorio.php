@@ -35,11 +35,7 @@ class Directorio extends Model
         $query->when($filters['search'] ?? null, function ($query, $search) {
             $query->where('nombre_dir', 'like', '%'.$search.'%');
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {
-            if ($trashed === 'with') {
-                $query->withTrashed();
-            } elseif ($trashed === 'only') {
-                $query->onlyTrashed();
-            }
+            $trashed === 'only' ? $query->onlyTrashed() : '';
         });
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exports\ComponentePozosExport;
 use App\Imports\ComponentePozosImport;
 use App\Models\ComponentePozo;
+use App\Models\ComponentePozoView;
 use App\Models\Pozo;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
@@ -14,6 +15,7 @@ use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 use Maatwebsite\Excel\Facades\Excel;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class ComponentePozoController extends Controller
 {
@@ -26,6 +28,8 @@ class ComponentePozoController extends Controller
             'can' => [
                 'createComponentePozo' => Auth::user()->can('create', ComponentePozo::class),
                 'editComponentePozo' => Auth::user()->can('update', ComponentePozo::class),
+                'deleteComponentePozo' => Auth::user()->can('delete', ComponentePozo::class),
+                'restoreComponentePozo' => Auth::user()->can('restore', ComponentePozo::class),
             ],
             'filters' => $request->all('search', 'trashed'),
             'componentePozos' => $componentePozo->query()
@@ -40,7 +44,7 @@ class ComponentePozoController extends Controller
                     'nombre_componente' => $cp->nombre_componente,
                     'fecha_recep' => $cp->fecha_recep,
                     'deleted_at' => $cp->deleted_at,
-                    'pozo' => $cp->pozo ? $cp->pozo->only('nombre_pozo') : null,
+                    'pozo' => $cp->pozo ? $cp->pozo->only('nombre_pozo', 'deleted_at') : null,
                 ]),
         ]);
     }
@@ -61,11 +65,15 @@ class ComponentePozoController extends Controller
     /**
      * Display the information for specific component well.
      */
-    public function show(ComponentePozo $componentePozo, Pozo $pozo): Response
+    public function show(ComponentePozoView $view, ComponentePozo $componentePozo, Pozo $pozo): Response
     {
+        $quimicosData = $view->query()->where('idComPozo', $componentePozo->id)->get();
+
         return Inertia::render('ComponentePozos/Show', [
             'can' => [
                 'editComponentePozo' => Auth::user()->can('update', ComponentePozo::class),
+                'deleteComponentePozo' => Auth::user()->can('delete', ComponentePozo::class),
+                'restoreComponentePozo' => Auth::user()->can('restore', ComponentePozo::class),
             ],
             'componentePozo' => [
                 'id' => $componentePozo->id,
@@ -129,7 +137,8 @@ class ComponentePozoController extends Controller
                 ->orderBy('id', 'desc')
                 ->get()
                 ->map
-                ->only('id', 'nombre_pozo'),
+                ->only('id', 'nombre_pozo'),   
+            'quimicosData' => $quimicosData,
         ]);
     }
 
@@ -218,8 +227,17 @@ class ComponentePozoController extends Controller
     public function destroy(ComponentePozo $componentePozo): RedirectResponse
     {
         $componentePozo->delete();
-
         return Redirect::back()->with('success', 'Componentes de pozo eliminados.');
+    }
+
+    /**
+     * Delete multiple componentes wells.
+     */
+    public function destroyAll(Request $request, ComponentePozo $componentePozo): RedirectResponse
+    {
+        $ids = explode(',', $request->query('ids', ''));
+        $componentePozo->whereIn('id', $ids)->delete();
+        return Redirect::back()->with('success', 'Componentes de pozos eliminados.');
     }
 
     /**
@@ -233,15 +251,59 @@ class ComponentePozoController extends Controller
     }
 
     /**
+     * Restore mutliple components wells.
+     */
+    public function restoreAll(Request $request, ComponentePozo $componentePozo): RedirectResponse
+    {        
+        $ids = explode(',', $request->query('ids', ''));
+        $componentePozo->whereIn('id', $ids)->restore();       
+        return Redirect::back()->with('success', 'Componentes de pozos restablecidos.');
+    }
+
+    /**
+     * Read data for component wells.
+     */
+    public function read(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv',
+        ]);
+
+        $file = $request->file('file')->getRealPath();
+        $spreadsheet = IOFactory::load($file);
+        $worksheet = $spreadsheet->getActiveSheet();
+
+        $data = [];
+
+        foreach ($worksheet->getRowIterator() as $row) {
+            $rowData = [];
+
+            foreach ($row->getCellIterator() as $cell) {
+                $rowData[] = $cell->getValue();
+            }
+
+            $data[] = $rowData;
+        }
+
+        return response()->json($data);
+    }
+
+    /**
      * Import data for componente wells.
      */
     public function import(Request $request): RedirectResponse
     {
-        $file = $request->file('file');
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv',
+        ]);
 
-        Excel::import(new ComponentePozosImport, $file);
+        $path = $request->file('file')->getRealPath();
+        $import = new ComponentePozosImport();
 
-        return Redirect::back()->with('success', 'Archivo importado!');
+
+        Excel::import($import, $path);
+
+        return Redirect::back()->with('success', 'Documento importado.');
     }
 
     /**

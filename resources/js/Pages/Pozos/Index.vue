@@ -41,13 +41,18 @@ const reset = () => {
   form.value = mapValues(form.value, () => null)
 }
 
-const select = () => {
+const toggleAll = () => {
   selected.value = []
-
   if (!selectAll.value) {
-    props.pozos.data.forEach((pozo) => {
-      selected.value.push(pozo.id)
-    })
+    selected.value = selected.value.length === props.pozos.data.length ? [] : props.pozos.data.map((pozo) => pozo.id)
+  }
+}
+
+const changeToggleAll = () => {
+  if (props.pozos.data.length === selected.value.length) {
+    selectAll.value = true
+  } else {
+    selectAll.value = false
   }
 }
 
@@ -80,7 +85,10 @@ const removeSelectedItems = () => {
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        // TODO: remove every item selected
+        formPozo.delete(`/pozos?ids=${selected.value.join(',')}`, {
+          onSuccess: () => (selected.value = []),
+          onFinish: () => (selectAll.value = false),
+        })
       }
     })
   }
@@ -115,7 +123,10 @@ const restoreSelectedItems = () => {
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        // TODO: restore every item selected
+        formPozo.put(`/pozos?ids=${selected.value.join(',')}`, {
+          onSuccess: () => (selected.value = []),
+          onFinish: () => (selectAll.value = false),
+        })
       }
     })
   }
@@ -140,11 +151,11 @@ const restoreSelectedItems = () => {
         <span>Crear</span>
         <span class="hidden md:inline">&nbsp;Pozo</span>
       </Link>
-      <button v-if="pozos.data.length !== 0 && !isTrashed" class="btn-secondary" type="button" :disabled="!selectAll && !selected.length" @click="removeSelectedItems">
+      <button v-if="pozos.data.length !== 0 && can.deletePozo && !isTrashed" class="btn-secondary" type="button" :disabled="!selectAll && !selected.length" @click="removeSelectedItems">
         <span>Borrar Elementos</span>
         <span class="hidden md:inline">&nbsp;Seleccionados</span>
       </button>
-      <button v-if="pozos.data.length !== 0 && isTrashed" class="btn-secondary" type="button" :disabled="!selectAll && !selected.length" @click="restoreSelectedItems">
+      <button v-if="pozos.data.length !== 0 && can.restorePozo && isTrashed" class="btn-secondary" type="button" :disabled="!selectAll && !selected.length" @click="restoreSelectedItems">
         <span>Restablecer Elementos</span>
         <span class="hidden md:inline">&nbsp;Seleccionados</span>
       </button>
@@ -155,7 +166,7 @@ const restoreSelectedItems = () => {
           <tr>
             <th v-if="can.editPozo" scope="col" class="p-4">
               <div class="flex items-center">
-                <input id="checkbox-all-pozos" v-model="selectAll" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="select" />
+                <input id="checkbox-all-pozos" v-model="selectAll" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="toggleAll" />
                 <label for="checkbox-all-pozos" class="sr-only">checkbox</label>
               </div>
             </th>
@@ -166,60 +177,47 @@ const restoreSelectedItems = () => {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="pozo in props.pozos.data" :key="pozo.id" class="bg-white hover:bg-gray-100 focus-within:bg-gray-100 border-b">
+          <tr v-for="pozo in pozos.data" :key="pozo.id" class="bg-white hover:bg-gray-100 focus-within:bg-gray-100 border-b">
             <td v-if="can.editPozo" class="w-4 p-4">
               <div class="flex items-center">
-                <input :id="`checkbox-pozo-${pozo.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="pozo.id" />
+                <input :id="`checkbox-pozo-${pozo.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="pozo.id" @change="changeToggleAll" />
                 <label :for="`checkbox-pozo-${pozo.id}`" class="sr-only">checkbox</label>
               </div>
             </td>
             <td>
-              <Link v-if="can.editPozo" class="flex items-center px-6 py-4" :href="`/pozos/${pozo.id}`">
+              <Link class="flex items-center px-6 py-4" :href="`/pozos/${pozo.id}`">
                 {{ pozo.id }}
               </Link>
-              <div v-else class="flex items-center px-6 py-4">
-                {{ pozo.id }}
-              </div>
             </td>
             <td>
-              <Link v-if="can.editPozo" class="flex items-center px-6 py-4 focus:text-yellow-500" :href="`/pozos/${pozo.id}`" tabindex="-1">
+              <Link class="flex items-center px-6 py-4 focus:text-yellow-500" :href="`/pozos/${pozo.id}`" tabindex="-1">
                 {{ pozo.nombre_pozo }}
-                <Icon v-if="pozo.deleted_at" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" name="trash" />
+                <Icon v-if="pozo.deleted_at" class="flex-shrink-0 ml-2 w-3 h-3 fill-yellow-400" name="trash" />
               </Link>
-              <div v-else class="flex items-center px-6 py-4">
-                {{ pozo.nombre_pozo }}
-                <Icon v-if="pozo.deleted_at" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" name="trash" />
-              </div>
             </td>
             <td>
-              <Link v-if="can.editPozo" class="flex items-center px-6 py-4" :href="`/pozos/${pozo.id}`" tabindex="-1">
-                {{ pozo.identificador === '' ? 'No hay identificador' : pozo.identificador }}
+              <Link class="flex items-center px-6 py-4" :href="`/pozos/${pozo.id}`" tabindex="-1">
+                {{ pozo.identificador === '' || pozo.identificador === null ? 'Sin identificador.' : pozo.identificador }}
               </Link>
-              <div v-else class="flex items-center px-6 py-4">
-                {{ pozo.identificador === '' ? 'No hay identificador' : pozo.identificador }}
-              </div>
             </td>
             <td>
-              <Link v-if="can.editPozo" class="flex items-center px-6 py-4" :href="`/pozos/${pozo.id}`" tabindex="-1">
+              <Link class="flex items-center px-6 py-4" :href="`/pozos/${pozo.id}`" tabindex="-1">
                 {{ pozo.fecha_hora }}
               </Link>
-              <div v-else class="flex items-center px-6 py-4">
-                {{ pozo.fecha_hora }}
-              </div>
             </td>
-            <td v-if="can.editPozo" class="w-px">
+            <td class="w-px">
               <Link class="flex items-center px-6" :href="`/pozos/${pozo.id}`" tabindex="-1">
                 <Icon class="block w-6 h-6 fill-gray-400" name="cheveron-right" />
               </Link>
             </td>
           </tr>
-          <tr v-if="props.pozos.data.length === 0">
-            <td class="px-6 py-4" colspan="5">No se encontraron pozos registrados.</td>
+          <tr v-if="pozos.data.length === 0">
+            <td class="px-6 py-4" colspan="5">No se encontraron pozos {{ form.trashed === 'only' ? 'eliminados' : 'registrados' }}.</td>
           </tr>
         </tbody>
       </table>
     </div>
     <!-- Paginator -->
-    <Pagination class="mt-4" :links="props.pozos.links" :total="props.pozos.total" />
+    <Pagination class="mt-4" :links="pozos.links" :total="pozos.total" />
   </div>
 </template>

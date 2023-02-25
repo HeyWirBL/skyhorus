@@ -2,11 +2,11 @@
 
 namespace App\Policies;
 
-use App\Models\ComponentePozo;
+use App\Models\CromatografiaGas;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class ComponentePozoPolicy
+class CromatografiaGasPolicy
 {
     use HandlesAuthorization;
 
@@ -25,10 +25,10 @@ class ComponentePozoPolicy
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\ComponentePozo  $componentePozo
+     * @param  \App\Models\CromatografiaGas  $cromatografiaGas
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, ComponentePozo $componentePozo)
+    public function view(User $user, CromatografiaGas $cromatografiaGas)
     {
         //
     }
@@ -41,41 +41,31 @@ class ComponentePozoPolicy
      */
     public function create(User $user)
     {
-        switch ($user->rol) {
-            case 'Administrador': return $user->rol;
-            case 'Colaborador': return $user->rol;
-            case 'Editor': return $user->rol;
-        }
+        //
     }
 
     /**
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\User  $user
+     * @param  \App\Models\CromatografiaGas  $cromatografiaGas
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user)
+    public function update(User $user, CromatografiaGas $cromatografiaGas)
     {
-        switch ($user->rol) {
-            case 'Administrador': return $user->rol;
-            case 'Colaborador': return $user->rol;
-            case 'Editor': return $user->rol;
-        }
+        //
     }
 
     /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\User  $user
+     * @param  \App\Models\CromatografiaGas  $cromatografiaGas
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user)
+    public function delete(User $user, CromatografiaGas $cromatografiaGas)
     {
-        switch ($user->rol) {
-            case 'Administrador': return $user->rol;
-            case 'Colaborador': return $user->rol;
-            case 'Editor': return $user->rol;
-        }
+        //
     }
 
     /**
@@ -91,17 +81,5 @@ class ComponentePozoPolicy
             case 'Colaborador': return $user->rol;
             case 'Editor': return $user->rol;
         }
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\ComponentePozo  $componentePozo
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function forceDelete(User $user, ComponentePozo $componentePozo)
-    {
-        //
     }
 }

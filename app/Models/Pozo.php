@@ -36,22 +36,22 @@ class Pozo extends Model
 
     public function docPozos()
     {
-        return $this->hasMany(DocPozo::class);
+        return $this->hasMany(DocPozo::class)->withTrashed();
     }
 
     public function componentePozos()
     {
-        return $this->hasMany(ComponentePozo::class);
+        return $this->hasMany(ComponentePozo::class)->withTrashed();
     }
 
     public function cromatografiaGases()
     {
-        return $this->hasMany(CromatografiaGas::class);
+        return $this->hasMany(CromatografiaGas::class)->withTrashed();
     }
 
     public function cromatografiaLiquidas()
     {
-        return $this->hasMany(CromatografiaLiquida::class);
+        return $this->hasMany(CromatografiaLiquida::class)->withTrashed();
     }
 
     public function scopeFilter($query, array $filters)
@@ -61,9 +61,7 @@ class Pozo extends Model
                   ->orWhere('identificador', 'like', '%'.$search.'%')
                   ->orWhere('nombre_pozo', 'like', '%'.$search.'%');
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {
-            if ($trashed === 'only') {
-                $query->onlyTrashed();
-            }
+            $trashed === 'only' ? $query->onlyTrashed() : '';
         });
     }
 }
