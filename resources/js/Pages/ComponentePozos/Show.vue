@@ -189,6 +189,22 @@ const updateComponentePozo = () => {
   })
 }
 
+const destroy = () => {
+  swal({
+    title: '¿Estás seguro de querer eliminar estos componentes de este pozo?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Confirmar',
+    cancelButtonText: 'Cancelar',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      form.delete(`/componente-pozos/${props.componentePozo.id}`)
+    }
+  })
+}
+
 const restore = () => {
   swal({
     title: '¿Estás seguro de querer restablecer estos componentes de este pozo?',
@@ -422,7 +438,9 @@ const truncateMessageObs = computed(() => {
       <table class="w-full whitespace-nowrap">
         <thead class="bg-white border-b-2">
           <tr>
-            <th scope="col" class="border px-6 py-4" />
+            <th scope="col" class="border px-6 py-4">
+              <button v-if="!componentePozo.deleted_at" class="text-red-600 hover:underline" tabindex="-1" type="button" @click="destroy">Eliminar</button>
+            </th>
             <th scope="col" class="border px-6 py-4" />
             <th scope="col" class="border px-6 py-4" />
             <th scope="col" class="border px-6 py-4" />
