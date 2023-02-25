@@ -1,6 +1,5 @@
 <script setup>
 import { Head, Link, useForm } from '@inertiajs/vue3'
-import DropZone from '@/Components/DropZone.vue'
 import SelectInput from '@/Components/SelectInput.vue'
 import LoadingButton from '@/Components/LoadingButton.vue'
 import { ref } from 'vue'
@@ -13,17 +12,19 @@ defineProps({
 var files = ref([])
 
 const form = useForm({
-  documento: [],
   directorio_id: '',
   ano_id: '',
   mes_id: '',
-})
+  files: [],
+}); 
 
 function store() {
-  for(let i = 0; i < files.value.length; i++){
-    form.documento[i] = JSON.stringify(files.value[i])
+  for (let i = 0; i < files.value.length; i++) {
+    form.files[i] = files.value[i];
   }
-  form.post('/documentos')
+  form.post('/documentos', {
+    forceFormData: true,
+  });
 }
 </script>
 
@@ -43,9 +44,8 @@ function store() {
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
       <form @submit.prevent="store">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
-          <!-- DropZone -->
-          <DropZone class="pb-8 pr-6 w-full" @files="(fl) => files = fl" /> 
-          <SelectInput v-model="form.directorio_id" class="pb-8 pr-6 w-full" label="Carpeta">
+            <input type="file" @:input="files = $event.target.files" multiple>
+            <SelectInput class="pb-8 pr-6 w-full" label="Carpeta" v-model="form.directorio_id">
             <option :value="null" />
             <option v-for="directorio in directorios" :key="directorio.id" :value="directorio.id">{{ directorio.nombre_dir }}</option>
           </SelectInput>
@@ -62,6 +62,7 @@ function store() {
           <LoadingButton class="btn-yellow" type="submit">Guardar</LoadingButton>
         </div>
       </form>
+      <button @click="showdata" type="submit">picame</button>
     </div>
   </div>
 </template>

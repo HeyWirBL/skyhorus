@@ -29,12 +29,12 @@ const emit = defineEmits(['files'])
 
 onMounted(() => {
   if (dropRef.value !== null) {
-    new Dropzone(dropRef.value, {
+    var myDropzone = new Dropzone(dropRef.value, {
       previewTemplate: customPreview,
       url: '/documentos',
-      method: 'GET',
+      method: 'POST',
       addedfiles: (files) => {
-        emit('files', files)
+        emit('files', files);
       },
     })
 
