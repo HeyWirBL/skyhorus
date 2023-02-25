@@ -3,6 +3,7 @@ import { computed, inject, nextTick, ref } from 'vue'
 import { Head, Link, useForm } from '@inertiajs/vue3'
 import { Line } from 'vue-chartjs'
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js'
+import chartjsPluginDatalabels from 'chartjs-plugin-datalabels'
 import Icon from '@/Components/Icon.vue'
 import LoadingButton from '@/Components/LoadingButton.vue'
 import Modal from '@/Components/Modal.vue'
@@ -11,7 +12,7 @@ import TextInput from '@/Components/TextInput.vue'
 import TextareaInput from '@/Components/TextareaInput.vue'
 import TrashedMessage from '@/Shared/TrashedMessage.vue'
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, chartjsPluginDatalabels)
 
 const props = defineProps({
   can: Object,
@@ -25,12 +26,60 @@ const swal = inject('$swal')
 const editComponenteModal = ref(false)
 const showMessageMetLab = ref(false)
 const showMessageObs = ref(false)
+const showChart = ref(false)
 const firstInput = ref(null)
 
 const chartOptions = {
+  plugins: {
+    datalabels: {
+      align: 'end',
+      anchor: 'end',
+      color: '#555555',
+      font: {
+        size: 14,
+        weight: 'bold',
+      },
+      formatter: (value, context) => {
+        return context.chart.data.labels[context.dataIndex].label
+      },
+    },
+  },
   responsive: true,
+  scales: {
+    x: {
+      display: true,
+      title: {
+        display: true,
+        text: 'Componentes',
+        color: '#555555',
+        font: {
+          size: 15,
+          weight: 'bold',
+          lineHeight: 1.2,
+        },
+      },
+    },
+    y: {
+      display: true,
+      title: {
+        display: true,
+        text: 'Total Mo',
+        color: '#555555',
+        font: {
+          size: 15,
+          weight: 'bold',
+          lineHeight: 1.2,
+        },
+      },
+    },
+  },
 }
 
+/**
+ * Computed Property: Formats the data received from the props in a format
+ * that can be used by the chart. This includes mapping the `quimicosData`
+ * array to generate the chart labels and data.
+ */
 const chartDataFormatted = computed(() => {
   return {
     labels: props.quimicosData.map((q) => q.Quimico),
@@ -123,6 +172,10 @@ const openModalObs = () => {
   showMessageObs.value = true
 }
 
+const openModalChart = () => {
+  showChart.value = true
+}
+
 const updateComponentePozo = () => {
   form.post(`/componente-pozos/${props.componentePozo.id}`, {
     preserveScroll: true,
@@ -165,6 +218,10 @@ const closeModalMessageObs = () => {
   showMessageObs.value = false
 }
 
+const closeModalChart = () => {
+  showChart.value = false
+}
+
 const download = () => {
   return window.open('/componente-pozos/export/' + props.componentePozo.id, '_blank')
 }
@@ -200,8 +257,6 @@ const truncateMessageObs = computed(() => {
         <span class="hidden md:inline">&nbsp;Componentes</span>
       </button>
     </div>
-
-    <Line id="my-chart-id" :options="chartOptions" :data="chartDataFormatted" />
 
     <TrashedMessage v-if="componentePozo.deleted_at && can.restoreComponentePozo" class="mb-6" @restore="restore">Estos componentes de pozo han sido eliminados.</TrashedMessage>
 
@@ -338,6 +393,27 @@ const truncateMessageObs = computed(() => {
         </div>
         <div class="flex items-center justify-end p-4 space-x-2 border-t border-gray-200 rounded-b">
           <button class="btn-secondary" type="button" @click="closeModalMessageObs">Cerrar</button>
+        </div>
+      </div>
+    </Modal>
+
+    <Modal :show="showChart" style="max-width: 1000px" @close="closeModalChart">
+      <div class="relative">
+        <!-- Modal Header -->
+        <div class="flex items-start justify-between p-4 border-b rounded-t">
+          <h2 class="text-xl font-semibold">Gráfica de Líneas - % MOL</h2>
+
+          <button class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" type="button" @click="closeModalChart">
+            <Icon class="w-4 h-4" name="close" aria-hidden="true" />
+            <span class="sr-only">Cerrar modal</span>
+          </button>
+        </div>
+        <!-- Modal Body -->
+        <div class="p-6 space-y-6">
+          <Line id="my-chart-id" :options="chartOptions" :data="chartDataFormatted" />
+        </div>
+        <div class="flex items-center justify-end p-4 space-x-2 border-t border-gray-200 rounded-b">
+          <button class="btn-secondary" type="button" @click="closeModalChart">Cerrar</button>
         </div>
       </div>
     </Modal>
@@ -679,7 +755,7 @@ const truncateMessageObs = computed(() => {
                     <span class="ml-2 w-0 flex-1 truncate">Documento PDF</span>
                   </div>
                   <div class="ml-4 flex-shrink-0">
-                    <Link href="" class="font-medium text-yellow-600 hover:text-yellow-500" type="button" @click.prevent="download">Descargar</Link>
+                    <Link href="#" class="font-medium text-yellow-600 hover:text-yellow-500" type="button" @click.prevent="download">Descargar</Link>
                   </div>
                 </li>
                 <li class="flex items-center justify-between py-3 pl-3 pr-4 text-base">
@@ -688,7 +764,7 @@ const truncateMessageObs = computed(() => {
                     <span class="ml-2 w-0 flex-1 truncate">Gráfica de líneas % MOL</span>
                   </div>
                   <div class="ml-4 flex-shrink-0">
-                    <Link href="#" class="font-medium text-yellow-600 hover:text-yellow-500">Visualizar</Link>
+                    <a href="#" class="font-medium text-yellow-600 hover:text-yellow-500" @click="openModalChart">Visualizar</a>
                   </div>
                 </li>
               </ul>
