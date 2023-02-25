@@ -98,7 +98,7 @@ class DocumentoController extends Controller
             'files' => 'required',
             'directorio_id' => ['required', Rule::exists('directorios', 'id')],
             'ano_id' => ['required', Rule::exists('anos', 'id')],
-            'mes_id' => ['required', Rule::exists('meses', 'id')],
+            'mes_id' => ['required', Rule::exists('mes_detalles', 'id')],
         ]);
         if ($validated) {
             foreach($request->file('files') as $file){

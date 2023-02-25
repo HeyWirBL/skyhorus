@@ -164,7 +164,7 @@ const restoreSelectedItems = () => {
       <table class="w-full whitespace-nowrap">
         <thead class="text-sm text-left font-bold uppercase bg-white border-b">
           <tr>
-            <th v-if="can.editPozo" scope="col" class="p-4">
+            <th v-if="pozos.data.length !== 0 && can.editPozo" scope="col" class="p-4">
               <div class="flex items-center">
                 <input id="checkbox-all-pozos" v-model="selectAll" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="toggleAll" />
                 <label for="checkbox-all-pozos" class="sr-only">checkbox</label>
