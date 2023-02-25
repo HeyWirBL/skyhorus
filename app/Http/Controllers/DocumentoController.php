@@ -13,7 +13,6 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
-use League\CommonMark\Node\Block\Document;
 
 class DocumentoController extends Controller
 {
@@ -101,27 +100,32 @@ class DocumentoController extends Controller
             'ano_id' => ['required', Rule::exists('anos', 'id')],
             'mes_id' => ['required', Rule::exists('meses', 'id')],
         ]);
-
         if ($validated) {
-
             foreach($request->file('files') as $file){
                 $filename = $file->getClientOriginalName();
+                $fileRoute = time().$filename;
                 $filesize = $file->getSize();
                 $filetype = $file->getClientOriginalExtension();
-                $file->storeAs('files', $filename);
-
+                $file->storeAs('', $fileRoute);
                 $document = new Documento();
-                $document->documento = '{"name": "'.$filename.'", "size": "'.$filesize.'", "type": "'.$filetype.'" }';
+                $document->documento = '{"name": "'.$fileRoute.'", "size": "'.$filesize.'", "type": "'.$filetype.'", "usrName": "'.$filename.'" }';
                 $document->directorio_id = $request->directorio_id;
                 $document->ano_id = $request->ano_id;
                 $document->mes_id = $request->mes_id;
-                
                 $document->save();
             }
-        }
-
+        } 
         return redirect(route('documentos'));
     }
+
+   public function download($document)
+    {
+        if(Storage::disk('local')->exists($document)){
+            return Storage::disk('local')->download($document);
+        }else{
+            return response('¡404! No se pudo encontrar este recurso. Si ves este mensaje, por favor contacta con un administrador. <br/> Powered by: Nerd Rage!', 404);
+        }
+    } 
 
     /**
      * Delete temporary an specific document.

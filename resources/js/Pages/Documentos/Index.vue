@@ -150,11 +150,11 @@ const removeSelectedItems = () => {
             </td>
             <td class="flex items-center px-6 py-4">
               <div class="leading-snug">
-                <Link class="text-yellow-400 hover:underline focus:text-yellow-500" :href="`/documentos/${documento.id}`">
-                  {{ documento.documento }}
-                </Link>
+                <a class="text-yellow-400 hover:underline focus:text-yellow-500" :href="`/documentos/${documento.documento.name}/descargar`">
+                  {{ documento.documento.usrName }}
+                </a>
                 <span class="text-xs ml-2">
-                  {{ filesize(documento.documento.size) }}
+                  {{ filesize(documento.documento.size) }}  
                 </span>
               </div>
             </td>

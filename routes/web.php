@@ -139,6 +139,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('documentos/{documento}', [DocumentoController::class, 'destroy'])
         ->name('documentos.destroy');
 
+    Route::get('documentos/{documento}/descargar', [DocumentoController::class, 'download'])
+        ->name('documento.download');
+
     /* Catálogo de Pozos */
     //Route::resource('pozos', PozoController::class);
     Route::get('pozos', [PozoController::class, 'index'])
