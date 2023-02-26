@@ -21,12 +21,15 @@ const store = () => form.post('/users')
 <template>
   <div>
     <Head title="Crear Usuario" />
+    <!-- Header -->
     <h1 class="mb-8 text-3xl font-bold">
       <Link class="text-yellow-400 hover:text-yellow-600" href="/users">Usuarios</Link>
       <span class="text-yellow-400 font-medium">&nbsp;/</span> Crear
     </h1>
+    <!-- Form -->
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
       <form @submit.prevent="store">
+        <!-- Inputs -->
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
           <TextInput v-model="form.nombre" :error="form.errors.nombre" class="pb-8 pr-6 w-full lg:w-1/2" label="Nombre" />
           <TextInput v-model="form.apellidos" :error="form.errors.apellidos" class="pb-8 pr-6 w-full lg:w-1/2" label="Apellidos" />
@@ -44,6 +47,7 @@ const store = () => form.post('/users')
             <option value="Editor">Editor</option>
           </SelectInput>
         </div>
+        <!-- Submit Button -->
         <div class="flex items-center justify-end px-8 py-4 bg-gray-50 border-t border-gray-100">
           <LoadingButton :loading="form.processing" class="btn-yellow" type="submit">Guardar</LoadingButton>
         </div>

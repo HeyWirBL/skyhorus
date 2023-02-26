@@ -51,10 +51,16 @@ Route::middleware('auth')->group(function () {
         ->name('users.update')->middleware('can:update,App\Models\User');
 
     Route::put('users/{user}/restore', [UserController::class, 'restore'])
-        ->name('users.restore');
+        ->name('users.restore')->middleware('can:restore,App\Models\User');
+
+    Route::put('users', [UserController::class, 'restoreAll'])
+        ->name('users.restoreAll')->middleware('can:restore,App\Models\User');
 
     Route::delete('users/{user}', [UserController::class, 'destroy'])
-        ->name('users.destroy');
+        ->name('users.destroy')->middleware('can:delete,App\Models\User');
+
+    Route::delete('users', [UserController::class, 'destroyAll'])
+        ->name('users.destroyAll')->middleware('can:delete,App\Models\User');
 
     /** Perfil de Usuario */
     Route::get('perfil', [ProfileController::class, 'edit'])
