@@ -276,7 +276,7 @@ const truncateMessageObs = computed(() => {
 
     <TrashedMessage v-if="componentePozo.deleted_at && can.restoreComponentePozo" class="mb-6" @restore="restore">Estos componentes de pozo han sido eliminados.</TrashedMessage>
 
-    <Modal :show="editComponenteModal" style="max-width: 1000px">
+    <Modal :show="editComponenteModal" style="max-width: 1000px;">
       <div class="relative">
         <!-- Modal Header -->
         <div class="flex items-start justify-between p-4 border-b rounded-t">
@@ -288,9 +288,9 @@ const truncateMessageObs = computed(() => {
           </button>
         </div>
 
-        <!-- Modal Body -->
-        <div class="p-6 space-y-6" style="height: 600px; overflow: auto">
-          <form @submit.prevent="updateComponentePozo">
+        <form @submit.prevent="updateComponentePozo">
+          <!-- Modal Body -->
+          <div class="p-6 space-y-6" style="height: 600px; overflow: auto">
             <div class="flex flex-wrap text-sm leading-relaxed">
               <TextInput ref="firstInput" v-model="form.nombre_componente" :error="form.errors.nombre_componente" class="pb-8 pr-6 w-full lg:w-1/2" label="Nombre del grupo de componentes" />
               <SelectInput v-model="form.pozo_id" :error="form.errors.pozo_id" class="pb-8 pr-6 w-full lg:w-1/2" label="Pozo/Instalación">
@@ -361,13 +361,12 @@ const truncateMessageObs = computed(() => {
               <TextInput v-model="form.met_laboratorio" :error="form.errors.met_laboratorio" class="pb-8 pr-6 w-full lg:w-1/2" label="Método del laboratorio" />
               <TextareaInput v-model="form.observaciones" :error="form.errors.observaciones" class="pb-8 pr-6 w-full" label="Observaciones" placeholder="Ingresar observaciones adicionales" />
             </div>
-
-            <div class="mt-6 flex justify-end">
-              <button class="btn-secondary" type="button" @click="closeModal">Cancelar</button>
-              <LoadingButton :loading="form.processing" class="btn-yellow ml-3" type="submit">Guardar</LoadingButton>
-            </div>
-          </form>
-        </div>
+          </div>
+          <div class="flex items-center justify-end p-4 space-x-2 border-t border-gray-200 rounded-b">
+            <button class="btn-secondary" type="button" @click="closeModal">Cancelar</button>
+            <LoadingButton :loading="form.processing" class="btn-yellow ml-3" type="submit">Guardar</LoadingButton>
+          </div>
+        </form>
       </div>
     </Modal>
 
