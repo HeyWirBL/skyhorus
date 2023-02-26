@@ -31,7 +31,7 @@ defineExpose({ focus: () => textarea.value.focus() })
   <div>
     <label v-if="label" class="form-label" :for="id">{{ label }}:</label>
     <div class="form-input p-0">
-      <textarea :id="id" ref="textarea" v-bind="{ ...$attrs, class: null }" class="form-textarea" :value="modelValue" placeholder="Copie y pegue su texto aquí..." @input="$emit('update:modelValue', $event.target.value)" />
+      <textarea :id="id" ref="textarea" v-bind="{ ...$attrs, class: null }" class="form-textarea" :value="modelValue" style="height: 300px" @input="$emit('update:modelValue', $event.target.value)" />
     </div>
   </div>
 </template>

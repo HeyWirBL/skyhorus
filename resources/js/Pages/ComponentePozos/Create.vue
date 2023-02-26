@@ -1,42 +1,122 @@
 <script setup>
-import { computed, ref } from 'vue'
-import { Head, Link } from '@inertiajs/vue3'
+import { computed, reactive, watchEffect } from 'vue'
+import { Head, Link, useForm } from '@inertiajs/vue3'
+import SelectInput from '@/Components/SelectInput.vue'
+import TextInput from '@/Components/TextInput.vue'
 import CopyPasteTextInput from './Partials/CopyPasteTextInput.vue'
-import FileUpload from './Partials/FileUpload.vue'
 
 defineProps({
   pozos: Array,
 })
 
-const file = ref(null)
-const textarea = ref(null)
-const showTextarea = ref(false)
-const showTable = ref(false)
-const clickedButton = ref(null)
-
-const showHint = computed(() => {
-  return !file.value
+const comPozoForm = useForm({
+  dioxido_carbono: '',
+  pe_dioxido_carbono: '',
+  mo_dioxido_carbono: '',
+  den_dioxido_carbono: '',
+  acido_sulfidrico: '',
+  pe_acido_sulfidrico: '',
+  mo_acido_sulfidrico: '',
+  den_acido_sulfidrico: '',
+  nitrogeno: '',
+  pe_nitrogeno: '',
+  mo_nitrogeno: '',
+  den_nitrogeno: '',
+  metano: '',
+  pe_metano: '',
+  mo_metano: '',
+  den_metano: '',
+  etano: '',
+  pe_etano: '',
+  mo_etano: '',
+  den_etano: '',
+  propano: '',
+  pe_propano: '',
+  mo_propano: '',
+  den_propano: '',
+  iso_butano: '',
+  pe_iso_butano: '',
+  mo_iso_butano: '',
+  den_iso_butano: '',
+  n_butano: '',
+  pe_n_butano: '',
+  mo_n_butano: '',
+  den_n_butano: '',
+  iso_pentano: '',
+  pe_iso_pentano: '',
+  mo_iso_pentano: '',
+  den_iso_pentano: '',
+  n_pentano: '',
+  pe_n_pentano: '',
+  mo_n_pentano: '',
+  den_n_pentano: '',
+  n_exano: '',
+  pe_n_exano: '',
+  mo_n_exano: '',
+  den_n_exano: '',
+  fecha_recep: '',
+  pozo_id: '',
+  fecha_analisis: '',
+  no_determinacion: '',
+  equipo_utilizado: '',
+  met_laboratorio: '',
+  observaciones: null,
+  nombre_componente: '',
+  fecha_muestreo: null,
 })
 
-const showTextAreaHandler = () => {
-  showTextarea.value = true
-  clickedButton.value = 'textarea'
-}
+const state = reactive({
+  textarea: '',
+  rows: [],
+  columns: ['Col 1', 'Col 2', 'Col 3', 'Col 4', 'Col 5', 'Col 6', 'Col 7', 'Col 8', 'Col 9', 'Col 10', 'Col 11', 'Col 12', 'Col 13', 'Col 14', 'Col 15', 'Col 16', 'Col 17', 'Col 18', 'Col 19', 'Col 20', 'Col 21', 'Col 22', 'Col 23', 'Col 24', 'Col 25', 'Col 26', 'Col 27', 'Col 28', 'Col 29', 'Col 30', 'Col 31', 'Col 32', 'Col 33', 'Col 34', 'Col 35', 'Col 36', 'Col 37', 'Col 38', 'Col 39', 'Col 40', 'Col 41', 'Col 42', 'Col 43', 'Col 44', 'Col 45', 'Col 46', 'Col 47', 'Col 48', 'Col 49'],
+  comPozoFields: [
+    {
+      id: 0,
+      name: 'no',
+    },
+    {
+      id: 1,
+      name: 'no',
+    },
+    {
+      id: 2,
+      name: 'no',
+    },
+    {
+      id: 3,
+      name: 'no',
+    },
+  ],
+})
 
-const handleContinueClick = () => {
-  const data = textarea.value.split(',')
+const validationMessage = computed(() => {
+  const numValues = state.textarea.split(',').map((value) => value.trim()).length
+  const numColumns = state.columns.length
 
-  showTable.value = true
-  showTextarea.value = false
-  file.value = null
-}
+  if (numValues % numColumns !== 0) {
+    return `Por favor introduzca ${numColumns} valores separados por comas.`
+  }
 
-const resetForm = () => {
-  file.value = null
-  showTextarea.value = false
-  textarea.value = null
-  showTable.value = false
-}
+  return ''
+})
+
+watchEffect(() => {
+  const values = state.textarea.split(',').map((value) => value.trim())
+
+  if (values.length % state.columns.length !== 0) {
+    return
+  }
+  state.rows = []
+
+  for (let i = 0; i < values.length; i += state.columns.length) {
+    const row = {}
+    for (let j = 0; j < state.columns.length; j++) {
+      row[state.columns[j]] = values[i + j]
+    }
+    state.rows.push(row)
+  }
+  //showTable.value = true
+})
 </script>
 
 <template>
@@ -46,36 +126,35 @@ const resetForm = () => {
       <Link class="text-yellow-400 hover:text-yellow-600" href="/componente-pozos">Componentes de Pozo</Link>
       <span class="text-yellow-400 font-medium">&nbsp;/</span> Importar
     </h1>
-    <div class="mb-4">
-      <p class="text-sm text-gray-900">
-        <span class="font-semibold">Sugerencia:</span>
-        <span>&nbsp;Importe un fichero separado por comas (.csv), Excel (.xlsx) o elija otra opción.</span>
-      </p>
-    </div>
-    <div v-if="!showTable" class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
+
+    <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden mb-6">
       <div class="flex flex-wrap -mb-8 -mr-6 p-8">
-        <FileUpload v-if="!showTextarea" v-model="file" class="pb-8 pr-6 w-full" accept=".xlsx,.xls,.csv" label="Elige un archivo para importar" />
-        <div v-if="!showTextarea && showHint && clickedButton !== 'file'" class="pb-8 pr-6 w-full">
-          <label class="form-label">O copiar y pegar texto:</label>
-          <button class="btn-secondary" type="button" @click="showTextAreaHandler">Copiar y pegar texto</button>
+        <SelectInput class="pb-8 pr-6 w-full lg:w-1/2" label="Selecciona el Pozo/Instalación">
+          <option value="" />
+          <option v-for="pozo in pozos" :key="pozo.id" :value="pozo.id">{{ pozo.nombre_pozo }}</option>
+        </SelectInput>
+        <TextInput class="pb-8 pr-6 w-full lg:w-1/2" type="date" label="Fecha de Recepción" />
+        <TextInput class="pb-8 pr-6 w-full lg:w-1/2" type="date" label="Fecha de Análisis" />
+        <TextInput class="pb-8 pr-6 w-full lg:w-1/2" type="date" label="Fecha de Muestreo" />
+        <CopyPasteTextInput v-model.trim="state.textarea" class="pb-8 pr-6 w-full" label="Copie y pegue su texto aquí separado por comas" />
+        <div v-if="validationMessage" class="pb-8">
+          <span class="font-semibold"> Sugerencia: </span>
+          <span class="text-red-500">{{ validationMessage }}</span>
         </div>
-        <CopyPasteTextInput v-if="showTextarea && clickedButton === 'textarea'" v-model="textarea" class="pb-8 pr-6 w-full" label="Copiar y pegar texto" />
-      </div>
-      <div v-if="showTextarea || file" class="flex items-center justify-start px-8 py-4 bg-gray-50 border-t border-gray-100">
-        <button class="btn-yellow mr-2" type="button" @click="handleContinueClick">Continuar</button>
-        <button class="btn-secondary" type="button" @click="resetForm">Regresar</button>
       </div>
     </div>
-    <!-- v-if="showTable" -->
+
     <div class="w-full bg-white rounded-md shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
-        <thead class="text-sm text-left font-bold uppercase bg-white border-b">
-          <th style="width: 272px; min-width: 272px; max-width: 272px">
-            <select class="form-select">
-              <option value="" />
-            </select>
-          </th>
+        <thead>
+          <th v-for="(column, columnIndex) in state.columns" :key="columnIndex">{{ column }}</th>
+          <th />
         </thead>
+        <tbody>
+          <tr v-for="(row, rowIndex) in state.rows" :key="rowIndex">
+            <td v-for="(column, columnIndex) in state.columns" :key="columnIndex">{{ row[column] }}</td>
+          </tr>
+        </tbody>
       </table>
     </div>
   </div>
