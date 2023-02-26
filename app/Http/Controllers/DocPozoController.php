@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\DocPozo;
 use App\Models\Pozo;
+use Illuminate\Validation\Rule;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
+use Redirect;
 
 class DocPozoController extends Controller
 {
@@ -52,19 +54,27 @@ class DocPozoController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(Request $request):RedirectResponse
     {
-        $file = $request->file('file');
-        $data = [];
-        $handle = fopen($file, 'r');
-
-        if ($handle) {
-            while (($line = fgets($handle)) !== false) {
-                $object = ''; // your code to convert the line into an object
-                $data[] = $object;
+        $validated = $request->validate([
+            'files' => 'required',
+            'pozo' => ['required', Rule::exists('pozos', 'id')],
+            'fecha' => 'required',
+        ]);
+        if($validated){
+            foreach($request->file('files') as $file){
+                $filename = $file->getClientOriginalName();
+                $fileRoute = time().$filename;
+                $filesize = $file->getSize();
+                $filetype = $file->getClientOriginalExtension();
+                $file->storeAs('', $fileRoute);
+                $doc = new DocPozo();
+                $doc->documento = '{"name": "'.$fileRoute.'", "size": "'.$filesize.'", "type": "'.$filetype.'", "usrName": "'.$filename.'" }';
+                $doc->pozo_id = $request->pozo;
+                $doc->fecha_hora = $request->fecha;
+                $doc->save();
             }
-            fclose($handle);
         }
-        return $data;
+        return redirect(route('doc-pozos'));
     }
 }
