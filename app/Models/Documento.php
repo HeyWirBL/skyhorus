@@ -61,7 +61,7 @@ class Documento extends Model
             });
         })->when($filters['month'] ?? null, function ($query, $month) {
             $query->where(function ($query) use ($month) {
-                $query->where('mes_id', $month);
+                $query->where('mes_detalle_id', $month);
             });
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {
             if ($trashed === 'with') {

@@ -27,7 +27,7 @@ class DocumentoController extends Controller
                 ->orderBy('id', 'desc')
                 ->with('directorio')
                 ->with('ano')
-                ->with('mes')
+                ->with('mesDetalle')
                 ->filter($request->only('search', 'year', 'month', 'trashed'))
                 ->paginate(10)
                 ->withQueryString()
@@ -37,7 +37,7 @@ class DocumentoController extends Controller
                     'deleted_at' => $doc->deleted_at,
                     'directorio' => $doc->directorio ? $doc->directorio->only('nombre_dir') : null,
                     'ano' => $doc->ano ? $doc->ano->only('ano') : null,
-                    'mes' => $doc->mes ? $doc->mes->only('nombre') : null,
+                    'mes' => $doc->mesDetalle ? $doc->mesDetalle->only('nombre') : null,
                 ]),
             'anos' => $ano->query()
                 ->latest()
@@ -111,7 +111,7 @@ class DocumentoController extends Controller
                 $document->documento = '{"name": "'.$fileRoute.'", "size": "'.$filesize.'", "type": "'.$filetype.'", "usrName": "'.$filename.'" }';
                 $document->directorio_id = $request->directorio_id;
                 $document->ano_id = $request->ano_id;
-                $document->mes_id = $request->mes_id;
+                $document->mes_detalle_id = $request->mes_id;
                 $document->save();
             }
         } 

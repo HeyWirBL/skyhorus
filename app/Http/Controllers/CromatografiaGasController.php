@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Validation\Rule;
 
 class CromatografiaGasController extends Controller
 {
@@ -88,5 +89,28 @@ class CromatografiaGasController extends Controller
         $ids = explode(',', $request->query('ids', ''));
         $cromatografiaGas->whereIn('id', $ids)->restore();       
         return Redirect::back()->with('success', 'Documentos restablecidos.');
+    }
+
+    public function store(Request $request){
+        $validated = $request->validate([
+            'files' => 'required',
+            'fecha' => 'required',
+            'pozo' => ['required', Rule::exists('pozos', 'id')],
+        ]);
+        if($validated){
+            foreach($request->file('files') as $file){
+                $filename = $file->getClientOriginalName();
+                $fileRoute = time().$filename;
+                $filesize = $file->getSize();
+                $filetype = $file->getClientOriginalExtension();
+                $file->storeAs('', $fileRoute);
+                $doc = new CromatografiaGas();
+                $doc->documento = '{"name": "'.$fileRoute.'", "size": "'.$filesize.'", "type": "'.$filetype.'", "usrName": "'.$filename.'" }';
+                $doc->pozo_id = $request->pozo;
+                $doc->fecha_hora = $request->fecha;
+                $doc->save();
+            }
+            return redirect(route('documentos'));
+        }
     }
 }

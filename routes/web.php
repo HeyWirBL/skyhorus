@@ -13,6 +13,8 @@ use App\Http\Controllers\MenuController;
 use App\Http\Controllers\PozoController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
+use App\Models\CromatografiaGas;
+use App\Models\CromatografiaLiquida;
 use Illuminate\Support\Facades\Route;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
@@ -254,6 +256,9 @@ Route::middleware('auth')->group(function () {
         ->name('cromatografia-gases.restore')
         ->middleware('can:restore,App\Models\CromatografiaGas');
     
+    Route::post('cromatografia-gases', [CromatografiaGasController::class, 'store'])
+        ->name('cromatografia-gases.store');
+
     Route::put('cromatografia-gases', [CromatografiaGasController::class, 'restoreAll'])
         ->name('cromatografia-gases.restoreAll')
         ->middleware('can:restore,App\Models\CromatografiaGas');
@@ -286,6 +291,9 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('cromatografia-liquidas', [CromatografiaLiquidaController::class, 'destroyAll'])
         ->name('cromatografia-liquidas.destroyAll');
+
+    Route::post('cromatografia-liquidas', [CromatografiaLiquidaController::class, 'store'])
+        ->name('cromatografia-liquidas.store');
 
     /* Gráficas Generales */
     Route::resource('graficas', GraficaController::class)->only(['index']);
