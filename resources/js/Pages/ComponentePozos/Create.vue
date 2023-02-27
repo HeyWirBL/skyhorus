@@ -1,5 +1,5 @@
 <script setup>
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import { Head, Link, useForm } from '@inertiajs/vue3'
 import FileUpload from '@/Components/FileUpload.vue'
 import TextareaInput from '@/Components/TextareaInput.vue'
@@ -8,22 +8,26 @@ defineProps({
   pozos: Array,
 })
 
-const form = useForm({})
-const state = reactive({
-  file: null,
+var file = ref([]);
+const form = useForm({
+  file: [],
 })
+/* const state = reactive({
+  file: null,
+}) */
 
-const importExcel = async () => {
-  let formData = new FormData()
-  formData.append('file', state.file)
+function importExcel(){
+  /* let formData = new FormData()
+  formData.append('file', state.file) */
+  for( let i = 0; i < file.value.length; i++){
+    form.file[i] = file.value[i];
+  }
 
-  const response = form.post('/componente-pozos', formData)
+  const response = form.post('/componente-pozos', {
+    forceFormData: true,
+  })
 
   console.log(response)
-}
-
-const store = () => {
-  form.post('/componente-pozos')
 }
 </script>
 
@@ -43,7 +47,8 @@ const store = () => {
     <div class="w-full bg-white rounded-md shadow overflow-hidden">
       <form @submit.prevent="importExcel">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
-          <FileUpload class="pb-8 pr-6 w-full lg:w-1/2" type="file" label="Elegir archivo" accept=".xlsx, .xls, .csv" />
+          <!-- <FileUpload class="pb-8 pr-6 w-full lg:w-1/2" type="file" label="Elegir archivo" accept=".xlsx, .xls, .csv" /> -->
+          <input type="file" accept=".xlsx, .xls, .csv" @input="file = $event.target.files">
           <div class="pb-8 pr-6 w-full lg:w-1/2">
             <label>Copiar y pegar texto</label>
             <TextareaInput />
