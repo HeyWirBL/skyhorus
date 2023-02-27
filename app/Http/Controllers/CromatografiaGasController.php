@@ -104,14 +104,14 @@ class CromatografiaGasController extends Controller
                 $fileRoute = time().$filename;
                 $filesize = $file->getSize();
                 $filetype = $file->getClientOriginalExtension();
-                $file->storeAs('', $fileRoute);
+                $file->storeAs('public/files/', $fileRoute);
                 $doc = new CromatografiaGas();
                 $doc->documento = '{"name": "'.$fileRoute.'", "size": "'.$filesize.'", "type": "'.$filetype.'", "usrName": "'.$filename.'" }';
                 $doc->pozo_id = $request->pozo;
                 $doc->fecha_hora = $request->fecha;
                 $doc->save();
             }
-            return redirect(route('documentos'));
+            return redirect(route('cromatografia-gases'));
         }
     }
 }
