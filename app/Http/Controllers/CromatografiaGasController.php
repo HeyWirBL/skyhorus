@@ -15,27 +15,28 @@ use Illuminate\Validation\Rule;
 class CromatografiaGasController extends Controller
 {
     /**
-     * Display a list of well chromatographies.
+     * Display a list of pozo chromatographies.
      */
     public function index(Request $request, CromatografiaGas $cromatografiaGas): Response
     {
+        $filters = $request->only('search', 'trashed');
+        $cromatografiaGases = $cromatografiaGas->filter($filters)->latest()
+            ->paginate(10)
+            ->withQueryString()
+            ->through(fn ($cg) => [
+                'id' => $cg->id,
+                'documento' => json_decode($cg->documento),
+                'fecha_hora' => $cg->fecha_hora,
+                'deleted_at' => $cg->deleted_at,
+                'pozo' => optional($cg->pozo)->only('nombre_pozo', 'deleted_at'),
+            ]);
+
         return Inertia::render('CromatografiaGases/Index', [
             'can' => [
                 'restoreCromatografiaGas' => Auth::user()->can('restore', CromatografiaGas::class),
             ],
-            'filters' => $request->all('search', 'trashed'),
-            'cromatografiaGases' => $cromatografiaGas->query()
-                ->orderBy('id', 'desc')
-                ->filter($request->only(['search', 'trashed']))
-                ->paginate(10)
-                ->withQueryString()
-                ->through(fn ($cg) => [
-                    'id' => $cg->id,
-                    'documento' => json_decode($cg->documento, true),
-                    'fecha_hora' => $cg->fecha_hora,
-                    'deleted_at' => $cg->deleted_at,
-                    'pozo' => $cg->pozo ? $cg->pozo->only('nombre_pozo', 'deleted_at') : null,
-                ]),
+            'filters' => $filters,
+            'cromatografiaGases' => $cromatografiaGases,
         ]);
     }
 
