@@ -19,23 +19,24 @@ class CromatografiaLiquidaController extends Controller
      */
     public function index(Request $request, CromatografiaLiquida $cromatografiaLiquida): Response
     {
+        $filters = $request->only('search', 'trashed');
+        $cromatografiaLiquidas = $cromatografiaLiquida->filter($filters)
+            ->orderByDesc('id')
+            ->paginate(10)
+            ->withQueryString()
+            ->through(fn ($cl) => [
+                'id' => $cl->id,
+                'documento' => json_decode($cl->documento),
+                'fecha_hora' => $cl->fecha_hora,
+                'deleted_at' => $cl->deleted_at,
+                'pozo' => optional($cl->pozo)->only('nombre_pozo', 'deleted_at'),
+            ]);
         return Inertia::render('CromatografiaLiquidas/Index', [
             'can' => [
                 'restoreCromatografiaLiquida' => Auth::user()->can('restore', CromatografiaLiquida::class),
             ],
-            'filters' => $request->all('search', 'trashed'),
-            'cromatografiaLiquidas' => $cromatografiaLiquida->query()
-                ->orderBy('id', 'desc')
-                ->filter($request->only(['search', 'trashed']))
-                ->paginate(10)
-                ->withQueryString()
-                ->through(fn ($cl) => [
-                    'id' => $cl->id,
-                    'documento' => json_decode($cl->documento, true),
-                    'fecha_hora' => $cl->fecha_hora,
-                    'deleted_at' => $cl->deleted_at,
-                    'pozo' => $cl->pozo ? $cl->pozo->only('nombre_pozo', 'deleted_at') : null,
-                ]),
+            'filters' => $filters,
+            'cromatografiaLiquidas' => $cromatografiaLiquidas,
         ]);
     }
 
