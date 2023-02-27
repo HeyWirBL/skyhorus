@@ -177,12 +177,12 @@ watch(
     </div>
     <div class="flex items-center mb-6">
       <button v-if="directorios.data.length !== 0 && can.deleteDirectorio && !isTrashed" class="btn-secondary" type="button" :disabled="!selectAllDir && !selected.length" @click="removeSelectedItems">
-        <span>Borrar Elementos</span>
-        <span class="hidden md:inline">&nbsp;Seleccionados</span>
+        <span>Borrar</span>
+        <span class="hidden md:inline">&nbsp;Elementos Seleccionados</span>
       </button>
       <button v-if="directorios.data.length !== 0 && can.restoreDirectorio && isTrashed" class="btn-secondary" type="button" :disabled="!selectAllDir && !selected.length" @click="restoreSelectedItems">
-        <span>Restablecer Elementos</span>
-        <span class="hidden md:inline">&nbsp;Seleccionados</span>
+        <span>Restablecer</span>
+        <span class="hidden md:inline">&nbsp;Elementos Seleccionados</span>
       </button>
     </div>
     <div class="bg-white rounded-md shadow overflow-x-auto">
