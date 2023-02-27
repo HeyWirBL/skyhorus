@@ -141,7 +141,7 @@ class DocumentoController extends Controller
     public function restore(Documento $documento): RedirectResponse
     {
         $documento->restore();
-        return Redirect::back()->with('success', 'Carpeta restablecida.');
+        return Redirect::back()->with('success', 'Documento restablecido.');
     }
 
     /**

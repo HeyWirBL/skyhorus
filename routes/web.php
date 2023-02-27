@@ -203,6 +203,18 @@ Route::middleware('auth')->group(function () {
     Route::post('doc-pozos', [DocPozoController::class, 'store'])
         ->name('doc-pozos.store');
 
+    Route::put('doc-pozos/{docPozo}/restore', [DocPozoController::class, 'restore'])
+        ->name('doc-pozos.restore')->middleware('can:restore,App\Models\DocPozo');
+
+    Route::put('doc-pozos', [DocPozoController::class, 'restoreAll'])
+        ->name('doc-pozos.restoreAll')->middleware('can:restore,App\Models\DocPozo');
+
+    Route::delete('doc-pozos/{docPozo}', [DocPozoController::class, 'destroy'])
+        ->name('doc-pozos.destroy')->middleware('can:delete,App\Models\DocPozo');
+
+    Route::delete('doc-pozos', [DocPozoController::class, 'destroyAll'])
+        ->name('doc-pozos.destroyAll')->middleware('can:delete,App\Models\DocPozo');
+
     /* Catálogo de Pozos: Componentes */
     //Route::resource('componentespozos', ComponentePozoController::class)->only(['index']);
 
@@ -265,14 +277,14 @@ Route::middleware('auth')->group(function () {
         ->name('cromatografia-gases');
 
     Route::get('cromatografia-gases/crear', [CromatografiaGasController::class, 'create'])
-        ->name('cromatografia-gases.create');
+        ->name('cromatografia-gases.create');    
+    
+    Route::post('cromatografia-gases', [CromatografiaGasController::class, 'store'])
+        ->name('cromatografia-gases.store');
 
     Route::put('cromatografia-gases/{cromatografiaGas}/restore', [CromatografiaGasController::class, 'restore'])
         ->name('cromatografia-gases.restore')
         ->middleware('can:restore,App\Models\CromatografiaGas');
-    
-    Route::post('cromatografia-gases', [CromatografiaGasController::class, 'store'])
-        ->name('cromatografia-gases.store');
 
     Route::put('cromatografia-gases', [CromatografiaGasController::class, 'restoreAll'])
         ->name('cromatografia-gases.restoreAll')

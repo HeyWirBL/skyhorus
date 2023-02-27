@@ -187,7 +187,7 @@ watch(
           <option value="only">Solo Eliminado</option>
         </select>
       </SearchFilter>
-      <Link class="btn-yellow mr-2" href="/documentos/crear">
+      <Link class="btn-yellow" href="/documentos/crear">
         <span>Subir</span>
         <span class="hidden md:inline">&nbsp;Documentos</span>
       </Link>

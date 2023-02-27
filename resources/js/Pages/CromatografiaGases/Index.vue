@@ -17,7 +17,7 @@ const props = defineProps({
 const swal = inject('$swal')
 
 const selected = ref([])
-const selectAll = ref(false)
+const selectAllCromGas = ref(false)
 
 const form = ref({
   search: props.filters.search,
@@ -27,38 +27,51 @@ const form = ref({
 const formCromatografiaGas = useForm({})
 const isTrashed = computed(() => usePage().url.includes('trashed=only'))
 
-watch(
-  () => form.value,
-  debounce(function () {
-    router.get('/cromatografia-gases', pickBy(form.value), { preserveState: true, replace: true })
-  }, 300),
-  {
-    deep: true,
-  },
-)
-
-const filesize = (size) => {
-  let i = Math.floor(Math.log(size) / Math.log(1024))
-  return (size / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'][i]
-}
-
-const toggleAll = () => {
-  selected.value = []
-  if (!selectAll.value) {
-    selected.value = selected.value.length === props.cromatografiaGases.data.length ? [] : props.cromatografiaGases.data.map((cromatografiaGas) => cromatografiaGas.id)
+/**
+ * Helper Function that that checks whether the `selectAllRef` flag is set
+ * to false.
+ *
+ * @param {array} items an array of items.
+ * @param {array} selectedItems an array of selected items.
+ * @param {bool} selectAllRef boolean flag that represents whether all items are selected.
+ */
+const toggleAll = (items, selectedItems, selectAllRef) => {
+  selectedItems.value = []
+  if (!selectAllRef.value) {
+    selectedItems.value = selectedItems.value.length === items.length ? [] : items.map((item) => item.id)
   }
 }
 
-const changeToggleAll = () => {
-  if (props.cromatografiaGases.data.length === selected.value.length) {
-    selectAll.value = true
+/**
+ * Helper Function that updates the state of the "select all" checkbox
+ * when individual checkboxes are checked or unchecked.
+ *
+ * @param {array} items list of items that can be selected.
+ * @param {array} selectedItems an array which contains the ids of the items that have been selected.
+ * @param {bool} selectAllRef reference that represents the state of the "select all" checkbox.
+ */
+const changeToggleAll = (items, selectedItems, selectAllRef) => {
+  if (items.length === selectedItems.value.length) {
+    selectAllRef.value = true
   } else {
-    selectAll.value = false
+    selectAllRef.value = false
   }
+}
+
+const toggleAllCromGas = () => {
+  toggleAll(props.cromatografiaGases.data, selected, selectAllCromGas)
+}
+const changeToggleAllCromGas = () => {
+  changeToggleAll(props.cromatografiaGases.data, selected, selectAllCromGas)
 }
 
 const reset = () => {
   form.value = mapValues(form.value, () => null)
+}
+
+const filesize = (size) => {
+  let i = Math.floor(Math.log(size) / Math.log(1024))
+  return (size / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'][i]
 }
 
 const removeSelectedItems = () => {
@@ -136,6 +149,16 @@ const restoreSelectedItems = () => {
     })
   }
 }
+
+watch(
+  () => form.value,
+  debounce(function () {
+    router.get('/cromatografia-gases', pickBy(form.value), { preserveState: true, replace: true })
+  }, 300),
+  {
+    deep: true,
+  },
+)
 </script>
 
 <template>
@@ -192,9 +215,7 @@ const restoreSelectedItems = () => {
               <Link class="text-yellow-400 hover:underline focus:text-yellow-500 leading-snug" :href="`/cromatografia-gases/${cromatografiaGas.id}/editar`">
                 {{ cromatografiaGas.documento }}
               </Link>
-              <span class="text-xs ml-2 leading-snug">
-                size
-              </span>
+              <span class="text-xs ml-2 leading-snug"> size </span>
               <Icon v-if="cromatografiaGas.deleted_at" class="ml-2 w-3 h-3 fill-yellow-400" name="trash" />
             </td>
             <td>
