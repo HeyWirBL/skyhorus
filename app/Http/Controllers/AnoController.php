@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Ano;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
@@ -17,19 +18,23 @@ class AnoController extends Controller
      */
     public function index(Request $request, Ano $ano): Response
     {
-        return Inertia::render('Anos/Index', [
-            'filters' => $request->all('search', 'trashed'),
-            'anos' => $ano->query()
-                ->latest()
-                ->filter($request->only('search', 'trashed'))
-                ->paginate(10)
-                ->withQueryString()
-                ->through(fn ($ano) => [
-                    'id' => $ano->id,
-                    'ano' => $ano->ano,
-                    'deleted_at' => $ano->deleted_at,
-                ]), 
-        ]);
+        $can = [
+            'createAno' => Auth::user()->can('create', Ano::class),
+            'editAno' => Auth::user()->can('update', Ano::class),
+            'restoreAno' => Auth::user()->can('restore', Ano::class),
+            'deleteAno' => Auth::user()->can('delete', Ano::class),
+        ];
+        $filters = $request->all('search', 'trashed');
+        $anos = $ano->query()->latest()->filter($filters)
+            ->paginate(10)
+            ->withQueryString()
+            ->through(fn ($ano) => [
+                'id' => $ano->id,
+                'ano' => $ano->ano,
+                'deleted_at' => $ano->deleted_at,
+            ]);
+
+        return Inertia::render('Anos/Index', compact('can', 'filters', 'anos'));
     }
 
     /**
@@ -96,8 +101,17 @@ class AnoController extends Controller
     public function destroy(Ano $ano): RedirectResponse
     {
         $ano->delete();
-
         return Redirect::back()->with('success', 'Año eliminado.');
+    }
+
+    /**
+     * Delete multiple years.
+     */
+    public function destroyAll(Request $request, Ano $ano): RedirectResponse
+    {
+        $ids = explode(',', $request->query('ids', ''));
+        $ano->whereIn('id', $ids)->delete();
+        return Redirect::back()->with('success', 'Años eliminados.');
     }
 
     /**
@@ -106,7 +120,16 @@ class AnoController extends Controller
     public function restore(Ano $ano): RedirectResponse
     {
         $ano->restore();
-
         return Redirect::back()->with('success', 'Año restablecido.');
+    }
+    
+    /**
+     * Restore mutliple years.
+     */
+    public function restoreAll(Request $request, Ano $ano): RedirectResponse
+    {        
+        $ids = explode(',', $request->query('ids', ''));
+        $ano->whereIn('id', $ids)->restore();       
+        return Redirect::back()->with('success', 'Años restablecidos.');
     }
 }

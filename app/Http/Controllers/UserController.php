@@ -18,7 +18,7 @@ class UserController extends Controller
      */
     public function index(Request $request): Response
     {
-        $filters = $request->only('search', 'role', 'trashed');
+        $filters = $request->all('search', 'role', 'trashed');
         $query = $request->user()->query()->orderByName()->filter($filters);
 
         $users = $query->paginate(10)->withQueryString()->through(fn ($user) => [
@@ -35,6 +35,8 @@ class UserController extends Controller
             'can' => [
                 'createUser' => $request->user()->can('create', User::class),
                 'editUser' => $request->user()->can('update', User::class),
+                'restoreUser' => $request->user()->can('restore', User::class),
+                'deleteUser' => $request->user()->can('delete', User::class),
             ],
             'filters' => $filters,
             'users' => $users,

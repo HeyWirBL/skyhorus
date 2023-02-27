@@ -3,27 +3,27 @@ import { Head, Link, useForm } from '@inertiajs/vue3'
 import LoadingButton from '@/Components/LoadingButton.vue'
 import SelectInput from '@/Components/SelectInput.vue'
 import TextInput from '@/Components/TextInput.vue'
-import { ref } from 'vue';
+import { ref } from 'vue'
 
 defineProps({
   pozos: Array,
 })
 
-var files = ref([]);
+var files = ref([])
 
 const form = useForm({
   files: [],
   pozo: '',
   fecha: '',
-});
+})
 
-function store(){
-  for(let i = 0; i < files.value.length; i++){
-    form.files[i] = files.value[i];
+function store() {
+  for (let i = 0; i < files.value.length; i++) {
+    form.files[i] = files.value[i]
   }
   form.post('/doc-pozos', {
     forceFormData: true,
-  });
+  })
 }
 </script>
 
@@ -38,14 +38,14 @@ function store(){
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
       <form @submit.prevent="store">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
-          <input type="file" accept="application/pdf" @input="files = $event.target.files" multiple>
+          <input type="file" accept="application/pdf" multiple @input="files = $event.target.files" />
         </div>
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
-          <SelectInput class="pb-8 pr-6 w-full lg:w-1/2" v-model="form.pozo" label="Pozo">
+          <SelectInput v-model="form.pozo" class="pb-8 pr-6 w-full lg:w-1/2" label="Pozo">
             <option value="">Por favor seleccione</option>
             <option v-for="pozo in pozos" :key="pozo.id" :value="pozo.id">{{ pozo.nombre_pozo }}</option>
           </SelectInput>
-          <TextInput class="pb-8 pr-6 w-full lg:w-1/2" type="date" v-model="form.fecha" label="Fecha" />
+          <TextInput v-model="form.fecha" class="pb-8 pr-6 w-full lg:w-1/2" type="date" label="Fecha" />
 
           <!-- Upload File Component -->
         </div>

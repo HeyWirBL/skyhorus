@@ -17,39 +17,53 @@ const props = defineProps({
 const swal = inject('$swal')
 
 const selected = ref([])
-const selectAll = ref(false)
+const selectAllComPozos = ref(false)
 
 const form = ref({
   search: props.filters.search,
   trashed: props.filters.trashed,
 })
 
+const componentePozoForm = useForm({})
+
 const isTrashed = computed(() => usePage().url.includes('trashed=only'))
-const formComponentePozo = useForm({})
 
-watch(
-  () => form.value,
-  debounce(function () {
-    router.get('/componente-pozos', pickBy(form.value), { preserveState: true, replace: true })
-  }, 300),
-  {
-    deep: true,
-  },
-)
-
-const toggleAll = () => {
-  selected.value = []
-  if (!selectAll.value) {
-    selected.value = selected.value.length === props.componentePozos.data.length ? [] : props.componentePozos.data.map((componentePozo) => componentePozo.id)
+/**
+ * Helper Function that that checks whether the `selectAllRef` flag is set
+ * to false.
+ *
+ * @param {array} items an array of items.
+ * @param {array} selectedItems an array of selected items.
+ * @param {bool} selectAllRef boolean flag that represents whether all items are selected.
+ */
+const toggleAll = (items, selectedItems, selectAllRef) => {
+  selectedItems.value = []
+  if (!selectAllRef.value) {
+    selectedItems.value = selectedItems.value.length === items.length ? [] : items.map((item) => item.id)
   }
 }
 
-const changeToggleAll = () => {
-  if (props.componentePozos.data.length === selected.value.length) {
-    selectAll.value = true
+/**
+ * Helper Function that updates the state of the "select all" checkbox
+ * when individual checkboxes are checked or unchecked.
+ *
+ * @param {array} items list of items that can be selected.
+ * @param {array} selectedItems an array which contains the ids of the items that have been selected.
+ * @param {bool} selectAllRef reference that represents the state of the "select all" checkbox.
+ */
+const changeToggleAll = (items, selectedItems, selectAllRef) => {
+  if (items.length === selectedItems.value.length) {
+    selectAllRef.value = true
   } else {
-    selectAll.value = false
+    selectAllRef.value = false
   }
+}
+
+const toggleAllComPozos = () => {
+  toggleAll(props.componentePozos.data, selected, selectAllComPozos)
+}
+const changeToggleAllComPozos = () => {
+  changeToggleAll(props.componentePozos.data, selected, selectAllComPozos)
 }
 
 const reset = () => {
@@ -62,16 +76,16 @@ const removeSelectedItems = () => {
       title: '¿Estás seguro de querer eliminar estos componentes de este pozo?',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
+      confirmButtonColor: '#CEA915',
+      cancelButtonColor: '#BDBDBD',
       confirmButtonText: 'Confirmar',
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
         if (result.isConfirmed) {
-          formComponentePozo.delete(`/componente-pozos/${selected.value}`, {
+          componentePozoForm.delete(`/componente-pozos/${selected.value}`, {
             onSuccess: () => (selected.value = []),
-            onFinish: () => (selectAll.value = false),
+            onFinish: () => (selectAllComPozos.value = false),
           })
         }
       }
@@ -81,15 +95,15 @@ const removeSelectedItems = () => {
       title: '¿Estás seguro de querer eliminar estos componentes de pozos?',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
+      confirmButtonColor: '#CEA915',
+      cancelButtonColor: '#BDBDBD',
       confirmButtonText: 'Confirmar',
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        formComponentePozo.delete(`/componente-pozos?ids=${selected.value.join(',')}`, {
+        componentePozoForm.delete(`/componente-pozos?ids=${selected.value.join(',')}`, {
           onSuccess: () => (selected.value = []),
-          onFinish: () => (selectAll.value = false),
+          onFinish: () => (selectAllComPozos.value = false),
         })
       }
     })
@@ -102,15 +116,15 @@ const restoreSelectedItems = () => {
       title: '¿Estás seguro de querer restablecer los componentes de este pozo?',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
+      confirmButtonColor: '#CEA915',
+      cancelButtonColor: '#BDBDBD',
       confirmButtonText: 'Confirmar',
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        formComponentePozo.put(`/componente-pozos/${selected.value}/restore`, {
+        componentePozoForm.put(`/componente-pozos/${selected.value}/restore`, {
           onSuccess: () => (selected.value = []),
-          onFinish: () => (selectAll.value = false),
+          onFinish: () => (selectAllComPozos.value = false),
         })
       }
     })
@@ -119,20 +133,30 @@ const restoreSelectedItems = () => {
       title: '¿Estás seguro de querer restablecer los componentes de estos pozos?',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
+      confirmButtonColor: '#CEA915',
+      cancelButtonColor: '#BDBDBD',
       confirmButtonText: 'Confirmar',
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        formComponentePozo.put(`/componente-pozos?ids=${selected.value.join(',')}`, {
+        componentePozoForm.put(`/componente-pozos?ids=${selected.value.join(',')}`, {
           onSuccess: () => (selected.value = []),
-          onFinish: () => (selectAll.value = false),
+          onFinish: () => (selectAllComPozos.value = false),
         })
       }
     })
   }
 }
+
+watch(
+  () => form.value,
+  debounce(function () {
+    router.get('/componente-pozos', pickBy(form.value), { preserveState: true, replace: true })
+  }, 300),
+  {
+    deep: true,
+  },
+)
 </script>
 
 <template>
@@ -147,74 +171,70 @@ const restoreSelectedItems = () => {
           <option value="only">Solo Eliminado</option>
         </select>
       </SearchFilter>
-    </div>
-    <div class="flex items-center mb-6">
-      <Link v-if="can.createComponentePozo" class="btn-yellow mr-2" href="/componente-pozos/crear">
+      <Link v-if="can.createComponentePozo" class="btn-yellow" href="/componente-pozos/crear">
         <span>Importar</span>
         <span class="hidden md:inline">&nbsp;Excel</span>
       </Link>
-      <button v-if="componentePozos.data.length !== 0 && can.deleteComponentePozo && !isTrashed" class="btn-secondary" type="button" :disabled="!selectAll && !selected.length" @click="removeSelectedItems">
-        <span>Borrar Elementos</span>
-        <span class="hidden md:inline">&nbsp;Seleccionados</span>
+    </div>
+    <div class="flex items-center mb-6">
+      <button v-if="componentePozos.data.length !== 0 && can.deleteComponentePozo && !isTrashed" class="btn-secondary" type="button" :disabled="!selectAllComPozos && !selected.length" @click="removeSelectedItems">
+        <span>Borrar</span>
+        <span class="hidden md:inline">&nbsp;Elementos Seleccionados</span>
       </button>
-      <button v-if="componentePozos.data.length !== 0 && can.restoreComponentePozo && isTrashed" class="btn-secondary" type="button" :disabled="!selectAll && !selected.length" @click="restoreSelectedItems">
-        <span>Restablecer Elementos</span>
-        <span class="hidden md:inline">&nbsp;Seleccionados</span>
+      <button v-if="componentePozos.data.length !== 0 && can.restoreComponentePozo && isTrashed" class="btn-secondary" type="button" :disabled="!selectAllComPozos && !selected.length" @click="restoreSelectedItems">
+        <span>Restablecer</span>
+        <span class="hidden md:inline">&nbsp;Elementos Seleccionados</span>
       </button>
     </div>
     <div class="bg-white rounded-md shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
-        <thead class="text-sm text-left font-bold uppercase bg-white border-b">
+        <thead class="text-sm text-left font-bold uppercase bg-white border-b-2">
           <tr>
             <th v-if="componentePozos.data.length !== 0 && can.editComponentePozo" scope="col" class="p-4">
               <div class="flex items-center">
-                <input id="checkbox-all-componente-pozos" v-model="selectAll" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="toggleAll" />
-                <label for="checkbox-all-componente-pozos" class="sr-only">checkbox</label>
+                <input id="checkbox-all-compozos" v-model="selectAllComPozos" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="toggleAllComPozos" />
+                <label for="checkbox-all-compozos" class="sr-only">checkbox</label>
               </div>
             </th>
-            <th scope="col" class="px-6 py-3">No.</th>
-            <th scope="col" class="px-6 py-3">Pozo/Instalación</th>
-            <th scope="col" class="px-6 py-3">Nombre del Componente</th>
-            <th scope="col" class="px-6 py-3">Equipo Utilizado</th>
-            <th scope="col" class="px-6 py-3" colspan="2">Fecha de Recepción</th>
+            <th scope="col" class="px-6 py-3 border-solid border border-gray-200">No.</th>
+            <th scope="col" class="px-6 py-3 border-solid border border-gray-200">Pozo/Instalación</th>
+            <th scope="col" class="px-6 py-3 border-solid border border-gray-200">Nombre del Componente</th>
+            <th scope="col" class="px-6 py-3 border-solid border border-gray-200">Equipo Utilizado</th>
+            <th scope="col" class="px-6 py-3 border-solid border border-gray-200" colspan="2">Fecha de Recepción</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="componentePozo in componentePozos.data" :key="componentePozo.id" class="bg-white hover:bg-gray-100 focus-within:bg-gray-100 border-b">
-            <td v-if="can.editComponentePozo" class="w-4 p-4">
+          <tr v-for="componentePozo in componentePozos.data" :key="componentePozo.id" class="bg-white border-b">
+            <td v-if="can.editComponentePozo" class="w-4 p-4 border-solid border border-gray-200">
               <div class="flex items-center">
-                <input :id="`checkbox-componentespozo-${componentePozo.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="componentePozo.id" @change="changeToggleAll" />
-                <label :for="`checkbox-componentespozo-${componentePozo.id}`" class="sr-only">checkbox</label>
+                <input :id="`checkbox-compozo-${componentePozo.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="componentePozo.id" @change="changeToggleAllComPozos" />
+                <label :for="`checkbox-compozo-${componentePozo.id}`" class="sr-only">checkbox</label>
               </div>
             </td>
-            <td>
-              <Link class="flex items-center px-6 py-4" :href="`/componente-pozos/${componentePozo.id}`">
-                {{ componentePozo.id }}
-              </Link>
+            <td class="px-6 py-4 border-solid border border-gray-200">
+              <span class="block">{{ componentePozo.id }}</span>
             </td>
-            <td>
-              <Link class="flex items-center px-6 py-4 focus:text-yellow-500" :href="`/componente-pozos/${componentePozo.id}`" tabindex="-1">
-                <div v-if="componentePozo.pozo">
-                  {{ componentePozo.pozo.nombre_pozo }}
-                </div>
-                <Icon v-if="componentePozo.pozo.deleted_at" class="flex-shrink-0 ml-2 w-3 h-3 fill-yellow-400" name="trash" />
-              </Link>
+            <td class="px-6 py-4 border-solid border border-gray-200">
+              <div class="flex items-center">
+                <span> {{ componentePozo.pozo.nombre_pozo }}</span>
+                <span v-if="componentePozo.pozo.deleted_at" title="Este pozo ha sido eliminado.">
+                  <Icon class="flex-shrink-0 ml-2 w-3 h-3 fill-yellow-400" name="trash" />
+                </span>
+              </div>
             </td>
-            <td>
-              <Link class="flex items-center px-6 py-4 focus:text-yellow-500" :href="`/componente-pozos/${componentePozo.id}`" tabindex="-1">
-                {{ componentePozo.nombre_componente }}
-                <Icon v-if="componentePozo.deleted_at" class="flex-shrink-0 ml-2 w-3 h-3 fill-yellow-400" name="trash" />
-              </Link>
+            <td class="px-6 py-4 border-solid border border-gray-200">
+              <div class="flex items-center">
+                <span>{{ componentePozo.nombre_componente }}</span>
+                <span v-if="componentePozo.deleted_at" title="Este componente de pozo ha sido eliminado.">
+                  <Icon class="flex-shrink-0 ml-2 w-3 h-3 fill-yellow-400" name="trash" />
+                </span>
+              </div>
             </td>
-            <td>
-              <Link class="flex items-center px-6 py-4" :href="`/componente-pozos/${componentePozo.id}`" tabindex="-1">
-                {{ componentePozo.equipo_utilizado }}
-              </Link>
+            <td class="px-6 py-4 border-solid border border-gray-200">
+              <span class="block">{{ componentePozo.equipo_utilizado }}</span>
             </td>
-            <td>
-              <Link class="flex items-center px-6 py-4" :href="`/componente-pozos/${componentePozo.id}`" tabindex="-1">
-                {{ componentePozo.fecha_recep }}
-              </Link>
+            <td class="px-6 py-4">
+              <span class="block">{{ componentePozo.fecha_recep }}</span>
             </td>
             <td class="w-px">
               <Link class="flex items-center px-6" :href="`/componente-pozos/${componentePozo.id}`" tabindex="-1">

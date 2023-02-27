@@ -174,64 +174,73 @@ watch(
           <option value="only">Solo Eliminado</option>
         </select>
       </SearchFilter>
-    </div>
-    <div class="flex items-center mb-6">
-      <Link class="btn-yellow mr-2" href="/cromatografia-gases/crear">
+      <Link class="btn-yellow" href="/cromatografia-gases/crear">
         <span>Subir</span>
         <span class="hidden md:inline">&nbsp;Documentos</span>
       </Link>
-      <button v-if="cromatografiaGases.data.length !== 0 && !isTrashed" class="btn-secondary" type="button" :disabled="!selectAll && !selected.length" @click="removeSelectedItems">
-        <span>Borrar Elementos</span>
-        <span class="hidden md:inline">&nbsp;Seleccionados</span>
+    </div>
+    <div class="flex items-center mb-6">
+      <button v-if="cromatografiaGases.data.length !== 0 && !isTrashed" class="btn-secondary" type="button" :disabled="!selectAllCromGas && !selected.length" @click="removeSelectedItems">
+        <span>Borrar</span>
+        <span class="hidden md:inline">&nbsp;Elementos Seleccionados</span>
       </button>
-      <button v-if="cromatografiaGases.data.length !== 0 && can.restoreCromatografiaGas && isTrashed" class="btn-secondary" type="button" :disabled="!selectAll && !selected.length" @click="restoreSelectedItems">
-        <span>Restablecer Elementos</span>
-        <span class="hidden md:inline">&nbsp;Seleccionados</span>
+      <button v-if="cromatografiaGases.data.length !== 0 && can.restoreCromatografiaGas && isTrashed" class="btn-secondary" type="button" :disabled="!selectAllCromGas && !selected.length" @click="restoreSelectedItems">
+        <span>Restablecer</span>
+        <span class="hidden md:inline">&nbsp;Elementos Seleccionados</span>
       </button>
     </div>
     <div class="mt-6 bg-white rounded shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
-        <thead class="text-sm text-left font-bold uppercase bg-white border-b">
+        <thead class="text-sm text-left font-bold uppercase bg-white border-b-2">
           <tr>
-            <th v-if="cromatografiaGases.data.length !== 0" scope="col" class="p-4">
+            <th v-if="cromatografiaGases.data.length !== 0" scope="col" class="p-4 w-4 border-solid border border-gray-200" />
+            <th v-if="cromatografiaGases.data.length !== 0" scope="col" class="p-4 border-solid border border-gray-200">
               <div class="flex items-center">
-                <input id="checkbox-all-cromgas" v-model="selectAll" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="toggleAll" />
+                <input id="checkbox-all-cromgas" v-model="selectAllCromGas" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="toggleAllCromGas" />
                 <label for="checkbox-all-cromgas" class="sr-only">checkbox</label>
               </div>
             </th>
-            <th scope="col" class="px-6 py-3">Archivo</th>
-            <th scope="col" class="px-6 py-3">Pozo/Instalación</th>
-            <th scope="col" class="px-6 py-3" colspan="2">Fecha</th>
+            <th scope="col" class="px-6 py-3 border-solid border border-gray-200">Archivo</th>
+            <th scope="col" class="px-6 py-3 border-solid border border-gray-200">Pozo/Instalación</th>
+            <th scope="col" class="px-6 py-3 border-solid border border-gray-200">Fecha</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="cromatografiaGas in cromatografiaGases.data" :key="cromatografiaGas.id" class="bg-white hover:bg-gray-100 focus-within:bg-gray-100 border-b">
-            <td class="w-4 p-4">
+          <tr v-for="cromatografiaGas in cromatografiaGases.data" :key="cromatografiaGas.id" class="bg-white border-b">
+            <td class="px-6 py-4 whitespace-nowrap border-solid border border-gray-200">
+              <span class="inline-block whitespace-nowrap">
+                <Link class="flex items-center" :href="`/cromatografia-gases/${cromatografiaGas.id}/editar`" tabindex="-1">
+                  <Icon class="flex-shrink-0 w-4 h-4 fill-yellow-400" name="pencil" />
+                </Link>
+              </span>
+            </td>
+            <td class="w-4 p-4 border-solid border border-gray-200">
               <div class="flex items-center">
-                <input :id="`checkbox-cromatografiagas-${cromatografiaGas.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="cromatografiaGas.id" @change="changeToggleAll" />
-                <label :for="`checkbox-cromatografiagas-${cromatografiaGas.id}`" class="sr-only">checkbox</label>
+                <input :id="`checkbox-cromgas-${cromatografiaGas.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="cromatografiaGas.id" @change="changeToggleAllCromGas" />
+                <label :for="`checkbox-cromgas-${cromatografiaGas.id}`" class="sr-only">checkbox</label>
               </div>
             </td>
-            <td class="flex items-center px-6 py-4">
-              <Link class="text-yellow-400 hover:underline focus:text-yellow-500 leading-snug" :href="`/cromatografia-gases/${cromatografiaGas.id}/editar`">
-                {{ cromatografiaGas.documento }}
-              </Link>
-              <span class="text-xs ml-2 leading-snug"> size </span>
-              <Icon v-if="cromatografiaGas.deleted_at" class="ml-2 w-3 h-3 fill-yellow-400" name="trash" />
+            <td class="px-6 py-4 border-solid border border-gray-200">
+              <div class="flex items-center leading-snug">
+                <a class="text-yellow-400 hover:underline focus:text-yellow-500" :href="`/cromatografia-gases/${cromatografiaGas.documento}/descargar`">
+                  {{ cromatografiaGas.documento }}
+                </a>
+                <span class="text-xs ml-2"> size </span>
+                <span v-if="cromatografiaGas.deleted_at" title="Este documento ha sido eliminado.">
+                  <Icon class="flex-shrink-0 ml-2 w-3 h-3 fill-yellow-400" name="trash" />
+                </span>
+              </div>
             </td>
-            <td>
-              <Link class="flex items-center px-6 py-4 focus:text-yellow-500" :href="`/cromatografia-gases/${cromatografiaGas.id}/editar`">
-                {{ cromatografiaGas.pozo.nombre_pozo }}
-                <Icon v-if="cromatografiaGas.pozo.deleted_at" class="ml-2 w-3 h-3 fill-yellow-400" name="trash" />
-              </Link>
+            <td class="px-6 py-4 border-solid border border-gray-200">
+              <div class="flex items-center">
+                <span>{{ cromatografiaGas.pozo.nombre_pozo }}</span>
+                <span v-if="cromatografiaGas.pozo.deleted_at" title="Este pozo ha sido eliminado.">
+                  <Icon class="flex-shrink-0 ml-2 w-3 h-3 fill-yellow-400" name="trash" />
+                </span>
+              </div>
             </td>
-            <td>
-              <Link class="flex items-center px-6 py-4" :href="`/cromatografia-gases/${cromatografiaGas.id}/editar`" tabindex="-1">{{ cromatografiaGas.fecha_hora }} </Link>
-            </td>
-            <td class="w-px">
-              <Link class="flex items-center px-6" :href="`/cromatografia-gases/${cromatografiaGas.id}/editar`" tabindex="-1">
-                <Icon class="block w-6 h-6 fill-gray-400" name="cheveron-right" />
-              </Link>
+            <td class="px-6 py-4 border-solid border border-gray-200">
+              <span class="block">{{ cromatografiaGas.fecha_hora }}</span>
             </td>
           </tr>
           <tr v-if="cromatografiaGases.data.length === 0">

@@ -27,7 +27,7 @@ class DirectorioController extends Controller
             'deleteDirectorio' => Auth::user()->can('delete', Directorio::class),
         ];
 
-        $filters = $request->only('search', 'trashed');
+        $filters = $request->all('search', 'trashed');
         $directorios = $directorio->query()
             ->with('documentos:id,documento')
             ->latest()

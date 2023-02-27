@@ -20,7 +20,8 @@ class CromatografiaGasController extends Controller
     public function index(Request $request, CromatografiaGas $cromatografiaGas): Response
     {
         $filters = $request->only('search', 'trashed');
-        $cromatografiaGases = $cromatografiaGas->filter($filters)->latest()
+        $cromatografiaGases = $cromatografiaGas->filter($filters)
+            ->orderByDesc('id')
             ->paginate(10)
             ->withQueryString()
             ->through(fn ($cg) => [
