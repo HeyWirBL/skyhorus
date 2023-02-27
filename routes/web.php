@@ -151,8 +151,14 @@ Route::middleware('auth')->group(function () {
     Route::put('documentos/{documento}/restore', [DocumentoController::class, 'restore'])
         ->name('documentos.restore');
 
+    Route::put('documentos', [DocumentoController::class, 'restoreAll'])
+        ->name('documentos.restoreAll');
+
     Route::delete('documentos/{documento}', [DocumentoController::class, 'destroy'])
         ->name('documentos.destroy');
+
+    Route::delete('documentos', [DocumentoController::class, 'destroyAll'])
+        ->name('documentos.destroyAll');
 
     Route::get('documentos/{documento}/descargar', [DocumentoController::class, 'download'])
         ->name('documento.download');

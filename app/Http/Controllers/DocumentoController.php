@@ -21,36 +21,25 @@ class DocumentoController extends Controller
      */
     public function index(Request $request, Documento $documento, Ano $ano, MesDetalle $mes): Response
     {
-        return Inertia::render('Documentos/Index', [
-            'filters' => $request->all('search', 'year', 'month', 'trashed'),
-            'documentos' => $documento->query()
-                ->orderBy('id', 'desc')
-                ->with('directorio')
-                ->with('ano')
-                ->with('mesDetalle')
-                ->filter($request->only('search', 'year', 'month', 'trashed'))
-                ->paginate(10)
-                ->withQueryString()
-                ->through(fn ($doc) => [
-                    'id' => $doc->id,
-                    'documento' => json_decode($doc->documento, true),
-                    'deleted_at' => $doc->deleted_at,
-                    'directorio' => $doc->directorio ? $doc->directorio->only('nombre_dir') : null,
-                    'ano' => $doc->ano ? $doc->ano->only('ano') : null,
-                    'mes' => $doc->mesDetalle ? $doc->mesDetalle->only('nombre') : null,
-                ]),
-            'anos' => $ano->query()
-                ->latest()
-                ->get()
-                ->map
-                ->only('id', 'ano'),
-            'meses' => $mes->query()
-                ->latest()
-                ->get()
-                ->map
-                ->only('id', 'nombre'),
+        $filters = $request->only('search', 'year',' month', 'trashed');
+        $documentos = $documento->with('directorio', 'ano', 'mesDetalle')
+            ->filter($filters)
+            ->latest()
+            ->paginate(10)
+            ->withQueryString()
+            ->through(fn ($doc) => [
+                'id' => $doc->id,
+                'documento' => json_decode($doc->documento),
+                'deleted_at' => $doc->deleted_at,
+                'directorio' => optional($doc->directorio)->only('nombre_dir', 'deleted_at'),
+                'ano' => optional($doc->ano)->only('ano', 'deleted_at'),
+                'mes' => optional($doc->mesDetalle)->only('nombre'),
+            ]);
 
-        ]);
+        $anos = $ano->latest()->get()->map->only('id', 'ano');
+        $meses = $mes->latest()->get()->map->only('id', 'nombre');
+
+        return Inertia::render('Documentos/Index', compact('filters', 'documentos', 'anos', 'meses'));
     }
 
     /**
@@ -130,14 +119,19 @@ class DocumentoController extends Controller
     /**
      * Delete temporary an specific document.
      */
+    public function destroy(Documento $documento): RedirectResponse
+    {
+        $documento->delete();
+        return Redirect::back()->with('success', 'Documento eliminado.');
+    }
 
     /**
      * Delete multiple documents.
      */
-    public function destroyMultiple(Request $request, Documento $documento): RedirectResponse
+    public function destroyAll(Request $request, Documento $documento): RedirectResponse
     {
-        $documento->query()->whereIn('id', $request->get('selected'))->delete();
-
+        $ids = explode(',', $request->query('ids', ''));
+        $documento->whereIn('id', $ids)->delete();
         return Redirect::back()->with('success', 'Documentos eliminados.');
     }
 
@@ -147,13 +141,16 @@ class DocumentoController extends Controller
     public function restore(Documento $documento): RedirectResponse
     {
         $documento->restore();
-
         return Redirect::back()->with('success', 'Carpeta restablecida.');
     }
 
-    //public function downloadFile(Documento $documento)
-    //{
-    //    $file = $documento->id;
-    //    $subjectCode = $file->documento()->get()->map()->only('documento');
-    //}
+    /**
+     * Restore mutliple documents.
+     */
+    public function restoreAll(Request $request, Documento $documento): RedirectResponse
+    {        
+        $ids = explode(',', $request->query('ids', ''));
+        $documento->whereIn('id', $ids)->restore();       
+        return Redirect::back()->with('success', 'Documentos restablecidos.');
+    }
 }
