@@ -189,7 +189,7 @@ watch(
         <span class="hidden md:inline">&nbsp;Elementos Seleccionados</span>
       </button>
     </div>
-    <div class="mt-6 bg-white rounded shadow overflow-x-auto">
+    <div class="bg-white rounded shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
         <thead class="text-sm text-left font-bold uppercase bg-white border-b-2">
           <tr>

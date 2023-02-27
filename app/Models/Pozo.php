@@ -36,22 +36,22 @@ class Pozo extends Model
 
     public function docPozos()
     {
-        return $this->hasMany(DocPozo::class)->withTrashed();
+        return $this->hasMany(DocPozo::class);
     }
 
     public function componentePozos()
     {
-        return $this->hasMany(ComponentePozo::class)->withTrashed();
+        return $this->hasMany(ComponentePozo::class);
     }
 
     public function cromatografiaGases()
     {
-        return $this->hasMany(CromatografiaGas::class)->withTrashed();
+        return $this->hasMany(CromatografiaGas::class);
     }
 
     public function cromatografiaLiquidas()
     {
-        return $this->hasMany(CromatografiaLiquida::class)->withTrashed();
+        return $this->hasMany(CromatografiaLiquida::class);
     }
 
     public function scopeFilter($query, array $filters)
