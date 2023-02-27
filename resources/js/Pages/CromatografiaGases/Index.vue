@@ -24,7 +24,8 @@ const form = ref({
   trashed: props.filters.trashed,
 })
 
-const formCromatografiaGas = useForm({})
+const cromatografiaGasForm = useForm({})
+
 const isTrashed = computed(() => usePage().url.includes('trashed=only'))
 
 /**
@@ -80,15 +81,15 @@ const removeSelectedItems = () => {
       title: '¿Estás seguro de querer eliminar este documento?',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
+      confirmButtonColor: '#CEA915',
+      cancelButtonColor: '#BDBDBD',
       confirmButtonText: 'Confirmar',
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        formCromatografiaGas.delete(`/cromatografia-gases/${selected.value}`, {
+        cromatografiaGasForm.delete(`/cromatografia-gases/${selected.value}`, {
           onSuccess: () => (selected.value = []),
-          onFinish: () => (selectAll.value = false),
+          onFinish: () => (selectAllCromGas.value = false),
         })
       }
     })
@@ -97,15 +98,15 @@ const removeSelectedItems = () => {
       title: '¿Estás seguro de querer eliminar estos documentos?',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
+      confirmButtonColor: '#CEA915',
+      cancelButtonColor: '#BDBDBD',
       confirmButtonText: 'Confirmar',
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        formCromatografiaGas.delete(`/cromatografia-gases?ids=${selected.value.join(',')}`, {
+        cromatografiaGasForm.delete(`/cromatografia-gases?ids=${selected.value.join(',')}`, {
           onSuccess: () => (selected.value = []),
-          onFinish: () => (selectAll.value = false),
+          onFinish: () => (selectAllCromGas.value = false),
         })
       }
     })
@@ -118,15 +119,15 @@ const restoreSelectedItems = () => {
       title: '¿Estás seguro de querer restablecer este documento?',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
+      confirmButtonColor: '#CEA915',
+      cancelButtonColor: '#BDBDBD',
       confirmButtonText: 'Confirmar',
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        formCromatografiaGas.put(`/cromatografia-gases/${selected.value}/restore`, {
+        cromatografiaGasForm.put(`/cromatografia-gases/${selected.value}/restore`, {
           onSuccess: () => (selected.value = []),
-          onFinish: () => (selectAll.value = false),
+          onFinish: () => (selectAllCromGas.value = false),
         })
       }
     })
@@ -135,15 +136,15 @@ const restoreSelectedItems = () => {
       title: '¿Estás seguro de querer restablecer estos documentos?',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
+      confirmButtonColor: '#CEA915',
+      cancelButtonColor: '#BDBDBD',
       confirmButtonText: 'Confirmar',
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        formCromatografiaGas.put(`/cromatografia-gases?ids=${selected.value.join(',')}`, {
+        cromatografiaGasForm.put(`/cromatografia-gases?ids=${selected.value.join(',')}`, {
           onSuccess: () => (selected.value = []),
-          onFinish: () => (selectAll.value = false),
+          onFinish: () => (selectAllCromGas.value = false),
         })
       }
     })
