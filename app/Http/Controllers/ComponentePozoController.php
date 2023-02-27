@@ -25,29 +25,30 @@ class ComponentePozoController extends Controller
      */
     public function index(Request $request, ComponentePozo $componentePozo): Response
     {
-        return Inertia::render('ComponentePozos/Index', [
-            'can' => [
-                'createComponentePozo' => Auth::user()->can('create', ComponentePozo::class),
-                'editComponentePozo' => Auth::user()->can('update', ComponentePozo::class),
-                'deleteComponentePozo' => Auth::user()->can('delete', ComponentePozo::class),
-                'restoreComponentePozo' => Auth::user()->can('restore', ComponentePozo::class),
-            ],
-            'filters' => $request->all('search', 'trashed'),
-            'componentePozos' => $componentePozo->query()
-                ->orderBy('id', 'desc')
-                ->with('pozo')
-                ->filter($request->only('search', 'trashed'))
-                ->paginate(10)
-                ->withQueryString()
-                ->through(fn ($cp) => [
-                    'id' => $cp->id,
-                    'equipo_utilizado' => $cp->equipo_utilizado,
-                    'nombre_componente' => $cp->nombre_componente,
-                    'fecha_recep' => $cp->fecha_recep,
-                    'deleted_at' => $cp->deleted_at,
-                    'pozo' => $cp->pozo ? $cp->pozo->only('nombre_pozo', 'deleted_at') : null,
-                ]),
-        ]);
+        $can = [
+            'createComponentePozo' => Auth::user()->can('create', ComponentePozo::class),
+            'editComponentePozo' => Auth::user()->can('update', ComponentePozo::class),
+            'restoreComponentePozo' => Auth::user()->can('restore', ComponentePozo::class),
+            'deleteComponentePozo' => Auth::user()->can('delete', ComponentePozo::class),
+        ];
+
+        $filters = $request->all('search', 'trashed');
+
+        $componentePozos = $componentePozo->query()->filter($filters)
+            ->orderByDesc('id')
+            ->with('pozo')
+            ->paginate(10)
+            ->withQueryString()
+            ->through(fn ($cp) => [
+                'id' => $cp->id,
+                'equipo_utilizado' => $cp->equipo_utilizado,
+                'nombre_componente' => $cp->nombre_componente,
+                'fecha_recep' => $cp->fecha_recep,
+                'deleted_at' => $cp->deleted_at,
+                'pozo' => optional($cp->pozo)->only('nombre_pozo', 'deleted_at'),
+            ]); 
+
+        return Inertia::render('ComponentePozos/Index', compact('can', 'filters', 'componentePozos'));
     }
 
     /**

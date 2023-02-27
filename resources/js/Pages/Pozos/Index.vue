@@ -209,7 +209,7 @@ watch(
                 <label :for="`checkbox-pozo-${pozo.id}`" class="sr-only">checkbox</label>
               </div>
             </td>
-            <td class="px-6 py-4">
+            <td class="px-6 py-4 border-solid border border-gray-200">
               <span class="block">{{ pozo.id }}</span>
             </td>
             <td class="px-6 py-4 border-solid border border-gray-200">
