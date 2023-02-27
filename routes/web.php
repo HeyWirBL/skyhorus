@@ -248,6 +248,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('componente-pozos/export/{componentePozo}', [ComponentePozoController::class, 'export'])
         ->name('componente-pozos.export');
+    
+    Route::post('componente-pozos', [ComponentePozoController::class, 'import'])
+        ->name('componente-pozos.import');
 
     /* Cromatografías: Gas */
     //Route::resource('cromatografiagas', CromatografiaGasController::class)->only(['index']);

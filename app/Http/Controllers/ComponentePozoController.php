@@ -7,6 +7,7 @@ use App\Imports\ComponentePozosImport;
 use App\Models\ComponentePozo;
 use App\Models\ComponentePozoView;
 use App\Models\Pozo;
+use GrahamCampbell\ResultType\Success;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Http\Request;
@@ -296,21 +297,44 @@ class ComponentePozoController extends Controller
     /**
      * Import data for componente wells.
      */
-    public function import(Request $request): RedirectResponse
+    /* public function import(Request $request): RedirectResponse
     {
-        $request->validate([
-            'file' => 'required|mimes:xlsx,xls,csv',
-        ]);
+        $path = $request->file('file');
 
-        $path = $request->file('file')->getRealPath();
+        if(!empty($path)){
+            return Redirect::back()->with('succes', $path);
+        }else{
+            return Redirect::back()->with('succes', 'la importacion ha fallado'); 
+        }
+
         $import = new ComponentePozosImport();
+        Excel::import($import, $path); 
 
-
-        Excel::import($import, $path);
-
-        return Redirect::back()->with('success', 'Documento importado.');
+        return Redirect::back()->with('success', 'Datos importados correctamente.');
     }
+ */ 
+    public function import(Request $request)
+    {   
+        foreach($request->file('file') as $file){
+            if(!empty($file)){
+                /* $path = $file->getRealPath();
+                $data = Excel::load($path, function($reader){
+                })->get();
 
+                if(!empty($data) && count($data)){
+                   $dataArray = $data->toArray();
+                   for($i = 0; $i < count($dataArray); $i++){
+                        $dataImport[] = $dataArray[$i];
+                   }
+                }
+            ComponentePozo::insert($dataImport); */
+            Excel::import(new ComponentePozosImport, $file );
+
+            }
+
+        }
+        return redirect(route('componente-pozos'))->with('succes', 'archvos importados correctamente');
+    }
     /**
      * Export data for component well as xlsx.
      */

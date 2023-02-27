@@ -60,14 +60,14 @@ class ComponentePozosImport implements ToModel
             'mo_n_exano' => $row[42],
             'den_n_exano' => $row[43], 
             'pozo_id' => '1',
-            'fecha_recep' => $row[44],
-            'fecha_analisis' => $row[45],
-            'no_determinacion' => $row[46],
-            'equipo_utilizado' => $row[47],
-            'met_laboratorio' => $row[48],
-            'observaciones' => $row[49],
-            'nombre_componente' => $row[50],
-            'fecha_muestreo' => $row[51],
+            'fecha_recep' => date("Y-m-d"),
+            'fecha_analisis' => date("Y-m-d"),
+            'no_determinacion' => $row[44],
+            'equipo_utilizado' => $row[45],
+            'met_laboratorio' => $row[46],
+            'observaciones' => $row[47],
+            'nombre_componente' => $row[48],
+            'fecha_muestreo' => date("Y-m-d"),
         ]);
     }
 }
