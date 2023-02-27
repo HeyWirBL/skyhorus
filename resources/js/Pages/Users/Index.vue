@@ -215,7 +215,7 @@ watch(
         </thead>
         <tbody>
           <tr v-for="user in users.data" :key="user.id" class="bg-white border-b">
-            <td class="px-6 py-4 whitespace-nowrap border-solid border border-gray-200">
+            <td v-if="can.editUser" class="px-6 py-4 whitespace-nowrap border-solid border border-gray-200">
               <span class="inline-block whitespace-nowrap">
                 <Link class="flex items-center" :href="`/users/${user.id}/editar`" tabindex="-1">
                   <Icon class="flex-shrink-0 w-4 h-4 fill-yellow-400" name="pencil" />

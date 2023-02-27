@@ -19,27 +19,25 @@ class PozoController extends Controller
      */
     public function index(Request $request, Pozo $pozo): Response
     {
-        return Inertia::render('Pozos/Index', [
-            'can' => [
-                'createPozo' => Auth::user()->can('create', Pozo::class),
-                'editPozo' => Auth::user()->can('update', Pozo::class),
-                'deletePozo' => Auth::user()->can('delete', Pozo::class),
-                'restorePozo' => Auth::user()->can('restore', Pozo::class),                
-            ],
-            'filters' => $request->all('search','trashed'),
-            'pozos' => $pozo->query()
-                ->orderBy('id', 'desc')
-                ->filter($request->only('search', 'trashed'))
-                ->paginate(10)
-                ->withQueryString()
-                ->through(fn ($p) => [
-                    'id' => $p->id,
-                    'fecha_hora' => $p->fecha_hora,
-                    'identificador' => $p->identificador,
-                    'nombre_pozo' => $p->nombre_pozo,
-                    'deleted_at' => $p->deleted_at,
-                ]),
+        $can = [
+            'createPozo' => Auth::user()->can('create', Pozo::class),
+            'editPozo' => Auth::user()->can('update', Pozo::class),
+            'restorePozo' => Auth::user()->can('restore', Pozo::class), 
+            'deletePozo' => Auth::user()->can('delete', Pozo::class),
+        ];
+
+        $filters = $request->only('search', 'trashed');
+        $query = $pozo->query()->orderByDesc('id')->filter($filters);
+
+        $pozos = $query->paginate(10)->through(fn ($p) => [
+            'id' => $p->id,
+            'fecha_hora' => $p->fecha_hora,
+            'identificador' => $p->identificador,
+            'nombre_pozo' => $p->nombre_pozo,
+            'deleted_at' => $p->deleted_at,
         ]);
+
+        return Inertia::render('Pozos/Index', compact('pozos', 'can', 'filters'));
     }
 
     /**

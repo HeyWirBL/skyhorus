@@ -22,17 +22,15 @@ class UserController extends Controller
         $filters = $request->only('search', 'role', 'trashed');
         $query = $request->user()->query()->orderByName()->filter($filters);
 
-        $users = $query->paginate(10)->withQueryString()->through(function ($user) {
-            return [
-                'id' => $user->id,
-                'nombre' => $user->nombre,
-                'apellidos' => $user->apellidos,
-                'usuario' => $user->usuario,
-                'email' => $user->email,
-                'rol' => $user->rol,
-                'deleted_at' => $user->deleted_at,
-            ];
-        });
+        $users = $query->paginate(10)->withQueryString()->through(fn ($user) => [
+            'id' => $user->id,
+            'nombre' => $user->nombre,
+            'apellidos' => $user->apellidos,
+            'usuario' => $user->usuario,
+            'email' => $user->email,
+            'rol' => $user->rol,
+            'deleted_at' => $user->deleted_at,
+        ]);
 
         return Inertia::render('Users/Index', [
             'can' => [
@@ -70,7 +68,7 @@ class UserController extends Controller
             'rol' => ['required', 'string'],
         ]);
 
-        $user = User::create($validatedData);
+        User::create($validatedData);
 
         return redirect()->route('users')->with('success', 'Usuario creado.');
     }

@@ -15,29 +15,28 @@ use Redirect;
 class DocPozoController extends Controller
 {
     /**
-     * Display a listing of well documents.
+     * Display a listing of pozo documents.
      */
     public function index(Request $request, DocPozo $docPozo): Response
     {
-        return Inertia::render('DocPozos/Index', [
-            'can' => [
-                'createDocPozo' => Auth::user()->can('create', DocPozo::class),
-                'editDocPozo' => Auth::user()->can('update', DocPozo::class),
-            ],
-            'filters' => $request->all('search', 'trashed'),
-            'docPozos' => $docPozo->query()
-                ->orderBy('id', 'desc')
-                ->filter($request->only(['search', 'trashed']))
-                ->paginate(10)
-                ->withQueryString()
-                ->through(fn ($dp) => [
-                    'id' => $dp->id,
-                    'documento' => $dp->documento,
-                    'fecha_hora' => $dp->fecha_hora,
-                    'deleted_at' => $dp->deleted_at,
-                    'pozo' => $dp->pozo ? $dp->pozo->only('nombre_pozo') : null,
-                ]),
-        ]);
+        $filters = $request->only('search', 'trashed');
+        $can = [
+            'createDocPozo' => Auth::user()->can('create', DocPozo::class),
+            'editDocPozo' => Auth::user()->can('update', DocPozo::class),
+        ];
+
+        $docPozos = $docPozo->query()->latest()->filter($filters)
+            ->paginate(10)
+            ->withQueryString()
+            ->through(fn ($dp) => [
+                'id' => $dp->id,
+                'documento' => $dp->documento,
+                'fecha_hora' => $dp->fecha_hora,
+                'deleted_at' => $dp->deleted_at,
+                'pozo' => optional($dp->pozo)->only('nombre_pozo', 'deleted_at'),
+            ]);
+
+        return Inertia::render('DocPozos/Index', compact('can', 'filters', 'docPozos'));
     }
 
     /**
@@ -76,5 +75,43 @@ class DocPozoController extends Controller
             }
         }
         return redirect(route('doc-pozos'));
+    }
+
+    /**
+     * Delete temporary an specific document.
+     */
+    public function destroy(DocPozo $docPozo): RedirectResponse
+    {
+        $docPozo->delete();
+        return Redirect::back()->with('success', 'Documento de pozo eliminado.');
+    }
+
+    /**
+     * Delete multiple documents.
+     */
+    public function destroyAll(Request $request, DocPozo $docPozo): RedirectResponse
+    {
+        $ids = explode(',', $request->query('ids', ''));
+        $docPozo->whereIn('id', $ids)->delete();
+        return Redirect::back()->with('success', 'Documentos de pozo eliminados.');
+    }
+
+    /**
+     * Restore documents.
+     */
+    public function restore(DocPozo $docPozo): RedirectResponse
+    {
+        $docPozo->restore();
+        return Redirect::back()->with('success', 'Documento de pozo restablecido.');
+    }
+
+    /**
+     * Restore mutliple documents.
+     */
+    public function restoreAll(Request $request, DocPozo $docPozo): RedirectResponse
+    {        
+        $ids = explode(',', $request->query('ids', ''));
+        $docPozo->whereIn('id', $ids)->restore();       
+        return Redirect::back()->with('success', 'Documentos de pozo restablecidos.');
     }
 }
