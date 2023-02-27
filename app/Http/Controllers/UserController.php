@@ -19,26 +19,28 @@ class UserController extends Controller
      */
     public function index(Request $request): Response
     {
+        $filters = $request->only('search', 'role', 'trashed');
+        $query = $request->user()->query()->orderByName()->filter($filters);
+
+        $users = $query->paginate(10)->withQueryString()->through(function ($user) {
+            return [
+                'id' => $user->id,
+                'nombre' => $user->nombre,
+                'apellidos' => $user->apellidos,
+                'usuario' => $user->usuario,
+                'email' => $user->email,
+                'rol' => $user->rol,
+                'deleted_at' => $user->deleted_at,
+            ];
+        });
+
         return Inertia::render('Users/Index', [
             'can' => [
-                'createUser' => Auth::user()->can('create', User::class),
-                'editUser' => Auth::user()->can('update', User::class),
+                'createUser' => $request->user()->can('create', User::class),
+                'editUser' => $request->user()->can('update', User::class),
             ],
-            'filters' => $request->all('search', 'role', 'trashed'),
-            'users' => $request->user()->query()
-                ->orderByName()
-                ->filter($request->only('search', 'role', 'trashed'))
-                ->paginate(10)
-                ->withQueryString()
-                ->through(fn ($user) => [
-                    'id' => $user->id,
-                    'nombre' => $user->nombre,
-                    'apellidos' => $user->apellidos,
-                    'usuario' => $user->usuario,
-                    'email' => $user->email,
-                    'rol' => $user->rol,
-                    'deleted_at' => $user->deleted_at,
-                ]),
+            'filters' => $filters,
+            'users' => $users,
         ]); 
     }
 
@@ -57,20 +59,20 @@ class UserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'nombre' => 'required|string|max:50',
-            'apellidos' => 'required|string|max:100',
-            'usuario' => 'required|string|max:50|unique:'.User::class,
-            'email' => 'required|string|email|max:50|unique:'.User::class,
+        $validatedData = $request->validate([            
+            'nombre' => ['required', 'string', 'max:50'],
+            'apellidos' => ['required', 'string', 'max:100'],            
+            'usuario' => ['required', 'string', 'max:50', 'unique:' . User::class],
+            'email' => ['required', 'string', 'email', 'max:50', 'unique:' . User::class],
             'password' => ['required', Rules\Password::defaults()],
-            'telefono' => 'nullable',
-            'direccion' => 'nullable',
-            'rol' => 'required|string',
+            'telefono' => ['nullable', 'string'],
+            'direccion' => ['nullable', 'string'],
+            'rol' => ['required', 'string'],
         ]);
 
-        $request->user()->create($validated);
+        $user = User::create($validatedData);
 
-        return redirect(route('users'))->with('success', 'Usuario creado.');
+        return redirect()->route('users')->with('success', 'Usuario creado.');
     }
 
     /**
@@ -136,8 +138,17 @@ class UserController extends Controller
     public function destroy(User $user): RedirectResponse
     {
         $user->delete();
-
         return Redirect::back()->with('success', 'Usuario eliminado.');
+    }
+
+    /**
+     * Delete multiple users.
+     */
+    public function destroyAll(Request $request, User $user): RedirectResponse
+    {
+        $ids = explode(',', $request->query('ids', ''));
+        $user->whereIn('id', $ids)->delete();
+        return Redirect::back()->with('success', 'Usuarios eliminados.');
     }
 
     /**
@@ -146,7 +157,16 @@ class UserController extends Controller
     public function restore(User $user): RedirectResponse
     {
         $user->restore();
-
         return Redirect::back()->with('success', 'Usuario restablecido.');
+    }
+
+    /**
+     * Restore mutliple users.
+     */
+    public function restoreAll(Request $request, User $user): RedirectResponse
+    {        
+        $ids = explode(',', $request->query('ids', ''));
+        $user->whereIn('id', $ids)->restore();       
+        return Redirect::back()->with('success', 'Usuarios restablecidos.');
     }
 }

@@ -51,15 +51,20 @@ class ComponentePozoController extends Controller
     }
 
     /**
-     * Show the form for creating a new well components.
+     * Render the create view for a new Pozo component.
      */
     public function create(Pozo $pozo): Response
     {
+        // Retrieve a list of Pozos, selecting only the necessary columns
+        $pozos = $pozo->select('id', 'nombre_pozo')
+                      ->orderBy('id', 'desc') 
+                      ->get()
+                      ->map
+                      ->only('id', 'nombre_pozo');
+
+        // Render the create view, passing in the paginated list of Pozos.
         return Inertia::render('ComponentePozos/Create', [
-            'pozos' => $pozo->query()
-                ->get()
-                ->map
-                ->only('id', 'nombre_pozo')
+            'pozos' => $pozos,
         ]);
     }
 

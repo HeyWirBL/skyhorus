@@ -20,31 +20,36 @@ class DirectorioController extends Controller
      */
     public function index(Request $request, Directorio $directorio): Response
     {
-        return Inertia::render('Directorios/Index', [
-            'can' => [
-                'createDirectorio' => Auth::user()->can('create', Directorio::class),
-                'editDirectorio' => Auth::user()->can('update', Directorio::class),
-                'deleteDirectorio' => Auth::user()->can('delete', Directorio::class),
-                'restoreDirectorio' => Auth::user()->can('restore', Directorio::class),
-            ],
-            'filters' => $request->all('search', 'trashed'),
-            'directorios' => $directorio->query()
-                ->with('documentos')
-                ->latest()
-                ->filter($request->only('search', 'trashed'))
-                ->paginate(10)
-                ->withQueryString()
-                ->through(fn ($dir) => [
-                    'id' => $dir->id,
-                    'nombre_dir' => $dir->nombre_dir,
-                    'fecha_dir' => $dir->fecha_dir,
-                    'deleted_at' => $dir->deleted_at,
-                    'documentos' => $dir->documentos()
-                        ->get()
-                        ->map
-                        ->only('id', 'documento')
-                ]),
-        ]);
+        $can = [
+            'createDirectorio' => Auth::user()->can('create', Directorio::class),
+            'editDirectorio' => Auth::user()->can('update', Directorio::class),
+            'restoreDirectorio' => Auth::user()->can('restore', Directorio::class),
+            'deleteDirectorio' => Auth::user()->can('delete', Directorio::class),
+        ];
+
+        $filters = $request->only('search', 'trashed');
+
+        $directorios = $directorio->query()
+            ->with('documentos:id,documento')
+            ->latest()
+            ->filter($filters)
+            ->paginate(10)
+            ->withQueryString()
+            ->through(fn ($dir) => [
+                'id' => $dir->id,
+                'nombre_dir' => $dir->nombre_dir,
+                'fecha_dir' => $dir->fecha_dir,
+                'deleted_at' => $dir->deleted_at,
+                'documentos' => $dir->documentos
+                    ->map(function ($doc) {
+                        return [
+                            'id' => $doc->id,
+                            'documento' => $doc->documento,
+                        ];
+                }),
+            ]);
+
+        return Inertia::render('Directorios/Index', compact('can', 'filters', 'directorios'));
     }
 
     /**

@@ -17,7 +17,7 @@ const props = defineProps({
 const swal = inject('$swal')
 
 const selected = ref([])
-const selectAll = ref(false)
+const selectAllDir = ref(false)
 
 const form = ref({
   search: props.filters.search,
@@ -25,31 +25,46 @@ const form = ref({
 })
 
 const formDirectorio = useForm({})
+
 const isTrashed = computed(() => usePage().url.includes('trashed=only'))
 
-watch(
-  () => form.value,
-  debounce(function () {
-    router.get('/directorios', pickBy(form.value), { preserveState: true, replace: true })
-  }, 150),
-  {
-    deep: true,
-  },
-)
-
-const toggleAll = () => {
-  selected.value = []
-  if (!selectAll.value) {
-    selected.value = selected.value.length === props.directorios.data.length ? [] : props.directorios.data.map((dir) => dir.id)
+/**
+ * Helper Function that that checks whether the `selectAllRef` flag is set
+ * to false.
+ *
+ * @param {array} items an array of items.
+ * @param {array} selectedItems an array of selected items.
+ * @param {bool} selectAllRef boolean flag that represents whether all items are selected.
+ */
+const toggleAll = (items, selectedItems, selectAllRef) => {
+  selectedItems.value = []
+  if (!selectAllRef.value) {
+    selectedItems.value = selectedItems.value.length === items.length ? [] : items.map((item) => item.id)
   }
 }
 
-const changeToggleAll = () => {
-  if (props.directorios.data.length === selected.value.length) {
-    selectAll.value = true
+/**
+ * Helper Function that updates the state of the "select all" checkbox
+ * when individual checkboxes are checked or unchecked.
+ *
+ * @param {array} items list of items that can be selected.
+ * @param {array} selectedItems an array which contains the ids of the items that have been selected.
+ * @param {bool} selectAllRef reference that represents the state of the "select all" checkbox.
+ */
+const changeToggleAll = (items, selectedItems, selectAllRef) => {
+  if (items.length === selectedItems.value.length) {
+    selectAllRef.value = true
   } else {
-    selectAll.value = false
+    selectAllRef.value = false
   }
+}
+
+const toggleAllDir = () => {
+  toggleAll(props.directorios.data, selected, selectAllDir)
+}
+
+const changeToggleAllDir = () => {
+  changeToggleAll(props.directorios.data, selected, selectAllDir)
 }
 
 const reset = () => {
@@ -62,15 +77,15 @@ const removeSelectedItems = () => {
       title: '¿Estás seguro de querer eliminar este directorio?',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
+      confirmButtonColor: '#CEA915',
+      cancelButtonColor: '#BDBDBD',
       confirmButtonText: 'Confirmar',
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
         formDirectorio.delete(`/directorios/${selected.value}`, {
           onSuccess: () => (selected.value = []),
-          onFinish: () => (selectAll.value = false),
+          onFinish: () => (selectAllDir.value = false),
         })
       }
     })
@@ -79,15 +94,15 @@ const removeSelectedItems = () => {
       title: '¿Estás seguro de querer eliminar estos directorios?',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
+      confirmButtonColor: '#CEA915',
+      cancelButtonColor: '#BDBDBD',
       confirmButtonText: 'Confirmar',
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
         formDirectorio.delete(`/directorios?ids=${selected.value.join(',')}`, {
           onSuccess: () => (selected.value = []),
-          onFinish: () => (selectAll.value = false),
+          onFinish: () => (selectAllDir.value = false),
         })
       }
     })
@@ -100,15 +115,15 @@ const restoreSelectedItems = () => {
       title: '¿Estás seguro de querer restablecer este directorio?',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
+      confirmButtonColor: '#CEA915',
+      cancelButtonColor: '#BDBDBD',
       confirmButtonText: 'Confirmar',
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
         formDirectorio.put(`/directorios/${selected.value}/restore`, {
           onSuccess: () => (selected.value = []),
-          onFinish: () => (selectAll.value = false),
+          onFinish: () => (selectAllDir.value = false),
         })
       }
     })
@@ -117,20 +132,30 @@ const restoreSelectedItems = () => {
       title: '¿Estás seguro de querer restablecer estos directorios?',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
+      confirmButtonColor: '#CEA915',
+      cancelButtonColor: '#BDBDBD',
       confirmButtonText: 'Confirmar',
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
         formDirectorio.put(`/directorios?ids=${selected.value.join(',')}`, {
           onSuccess: () => (selected.value = []),
-          onFinish: () => (selectAll.value = false),
+          onFinish: () => (selectAllDir.value = false),
         })
       }
     })
   }
 }
+
+watch(
+  () => form.value,
+  debounce(function () {
+    router.get('/directorios', pickBy(form.value), { preserveState: true, replace: true })
+  }, 150),
+  {
+    deep: true,
+  },
+)
 </script>
 
 <template>
@@ -145,70 +170,65 @@ const restoreSelectedItems = () => {
           <option value="only">Solo Eliminado</option>
         </select>
       </SearchFilter>
-    </div>
-    <div class="flex items-center mb-6">
-      <Link v-if="can.createDirectorio" class="btn-yellow mr-2" href="/directorios/crear">
+      <Link v-if="can.createDirectorio" class="btn-yellow" href="/directorios/crear">
         <span>Crear</span>
         <span class="hidden md:inline">&nbsp;Directorio</span>
       </Link>
-      <button v-if="directorios.data.length !== 0 && can.deleteDirectorio && !isTrashed" class="btn-secondary" type="button" :disabled="!selectAll && !selected.length" @click="removeSelectedItems">
+    </div>
+    <div class="flex items-center mb-6">
+      <button v-if="directorios.data.length !== 0 && can.deleteDirectorio && !isTrashed" class="btn-secondary" type="button" :disabled="!selectAllDir && !selected.length" @click="removeSelectedItems">
         <span>Borrar Elementos</span>
         <span class="hidden md:inline">&nbsp;Seleccionados</span>
       </button>
-      <button v-if="directorios.data.length !== 0 && can.restoreDirectorio && isTrashed" class="btn-secondary" type="button" :disabled="!selectAll && !selected.length" @click="restoreSelectedItems">
+      <button v-if="directorios.data.length !== 0 && can.restoreDirectorio && isTrashed" class="btn-secondary" type="button" :disabled="!selectAllDir && !selected.length" @click="restoreSelectedItems">
         <span>Restablecer Elementos</span>
         <span class="hidden md:inline">&nbsp;Seleccionados</span>
       </button>
     </div>
     <div class="bg-white rounded-md shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
-        <thead class="text-sm text-left font-bold uppercase bg-white border-b">
+        <thead class="text-sm text-left font-bold uppercase bg-white border-b-2">
           <tr>
-            <th v-if="directorios.data.length !== 0 && can.editDirectorio" scope="col" class="p-4">
+            <th v-if="directorios.data.length !== 0" scope="col" class="p-4 w-4 border-solid border border-gray-200" />
+            <th v-if="directorios.data.length !== 0 && can.editDirectorio" scope="col" class="p-4 border-solid border border-gray-200">
               <div class="flex items-center">
-                <input id="checkbox-all-directorios" v-model="selectAll" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="toggleAll" />
+                <input id="checkbox-all-directorios" v-model="selectAllDir" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="toggleAllDir" />
                 <label for="checkbox-all-directorios" class="sr-only">checkbox</label>
               </div>
             </th>
-            <th scope="col" class="px-6 py-3">&nbsp;</th>
-            <th scope="col" class="px-6 py-3">Nombre de carpeta</th>
-            <th scope="col" class="px-6 py-3" colspan="2">Fecha de creación</th>
+            <th v-if="directorios.data.length !== 0" scope="col" class="px-6 py-3 border-solid border border-gray-200" />
+            <th scope="col" class="px-6 py-3 border-solid border border-gray-200">Nombre de carpeta</th>
+            <th scope="col" class="px-6 py-3 border-solid border border-gray-200">Fecha de creación</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="dir in directorios.data" :key="dir.id" class="bg-white hover:bg-gray-100 focus-within:bg-gray-100 border-b">
-            <td v-if="can.editDirectorio" class="w-4 p-4">
+          <tr v-for="dir in directorios.data" :key="dir.id" class="bg-white border-b">
+            <td v-if="can.editDirectorio" class="px-6 py-4 whitespace-nowrap border-solid border border-gray-200">
+              <span class="inline-block whitespace-nowrap">
+                <Link class="flex items-center" :href="`/directorios/${dir.id}/editar`" tabindex="-1">
+                  <Icon class="flex-shrink-0 w-4 h-4 fill-yellow-400" name="pencil" />
+                </Link>
+              </span>
+            </td>
+            <td v-if="can.editDirectorio" class="w-4 p-4 border-solid border border-gray-200">
               <div class="flex items-center">
-                <input :id="`checkbox-directorio-${dir.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="dir.id" @change="changeToggleAll" />
+                <input :id="`checkbox-directorio-${dir.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="dir.id" @change="changeToggleAllDir" />
                 <label :for="`checkbox-directorio-${dir.id}`" class="sr-only">checkbox</label>
               </div>
             </td>
-            <td class="flex items-center">
-              <Link v-if="can.editDirectorio" class="px-6 py-4 text-yellow-500 hover:underline focus:text-yellow-500" :href="`/directorios/${dir.id}/editar`"> Archivos ({{ dir.documentos.length }}) </Link>
-              <div v-else class="px-6 py-4 text-yellow-500">Archivos ({{ dir.documentos.length }})</div>
+            <td class="px-6 py-4 border-solid border border-gray-200">
+              <span class="block">Archivos ({{ dir.documentos.length }})</span>
             </td>
-            <td>
-              <Link v-if="can.editDirectorio" class="flex items-center px-6 py-4 focus:text-yellow-500" :href="`/directorios/${dir.id}/editar`" tabindex="-1">
-                {{ dir.nombre_dir }}
-                <Icon v-if="dir.deleted_at" class="flex-shrink-0 ml-2 w-3 h-3 fill-yellow-400" name="trash" />
-              </Link>
-              <div v-else class="flex items-center px-6 py-4">
-                {{ dir.nombre_dir }}
-                <Icon v-if="dir.deleted_at" class="flex-shrink-0 ml-2 w-3 h-3 fill-yellow-400" name="trash" />
+            <td class="px-6 py-4 border-solid border border-gray-200">
+              <div class="flex items-center">
+                <span>{{ dir.nombre_dir }}</span>
+                <span v-if="dir.deleted_at" title="Esta carpeta ha sido eliminada.">
+                  <Icon class="flex-shrink-0 ml-2 w-3 h-3 fill-yellow-400" name="trash" />
+                </span>
               </div>
             </td>
-            <td>
-              <Link v-if="can.editDirectorio" class="flex items-center px-6 py-4" :href="`/directorios/${dir.id}/editar`" tabindex="-1">
-                {{ dir.fecha_dir }}
-              </Link>
-              <div v-else class="flex items-center px-6 py-4">
-                {{ dir.fecha_dir }}
-              </div>
-            </td>
-            <td v-if="can.editDirectorio" class="w-px">
-              <Link class="flex items-center px-6" :href="`/directorios/${dir.id}/editar`" tabindex="-1">
-                <Icon class="block w-6 h-6 fill-gray-400" name="cheveron-right" />
-              </Link>
+            <td class="px-6 py-4 border-solid border border-gray-200">
+              <span>{{ dir.fecha_dir }}</span>
             </td>
           </tr>
           <tr v-if="directorios.data.length === 0">
