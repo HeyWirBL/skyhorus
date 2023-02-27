@@ -109,22 +109,28 @@ Route::middleware('auth')->group(function () {
         ->name('anos');
 
     Route::get('anos/crear', [AnoController::class, 'create'])
-        ->name('anos.create');
+        ->name('anos.create')->middleware('can:create,App\Models\Ano');
 
     Route::get('anos/{ano}/editar', [AnoController::class, 'edit'])
-        ->name('anos.edit');
+        ->name('anos.edit')->middleware('can:update,App\Models\Ano');
 
     Route::post('anos', [AnoController::class, 'store'])
-        ->name('anos.store');
+        ->name('anos.store')->middleware('can:create,App\Models\Ano');
         
     Route::put('anos/{ano}', [AnoController::class, 'update'])
-        ->name('anos.update');
+        ->name('anos.update')->middleware('can:update,App\Models\Ano');
 
     Route::put('anos/{ano}/restore', [AnoController::class, 'restore'])
-        ->name('anos.restore');
+        ->name('anos.restore')->middleware('can:restore,App\Models\Ano');
+
+    Route::put('anos', [AnoController::class, 'restoreAll'])
+        ->name('anos.restoreAll')->middleware('can:restore,App\Models\Ano');
 
     Route::delete('anos/{ano}', [AnoController::class, 'destroy'])
-        ->name('anos.destroy');
+        ->name('anos.destroy')->middleware('can:delete,App\Models\Ano');
+
+    Route::delete('anos', [AnoController::class, 'destroyAll'])
+        ->name('anos.destroyAll')->middleware('can:delete,App\Models\Ano');
 
     /* Catálogo de Documentos */
     /*Route::resource('documentos', DocumentoController::class)->only([
