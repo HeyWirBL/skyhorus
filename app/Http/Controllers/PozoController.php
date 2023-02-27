@@ -31,15 +31,7 @@ class PozoController extends Controller
 
         $pozos = $query->paginate(10)->through(fn ($p) => [
             'id' => $p->id,
-            'punto_muestreo' => $p->punto_muestreo,
             'fecha_hora' => $p->fecha_hora,
-            'presion_kgcm2' => $p->presion_kgcm2,
-            'presion_psi' => $p->presion_psi,
-            'temp_C' => $p->temp_C,
-            'temp_F' => $p->temp_F,
-            'volumen_cm3' => $p->volumen_cm3,
-            'volumen_lts' => $p->volumen_lts,
-            'observaciones' => $p->observaciones,
             'identificador' => $p->identificador,
             'nombre_pozo' => $p->nombre_pozo,
             'deleted_at' => $p->deleted_at,
