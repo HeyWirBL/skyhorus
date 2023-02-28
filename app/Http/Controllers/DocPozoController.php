@@ -23,6 +23,8 @@ class DocPozoController extends Controller
         $can = [
             'createDocPozo' => Auth::user()->can('create', DocPozo::class),
             'editDocPozo' => Auth::user()->can('update', DocPozo::class),
+            'restoreDocPozo' => Auth::user()->can('restore', DocPozo::class),
+            'deleteDocPozo' => Auth::user()->can('delete', DocPozo::class),
         ];
 
         $docPozos = $docPozo->query()->latest()->filter($filters)

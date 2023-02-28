@@ -12,6 +12,7 @@ import TextInput from '@/Components/TextInput.vue'
 import LoadingButton from '@/Components/LoadingButton.vue'
 
 const props = defineProps({
+  can: Object,
   filters: Object,
   directorio: Object,
   anos: Array,
@@ -109,7 +110,7 @@ const restore = () => {
       <Link class="text-yellow-400 hover:text-yellow-600" href="/directorios">Carpetas</Link>
       <span class="text-yellow-400 font-medium">&nbsp;/</span> {{ form.nombre_dir }}
     </h1>
-    <TrashedMessage v-if="props.directorio.deleted_at" class="mb-6" @restore="restore">Esta carpeta ha sido eliminada.</TrashedMessage>
+    <TrashedMessage v-if="directorio.deleted_at && can.restoreDirectorio" class="mb-6" @restore="restore">Esta carpeta ha sido eliminada.</TrashedMessage>
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
       <form @submit.prevent="update">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
@@ -117,7 +118,7 @@ const restore = () => {
           <TextInput v-model="form.fecha_dir" :error="form.errors.fecha_dir" class="pb-8 pr-6 w-full lg:w-1/2" type="date" label="Fecha de creación" />
         </div>
         <div class="flex items-center justify-end px-8 py-4 bg-gray-50 border-t border-gray-100">
-          <button v-if="!props.directorio.deleted_at" class="text-red-600 hover:underline" tabindex="-1" type="button" @click="destroy">Eliminar Carpeta</button>
+          <button v-if="!directorio.deleted_at && can.deleteDirectorio" class="text-red-600 hover:underline" tabindex="-1" type="button" @click="destroy">Eliminar Carpeta</button>
           <LoadingButton :loading="form.processing" :disabled="form.processing" class="btn-yellow ml-auto" type="submit">Actualizar</LoadingButton>
         </div>
       </form>

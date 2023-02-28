@@ -190,7 +190,7 @@ watch(
       <table class="w-full whitespace-nowrap">
         <thead class="text-sm text-left font-bold uppercase bg-white border-b-2">
           <tr>
-            <th v-if="componentePozos.data.length !== 0 && can.editComponentePozo" scope="col" class="p-4">
+            <th v-if="componentePozos.data.length !== 0 && can.deleteComponentePozo" scope="col" class="p-4">
               <div class="flex items-center">
                 <input id="checkbox-all-compozos" v-model="selectAllComPozos" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="toggleAllComPozos" />
                 <label for="checkbox-all-compozos" class="sr-only">checkbox</label>
@@ -205,7 +205,7 @@ watch(
         </thead>
         <tbody>
           <tr v-for="componentePozo in componentePozos.data" :key="componentePozo.id" class="bg-white border-b">
-            <td v-if="can.editComponentePozo" class="w-4 p-4 border-solid border border-gray-200">
+            <td v-if="can.deleteComponentePozo" class="w-4 p-4 border-solid border border-gray-200">
               <div class="flex items-center">
                 <input :id="`checkbox-compozo-${componentePozo.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="componentePozo.id" @change="changeToggleAllComPozos" />
                 <label :for="`checkbox-compozo-${componentePozo.id}`" class="sr-only">checkbox</label>

@@ -41,11 +41,7 @@ class AnoPolicy
      */
     public function create(User $user)
     {
-        switch ($user->rol) {
-            case 'Administrador': return $user->rol;
-            case 'Colaborador': return $user->rol;
-            case 'Editor': return $user->rol;
-        }
+        return in_array($user->rol, ['Administrador', 'Colaborador', 'Editor']);
     }
 
     /**
@@ -56,11 +52,7 @@ class AnoPolicy
      */
     public function update(User $user)
     {
-        switch ($user->rol) {
-            case 'Administrador': return $user->rol;
-            case 'Colaborador': return $user->rol;
-            case 'Editor': return $user->rol;
-        }
+        return in_array($user->rol, ['Administrador', 'Editor']);
     }
 
     /**
@@ -71,11 +63,7 @@ class AnoPolicy
      */
     public function delete(User $user)
     {
-        switch ($user->rol) {
-            case 'Administrador': return $user->rol;
-            case 'Colaborador': return $user->rol;
-            case 'Editor': return $user->rol;
-        }
+        return $user->rol === 'Administrador';
     }
 
     /**
@@ -86,10 +74,6 @@ class AnoPolicy
      */
     public function restore(User $user)
     {
-        switch ($user->rol) {
-            case 'Administrador': return $user->rol;
-            case 'Colaborador': return $user->rol;
-            case 'Editor': return $user->rol;
-        }
+        return $user->rol === 'Administrador';
     }
 }

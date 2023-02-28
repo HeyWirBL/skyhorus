@@ -438,7 +438,7 @@ const truncateMessageObs = computed(() => {
         <thead class="bg-white border-b-2">
           <tr>
             <th scope="col" class="border px-6 py-4">
-              <button v-if="!componentePozo.deleted_at" class="text-red-600 font-medium hover:underline" tabindex="-1" type="button" @click="destroy">Eliminar</button>
+              <button v-if="!componentePozo.deleted_at && can.deleteComponentePozo" class="text-red-600 font-medium hover:underline" tabindex="-1" type="button" @click="destroy">Eliminar</button>
             </th>
             <th scope="col" class="border px-6 py-4" />
             <th scope="col" class="border px-6 py-4" />
@@ -778,7 +778,7 @@ const truncateMessageObs = computed(() => {
                 <li class="flex items-center justify-between py-3 pl-3 pr-4 text-sm">
                   <div class="flex w-0 flex-1 items-center">
                     <Icon class="h-4 w-4 flex-shrink-0 text-gray-500" name="line-chart" aria-hidden="true" />
-                    <span class="ml-2 w-0 flex-1 truncate">Gráfica de líneas % MOL</span>
+                    <span class="ml-2 w-0 flex-1 truncate">Gráfica de líneas % MOL ({{ quimicosData.length }})</span>
                   </div>
                   <div class="ml-4 flex-shrink-0">
                     <a href="#" class="font-medium text-yellow-600 hover:text-yellow-500" @click.prevent="openModalChart">Visualizar</a>

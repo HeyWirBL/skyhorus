@@ -180,11 +180,11 @@ watch(
       </Link>
     </div>
     <div class="flex items-center mb-6">
-      <button v-if="docPozos.data.length !== 0 && !isTrashed" class="btn-secondary mr-2" type="button" :disabled="!selectAllDocPozos && !selected.length" @click="removeSelectedItems">
+      <button v-if="docPozos.data.length !== 0 && can.deleteDocPozo && !isTrashed" class="btn-secondary mr-2" type="button" :disabled="!selectAllDocPozos && !selected.length" @click="removeSelectedItems">
         <span>Borrar</span>
         <span class="hidden md:inline">&nbsp;Elementos Seleccionados</span>
       </button>
-      <button v-if="docPozos.data.length !== 0 && isTrashed" class="btn-secondary" type="button" :disabled="!selectAllDocPozos && !selected.length" @click="restoreSelectedItems">
+      <button v-if="docPozos.data.length !== 0 && can.restoreDocPozo && isTrashed" class="btn-secondary" type="button" :disabled="!selectAllDocPozos && !selected.length" @click="restoreSelectedItems">
         <span>Restablecer</span>
         <span class="hidden md:inline">&nbsp;Elementos Seleccionados</span>
       </button>
@@ -194,7 +194,7 @@ watch(
         <thead class="text-sm text-left font-bold uppercase bg-white border-b-2">
           <tr>
             <th v-if="docPozos.data.length !== 0 && can.editDocPozo" scope="col" class="p-4 w-4 border-solid border border-gray-200" />
-            <th v-if="docPozos.data.length !== 0 && can.editDocPozo" scope="col" class="p-4 border-solid border border-gray-200">
+            <th v-if="docPozos.data.length !== 0 && can.deleteDocPozo" scope="col" class="p-4 border-solid border border-gray-200">
               <div class="flex items-center">
                 <input id="checkbox-all-docpozos" v-model="selectAllDocPozos" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="toggleAllDocPozos" />
                 <label for="checkbox-all-docpozos" class="sr-only">checkbox</label>
@@ -214,7 +214,7 @@ watch(
                 </Link>
               </span>
             </td>
-            <td v-if="can.editDocPozo" class="w-4 p-4 border-solid border border-gray-200">
+            <td v-if="can.deleteDocPozo" class="w-4 p-4 border-solid border border-gray-200">
               <div class="flex items-center">
                 <input :id="`checkbox-docpozo-${docPozo.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="docPozo.id" @change="changeToggleAllDocPozos" />
                 <label :for="`checkbox-docpozo-${docPozo.id}`" class="sr-only">checkbox</label>

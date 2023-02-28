@@ -41,11 +41,7 @@ class ComponentePozoPolicy
      */
     public function create(User $user)
     {
-        switch ($user->rol) {
-            case 'Administrador': return $user->rol;
-            case 'Colaborador': return $user->rol;
-            case 'Editor': return $user->rol;
-        }
+        return in_array($user->rol, ['Administrador', 'Colaborador', 'Editor']);
     }
 
     /**
@@ -56,11 +52,7 @@ class ComponentePozoPolicy
      */
     public function update(User $user)
     {
-        switch ($user->rol) {
-            case 'Administrador': return $user->rol;
-            case 'Colaborador': return $user->rol;
-            case 'Editor': return $user->rol;
-        }
+        return in_array($user->rol, ['Administrador', 'Editor']);
     }
 
     /**
@@ -71,11 +63,7 @@ class ComponentePozoPolicy
      */
     public function delete(User $user)
     {
-        switch ($user->rol) {
-            case 'Administrador': return $user->rol;
-            case 'Colaborador': return $user->rol;
-            case 'Editor': return $user->rol;
-        }
+        return $user->rol === 'Administrador';
     }
 
     /**
@@ -86,22 +74,6 @@ class ComponentePozoPolicy
      */
     public function restore(User $user)
     {
-        switch ($user->rol) {
-            case 'Administrador': return $user->rol;
-            case 'Colaborador': return $user->rol;
-            case 'Editor': return $user->rol;
-        }
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\ComponentePozo  $componentePozo
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function forceDelete(User $user, ComponentePozo $componentePozo)
-    {
-        //
+        return $user->rol === 'Administrador';
     }
 }

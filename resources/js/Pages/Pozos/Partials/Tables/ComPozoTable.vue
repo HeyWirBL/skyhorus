@@ -297,9 +297,9 @@ const removeSelectedItems = () => {
       <table class="w-full whitespace-nowrap text-sm">
         <thead class="bg-white border-b-2">
           <tr v-if="componentePozos.data.length !== 0">
-            <th v-if="can.editComponentePozo" scope="col" class="p-4 w-4 border-solid border border-gray-200" />
-            <th v-if="can.editComponentePozo" scope="col" class="p-4 border-solid border border-gray-200">
-              <div class="flex items-center">
+            <th scope="col" class="p-4 w-4 border-solid border border-gray-200" />
+            <th scope="col" class="p-4 border-solid border border-gray-200">
+              <div v-if="can.editComponentePozo" class="flex items-center">
                 <input id="checkbox-all-compozos" v-model="selectAllComPozos" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="toggleAllComPozos" />
                 <label for="checkbox-all-compozos" class="sr-only">checkbox</label>
               </div>
@@ -328,15 +328,15 @@ const removeSelectedItems = () => {
               </td>
             </tr>
             <tr class="bg-white">
-              <td v-if="can.editComponentePozo" class="p-4 whitespace-nowrap border-solid border border-gray-200">
-                <span class="flex items-center whitespace-nowrap" title="Ver componente de pozo">
+              <td class="p-4 whitespace-nowrap border-solid border border-gray-200">
+                <span v-if="can.editComponentePozo" class="flex items-center whitespace-nowrap" title="Ver componente de pozo">
                   <Link class="flex items-center" :href="`/componente-pozos/${compozo.id}`" tabindex="-1">
                     <Icon class="flex-shrink-0 w-4 h-4 fill-yellow-400" name="eye" />
                   </Link>
                 </span>
               </td>
               <td class="w-4 p-4 border-solid border border-gray-200">
-                <div class="flex items-center">
+                <div v-if="can.editComponentePozo" class="flex items-center">
                   <input :id="`checkbox-compozo-${compozo.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="compozo.id" @change="changeToggleAllComPozos" />
                   <label :for="`checkbox-compozo-${compozo.id}`" class="sr-only">checkbox</label>
                 </div>
@@ -707,7 +707,7 @@ const removeSelectedItems = () => {
           </template>
           <template v-if="componentePozos.data.length === 0">
             <tr class="bg-white">
-              <td class="px-6 py-4 text-left leading-6 border-solid border border-gray-200" colspan="5">No se encontraron componentes registrados en este pozo.</td>
+              <td class="px-6 py-4 text-base text-left leading-6 border-solid border border-gray-200" colspan="5">No se encontraron componentes registrados en este pozo.</td>
             </tr>
           </template>
         </tbody>

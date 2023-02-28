@@ -86,9 +86,13 @@ class UserController extends Controller
     /**
      * Show the form for editing an specific user.
      */
-    public function edit(User $user): Response
+    public function edit(Request $request, User $user): Response
     {
         return Inertia::render('Users/Edit', [
+            'can' => [
+                'restoreUser' => $request->user()->can('restore', User::class),
+                'deleteUser' => $request->user()->can('delete', User::class),
+            ],
             'user' => [
                 'id' => $user->id,
                 'nombre' => $user->nombre,

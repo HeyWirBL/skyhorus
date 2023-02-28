@@ -41,11 +41,7 @@ class DirectorioPolicy
      */
     public function create(User $user)
     {
-        switch ($user->rol) {
-            case 'Administrador': return $user->rol;
-            case 'Colaborador': return $user->rol;
-            case 'Editor': return $user->rol;
-        }
+        return in_array($user->rol, ['Administrador', 'Colaborador', 'Editor']);
     }
 
     /**
@@ -56,42 +52,28 @@ class DirectorioPolicy
      */
     public function update(User $user)
     {
-        switch ($user->rol) {
-            case 'Administrador': return $user->rol;
-            case 'Colaborador': return $user->rol;
-            case 'Editor': return $user->rol;
-        }
+        return in_array($user->rol, ['Administrador', 'Editor']);
     }
 
     /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Directorio  $directorio
      * @return \Illuminate\Auth\Access\Response|bool
      */
     public function delete(User $user)
     {
-        switch ($user->rol) {
-            case 'Administrador': return $user->rol;
-            case 'Colaborador': return $user->rol;
-            case 'Editor': return $user->rol;
-        }
+        return $user->rol === 'Administrador';
     }
 
     /**
      * Determine whether the user can restore the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Directorio  $directorio
      * @return \Illuminate\Auth\Access\Response|bool
      */
     public function restore(User $user)
     {
-        switch ($user->rol) {
-            case 'Administrador': return $user->rol;
-            case 'Colaborador': return $user->rol;
-            case 'Editor': return $user->rol;
-        }
+        return $user->rol === 'Administrador';
     }
 }

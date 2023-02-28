@@ -41,19 +41,18 @@ class CromatografiaLiquidaPolicy
      */
     public function create(User $user)
     {
-        //
+        return in_array($user->rol, ['Administrador', 'Colaborador', 'Editor']);
     }
 
     /**
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\CromatografiaLiquida  $cromatografiaLiquida
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, CromatografiaLiquida $cromatografiaLiquida)
+    public function update(User $user)
     {
-        //
+        return in_array($user->rol, ['Administrador', 'Editor']);
     }
 
     /**
@@ -65,7 +64,7 @@ class CromatografiaLiquidaPolicy
      */
     public function delete(User $user, CromatografiaLiquida $cromatografiaLiquida)
     {
-        //
+        return $user->rol === 'Administrador';
     }
 
     /**
@@ -76,10 +75,6 @@ class CromatografiaLiquidaPolicy
      */
     public function restore(User $user)
     {
-        switch ($user->rol) {
-            case 'Administrador': return $user->rol;
-            case 'Colaborador': return $user->rol;
-            case 'Editor': return $user->rol;
-        }
+        return $user->rol === 'Administrador';
     }
 }

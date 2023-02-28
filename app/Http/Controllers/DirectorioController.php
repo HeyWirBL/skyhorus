@@ -83,6 +83,10 @@ class DirectorioController extends Controller
     public function edit(Request $request, Directorio $directorio, Ano $ano, MesDetalle $mes): Response
     {
         return Inertia::render('Directorios/Edit', [
+            'can' => [
+                'restoreDirectorio' => Auth::user()->can('restore', Directorio::class),
+                'deleteDirectorio' => Auth::user()->can('delete', Directorio::class),
+            ],
             'filters' => $request->all('search', 'year', 'month', 'trashed'),
             'directorio' => [
                 'id' => $directorio->id,

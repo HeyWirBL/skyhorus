@@ -17,29 +17,20 @@ class UserPolicy
      */
     public function viewAny(User $user)
     {
-        switch ($user->rol) {
-            case 'Administrador': return $user->rol;
-            case 'Colaborador': return $user->rol;
-            case 'Consultor': return $user->rol;
-            case 'Editor': return $user->rol;
-        }
+        $authorizedRoles = ['Administrador', 'Colaborador', 'Consultor', 'Editor'];
+        return in_array($user->rol, $authorizedRoles);
     }
 
     /**
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\User  $model
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, User $model)
+    public function view(User $user)
     {
-        switch ($user->rol) {
-            case 'Administrador': return $user->rol;
-            case 'Colaborador': return $user->rol;
-            case 'Consultor': return $user->rol;
-            case 'Editor': return $user->rol;
-        }
+        $authorizedRoles = ['Administrador', 'Colaborador', 'Consultor', 'Editor'];
+        return in_array($user->rol, $authorizedRoles);   
     }
 
     /**
@@ -50,11 +41,7 @@ class UserPolicy
      */
     public function create(User $user)
     {
-        switch ($user->rol) {
-            case 'Administrador': return $user->rol;
-            case 'Colaborador': return $user->rol;
-            case 'Editor': return $user->rol;
-        }
+        return in_array($user->rol, ['Administrador', 'Colaborador', 'Editor']);
     }
 
     /**
@@ -65,11 +52,7 @@ class UserPolicy
      */
     public function update(User $user)
     {
-        switch ($user->rol) {
-            case 'Administrador': return $user->rol;
-            case 'Colaborador': return $user->rol;
-            case 'Editor': return $user->rol;
-        }
+        return in_array($user->rol, ['Administrador', 'Editor']);
     }
 
     /**
@@ -80,11 +63,7 @@ class UserPolicy
      */
     public function delete(User $user)
     {
-        switch ($user->rol) {
-            case 'Administrador': return $user->rol;
-            case 'Colaborador': return $user->rol;
-            case 'Editor': return $user->rol;
-        }
+        return $user->rol === 'Administrador';
     }
 
     /**
@@ -95,10 +74,6 @@ class UserPolicy
      */
     public function restore(User $user)
     {
-        switch ($user->rol) {
-            case 'Administrador': return $user->rol;
-            case 'Colaborador': return $user->rol;
-            case 'Editor': return $user->rol;
-        }
+        return $user->rol === 'Administrador';
     }
 }
