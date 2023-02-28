@@ -102,10 +102,10 @@ const removeSelectedItems = () => {
   <div>
     <div class="flex items-center justify-between mb-6">
       <h2 class="text-2xl font-bold">Componentes de Pozo</h2>
-      <a v-if="can.createComponentePozo" class="btn-yellow" href="#">
+      <Link v-if="can.createComponentePozo" class="btn-yellow" href="/componente-pozos/crear">
         <span>Importar</span>
         <span class="hidden md:inline">&nbsp;Excel</span>
-      </a>
+      </Link>
     </div>
 
     <div class="flex items-center mb-6">

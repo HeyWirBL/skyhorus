@@ -72,7 +72,9 @@ function importExcel(){
             <input type="date" v-model="form.fechaMuest">
           </div>
         </div>
-        <button class="" type="submit">Importar</button>
+        <div class="flex items-center mb-6 ml-8">
+          <button class="btn-yellow" type="submit">Importar</button>
+        </div>
       </form>
     </div>
   </div>
