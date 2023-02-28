@@ -315,22 +315,23 @@ class ComponentePozoController extends Controller
     }
  */ 
     public function import(Request $request)
-    {   
+    {       
+        $validated = $request->validate([
+            'file' => ['required'],
+            'pozoId' => ['required'],
+            'fechaRecep' => ['required'],
+            'fechaAnalisis' => ['required'],
+            'fechaMuest' => ['required'],
+        ]);
+        
         foreach($request->file('file') as $file){
-            if(!empty($file)){
-                /* $path = $file->getRealPath();
-                $data = Excel::load($path, function($reader){
-                })->get();
+            $pozoId = $request->pozoId;
+            $fechaRecep = $request->fechaRecep;
+            $fechaAnalisis = $request->fechaAnalisis;
+            $fechaMuest = $request->fechaMuest;
 
-                if(!empty($data) && count($data)){
-                   $dataArray = $data->toArray();
-                   for($i = 0; $i < count($dataArray); $i++){
-                        $dataImport[] = $dataArray[$i];
-                   }
-                }
-            ComponentePozo::insert($dataImport); */
-            Excel::import(new ComponentePozosImport, $file );
-
+            if(!empty($file) && $validated){
+            Excel::import(new ComponentePozosImport($pozoId, $fechaRecep, $fechaAnalisis, $fechaMuest), $file );
             }
 
         }
