@@ -54,6 +54,31 @@ class CromatografiaLiquidaController extends Controller
         ]);
     }
 
+    /* store multiple documents */
+
+    public function store(Request $request){
+        $validated = $request->validate([
+            'files' => 'required',
+            'fecha' => 'required',
+            'pozo' => ['required', Rule::exists('pozos', 'id')],
+        ]);
+        if($validated){
+            foreach($request->file('files') as $file){
+                $filename = $file->getClientOriginalName();
+                $fileRoute = time().$filename;
+                $filesize = $file->getSize();
+                $filetype = $file->getClientOriginalExtension();
+                $file->storeAs('public/files/', $fileRoute);
+                $doc = new CromatografiaLiquida();
+                $doc->documento = '{"name": "'.$fileRoute.'", "size": "'.$filesize.'", "type": "'.$filetype.'", "usrName": "'.$filename.'" }';
+                $doc->pozo_id = $request->pozo;
+                $doc->fecha_hora = $request->fecha;
+                $doc->save();
+            }
+        }
+        return redirect(route('documentos'));
+    }
+
     /**
      * Delete temporary an specific well cromatography.
      */
@@ -90,30 +115,5 @@ class CromatografiaLiquidaController extends Controller
         $ids = explode(',', $request->query('ids', ''));
         $cromatografiaLiquida->whereIn('id', $ids)->restore();       
         return Redirect::back()->with('success', 'Documentos restablecidos.');
-    }
-
-    /* store multiple documents */
-
-    public function store(Request $request){
-        $validated = $request->validate([
-            'files' => 'required',
-            'fecha' => 'required',
-            'pozo' => ['required', Rule::exists('pozos', 'id')],
-        ]);
-        if($validated){
-            foreach($request->file('files') as $file){
-                $filename = $file->getClientOriginalName();
-                $fileRoute = time().$filename;
-                $filesize = $file->getSize();
-                $filetype = $file->getClientOriginalExtension();
-                $file->storeAs('', $fileRoute);
-                $doc = new CromatografiaLiquida();
-                $doc->documento = '{"name": "'.$fileRoute.'", "size": "'.$filesize.'", "type": "'.$filetype.'", "usrName": "'.$filename.'" }';
-                $doc->pozo_id = $request->pozo;
-                $doc->fecha_hora = $request->fecha;
-                $doc->save();
-            }
-        }
-        return redirect(route('documentos'));
     }
 }

@@ -66,7 +66,7 @@ class DocPozoController extends Controller
                 $fileRoute = time().$filename;
                 $filesize = $file->getSize();
                 $filetype = $file->getClientOriginalExtension();
-                $file->storeAs('', $fileRoute);
+                $file->storeAs('public/files/', $fileRoute);
                 $doc = new DocPozo();
                 $doc->documento = '{"name": "'.$fileRoute.'", "size": "'.$filesize.'", "type": "'.$filetype.'", "usrName": "'.$filename.'" }';
                 $doc->pozo_id = $request->pozo;
