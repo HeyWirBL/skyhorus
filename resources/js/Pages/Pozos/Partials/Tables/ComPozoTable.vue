@@ -1,8 +1,14 @@
 <script setup>
 import { computed, inject, ref } from 'vue'
 import { Link, useForm } from '@inertiajs/vue3'
+import { Line } from 'vue-chartjs'
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js'
+import chartjsPluginDatalabels from 'chartjs-plugin-datalabels'
 import Icon from '@/Components/Icon.vue'
+import Modal from '@/Components/Modal.vue'
 import Pagination from '@/Components/Pagination.vue'
+
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, chartjsPluginDatalabels)
 
 const props = defineProps({
   can: Object,
@@ -13,10 +19,92 @@ const swal = inject('$swal')
 
 const selected = ref([])
 const selectAllComPozos = ref(false)
+const selectedCompozo = ref({})
+const showMessageMetLab = ref(false)
+const showMessageObs = ref(false)
+const showChart = ref(false)
+
+const chartOptions = {
+  plugins: {
+    datalabels: {
+      align: 'end',
+      anchor: 'end',
+      color: '#555555',
+      font: {
+        size: 14,
+        weight: 'bold',
+      },
+      formatter: (value, context) => {
+        return context.chart.data.labels[context.dataIndex].label
+      },
+    },
+  },
+  responsive: true,
+  scales: {
+    x: {
+      display: true,
+      title: {
+        display: true,
+        text: 'Componentes',
+        color: '#555555',
+        font: {
+          size: 15,
+          weight: 'bold',
+          lineHeight: 1.2,
+        },
+      },
+    },
+    y: {
+      display: true,
+      title: {
+        display: true,
+        text: 'Total Mo',
+        color: '#555555',
+        font: {
+          size: 15,
+          weight: 'bold',
+          lineHeight: 1.2,
+        },
+      },
+    },
+  },
+}
 
 const componentePozoForm = useForm({})
 
 const componentePozos = computed(() => props.pozo.componentePozos)
+
+const selectedComponentePozo = computed(() => {
+  return componentePozos.value.data.find((componentePozo) => componentePozo.id === selectedCompozo.value)
+})
+
+/**
+ * Computed Property: Formats the data received from the props in a format
+ * that can be used by the chart. This includes mapping the `quimicosData`
+ * array to generate the chart labels and data.
+ */
+const chartDataFormatted = computed(() => {
+  if (selectedComponentePozo.value) {
+    const quimicosData = selectedComponentePozo.value.quimicosData
+    return {
+      labels: quimicosData.map((q) => q.Quimico),
+      datasets: [
+        {
+          label: 'Total Mo',
+          data: quimicosData.map((q) => q.Total_mo),
+          backgroundColor: 'rgba(100, 181, 246, 1)',
+          borderColor: 'rgba(105, 183, 246, 1)',
+          borderWidth: 2,
+          pointStyle: 'circle',
+          pointRadius: 6,
+          pointHoverRadius: 12,
+        },
+      ],
+    }
+  } else {
+    return {}
+  }
+})
 
 /**
  * Helper Function that that checks whether the `selectAllRef` flag is set
@@ -57,10 +145,37 @@ const changeToggleAllComPozos = () => {
   changeToggleAll(componentePozos.value.data, selected, selectAllComPozos)
 }
 
+const openModalMessageMetLab = (id) => {
+  selectedCompozo.value = componentePozos.value.data.find((compozo) => compozo.id === id)
+  showMessageMetLab.value = true
+}
+
+const openModalMessageObs = (id) => {
+  selectedCompozo.value = componentePozos.value.data.find((compozo) => compozo.id === id)
+  showMessageObs.value = true
+}
+
+const openModalChart = (id) => {
+  selectedCompozo.value = id
+  showChart.value = true
+}
+
+const closeModalMessageMetLab = () => {
+  showMessageMetLab.value = false
+}
+
+const closeModalMessageObs = () => {
+  showMessageObs.value = false
+}
+
+const closeModalChart = () => {
+  showChart.value = false
+}
+
 const removeSelectedItems = () => {
   if (selected.value.length === 1) {
     swal({
-      title: '¿Estás seguro de querer eliminar estos componentes de este pozo?',
+      title: '¿Estás seguro de querer eliminar estos componentes de pozo?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#CEA915',
@@ -79,7 +194,7 @@ const removeSelectedItems = () => {
     })
   } else {
     swal({
-      title: '¿Estás seguro de querer eliminar estos componentes de pozos?',
+      title: '¿Estás seguro de querer eliminar estos componentes de pozo?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#CEA915',
@@ -114,6 +229,69 @@ const removeSelectedItems = () => {
         <span class="hidden md:inline">&nbsp;Elementos Seleccionados</span>
       </button>
     </div>
+
+    <Modal :show="showMessageMetLab" @close="closeModalMessageMetLab">
+      <div class="relative">
+        <!-- Modal Header -->
+        <div class="flex items-start justify-between p-4 border-b rounded-t">
+          <h2 class="text-xl font-semibold">Método de laboratorio</h2>
+
+          <button class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" type="button" @click="closeModalMessageMetLab">
+            <Icon class="w-4 h-4" name="close" aria-hidden="true" />
+            <span class="sr-only">Cerrar modal</span>
+          </button>
+        </div>
+        <!-- Modal Body -->
+        <div class="p-6 space-y-6" style="height: 150px">
+          <p class="text-base text-gray-600">{{ selectedCompozo.met_laboratorio }}</p>
+        </div>
+        <div class="flex items-center justify-end p-4 space-x-2 border-t border-gray-200 rounded-b">
+          <button class="btn-secondary" type="button" @click="closeModalMessageMetLab">Cerrar</button>
+        </div>
+      </div>
+    </Modal>
+
+    <Modal :show="showMessageObs" @close="closeModalMessageObs">
+      <div class="relative">
+        <!-- Modal Header -->
+        <div class="flex items-start justify-between p-4 border-b rounded-t">
+          <h2 class="text-xl font-semibold">Observaciones</h2>
+
+          <button class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" type="button" @click="closeModalMessageObs">
+            <Icon class="w-4 h-4" name="close" aria-hidden="true" />
+            <span class="sr-only">Cerrar modal</span>
+          </button>
+        </div>
+        <!-- Modal Body -->
+        <div class="p-6 space-y-6" style="height: 150px">
+          <p class="text-base text-gray-600">{{ selectedCompozo.observaciones }}</p>
+        </div>
+        <div class="flex items-center justify-end p-4 space-x-2 border-t border-gray-200 rounded-b">
+          <button class="btn-secondary" type="button" @click="closeModalMessageObs">Cerrar</button>
+        </div>
+      </div>
+    </Modal>
+
+    <Modal :show="showChart" style="max-width: 1000px" @close="closeModalChart">
+      <div class="relative">
+        <!-- Modal Header -->
+        <div class="flex items-start justify-between p-4 border-b rounded-t">
+          <h2 class="text-xl font-semibold">Gráfica de Líneas - % MOL</h2>
+
+          <button class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" type="button" @click="closeModalChart">
+            <Icon class="w-4 h-4" name="close" aria-hidden="true" />
+            <span class="sr-only">Cerrar modal</span>
+          </button>
+        </div>
+        <!-- Modal Body -->
+        <div class="p-6 space-y-6">
+          <Line id="my-chart-id" :options="chartOptions" :data="chartDataFormatted" />
+        </div>
+        <div class="flex items-center justify-end p-4 space-x-2 border-t border-gray-200 rounded-b">
+          <button class="btn-secondary" type="button" @click="closeModalChart">Cerrar</button>
+        </div>
+      </div>
+    </Modal>
 
     <div class="bg-white shadow rounded-md overflow-x-auto">
       <table class="w-full whitespace-nowrap text-sm">
@@ -150,13 +328,8 @@ const removeSelectedItems = () => {
               </td>
             </tr>
             <tr class="bg-white">
-              <td v-if="can.editComponentePozo" class="p-1 whitespace-nowrap border-solid border border-gray-200">
-                <span class="inline-block whitespace-nowrap" title="Editar componente de pozo">
-                  <Link class="flex items-center" :href="`/componente-pozos/${compozo.id}/editar`" tabindex="-1">
-                    <Icon class="flex-shrink-0 w-4 h-4 fill-yellow-400" name="pencil" />
-                  </Link>
-                </span>
-                <span class="inline-block whitespace-nowrap ml-2" title="Ver componente de pozo">
+              <td v-if="can.editComponentePozo" class="p-4 whitespace-nowrap border-solid border border-gray-200">
+                <span class="flex items-center whitespace-nowrap" title="Ver componente de pozo">
                   <Link class="flex items-center" :href="`/componente-pozos/${compozo.id}`" tabindex="-1">
                     <Icon class="flex-shrink-0 w-4 h-4 fill-yellow-400" name="eye" />
                   </Link>
@@ -225,7 +398,7 @@ const removeSelectedItems = () => {
               <td class="p-1 text-center leading-6 border-solid border border-gray-200" colspan="2">
                 <span class="block">
                   {{ compozo.met_laboratorio.substring(0, 40) }}
-                  <a class="text-yellow-400 hover:underline" href="#" @click="openModalMessageMet">Ver Más...</a>
+                  <a v-if="compozo.met_laboratorio.length > 40" class="text-yellow-400 hover:underline" href="#" @click.prevent="openModalMessageMetLab(compozo.id)">Ver Más...</a>
                 </span>
               </td>
               <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
@@ -239,7 +412,7 @@ const removeSelectedItems = () => {
                 <span class="block bg-yellow-400 text-white">Observaciones</span>
               </td>
               <td class="p-1 text-left leading-6 border-solid border border-gray-200" colspan="2">
-                <span class="block">{{ compozo.observaciones.substring(0, 38) }} <a class="text-yellow-400 hover:underline" href="#" @click="openModalObs">Ver Más...</a></span>
+                <span class="block">{{ compozo.observaciones.substring(0, 38) }} <a v-if="compozo.observaciones.length > 38" class="text-yellow-400 hover:underline" href="#" @click.prevent="openModalMessageObs(compozo.id)">Ver Más...</a></span>
               </td>
               <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
               <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
@@ -525,7 +698,7 @@ const removeSelectedItems = () => {
                       <span class="ml-2 w-0 flex-1 truncate">Gráfica de líneas % MOL ({{ compozo.quimicosData.length }})</span>
                     </div>
                     <div class="ml-4 flex-shrink-0">
-                      <a href="#" class="font-medium text-yellow-600 hover:text-yellow-500" @click="openModalChart">Visualizar</a>
+                      <a href="#" class="font-medium text-yellow-600 hover:text-yellow-500" @click.prevent="openModalChart(compozo.id)">Visualizar</a>
                     </div>
                   </li>
                 </ul>

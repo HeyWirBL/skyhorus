@@ -434,7 +434,7 @@ const truncateMessageObs = computed(() => {
     </Modal>
 
     <div class="bg-white shadow rounded-md overflow-x-auto">
-      <table class="w-full whitespace-nowrap">
+      <table class="w-full whitespace-nowrap text-sm">
         <thead class="bg-white border-b-2">
           <tr>
             <th scope="col" class="border px-6 py-4">
@@ -511,7 +511,7 @@ const truncateMessageObs = computed(() => {
             <td class="border text-center px-6 py-4" colspan="2">
               <span class="block leading-6">
                 {{ truncateMessageMetLab }}
-                <a class="text-yellow-400 hover:underline" href="#" @click="openModalMessageMet">Ver Más...</a>
+                <a v-if="componentePozo.met_laboratorio.length > 40" class="text-yellow-400 hover:underline" href="#" @click.prevent="openModalMessageMet">Ver Más...</a>
               </span>
             </td>
             <td class="border text-center px-6 py-4" />
@@ -523,7 +523,7 @@ const truncateMessageObs = computed(() => {
               <span class="block bg-yellow-400 text-white underline cursor-pointer leading-6">Observaciones</span>
             </td>
             <td class="text-left border px-6 py-4" colspan="2">
-              <span class="block leading-6">{{ truncateMessageObs }} <a class="text-yellow-400 hover:underline" href="#" @click="openModalObs">Ver Más...</a></span>
+              <span class="block leading-6">{{ truncateMessageObs }} <a v-if="componentePozo.observaciones.length > 38" class="text-yellow-400 hover:underline" href="#" @click.prevent="openModalObs">Ver Más...</a></span>
             </td>
             <td class="text-center border px-6 py-4" />
             <td class="text-center border px-6 py-4" />
@@ -766,22 +766,22 @@ const truncateMessageObs = computed(() => {
             <td class="border text-center px-6 py-4" />
             <td class="border text-left px-6 py-4" colspan="5">
               <ul role="list" class="divide-y divide-gray-400 rounded-md border border-gray-400">
-                <li class="flex items-center justify-between py-3 pl-3 pr-4 text-base">
+                <li class="flex items-center justify-between py-3 pl-3 pr-4 text-sm">
                   <div class="flex w-0 flex-1 items-center">
-                    <Icon class="h-5 w-5 flex-shrink-0 text-gray-500" name="paper-clip" aria-hidden="true" />
+                    <Icon class="h-4 w-4 flex-shrink-0 text-gray-500" name="paper-clip" aria-hidden="true" />
                     <span class="ml-2 w-0 flex-1 truncate">Documento PDF</span>
                   </div>
                   <div class="ml-4 flex-shrink-0">
                     <Link href="#" class="font-medium text-yellow-600 hover:text-yellow-500" type="button" @click.prevent="download">Descargar</Link>
                   </div>
                 </li>
-                <li class="flex items-center justify-between py-3 pl-3 pr-4 text-base">
+                <li class="flex items-center justify-between py-3 pl-3 pr-4 text-sm">
                   <div class="flex w-0 flex-1 items-center">
-                    <Icon class="h-5 w-5 flex-shrink-0 text-gray-500" name="line-chart" aria-hidden="true" />
+                    <Icon class="h-4 w-4 flex-shrink-0 text-gray-500" name="line-chart" aria-hidden="true" />
                     <span class="ml-2 w-0 flex-1 truncate">Gráfica de líneas % MOL</span>
                   </div>
                   <div class="ml-4 flex-shrink-0">
-                    <a href="#" class="font-medium text-yellow-600 hover:text-yellow-500" @click="openModalChart">Visualizar</a>
+                    <a href="#" class="font-medium text-yellow-600 hover:text-yellow-500" @click.prevent="openModalChart">Visualizar</a>
                   </div>
                 </li>
               </ul>
