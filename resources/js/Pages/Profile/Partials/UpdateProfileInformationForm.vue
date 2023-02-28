@@ -6,7 +6,6 @@ import TextInput from '@/Components/TextInput.vue'
 const user = usePage().props.auth.user
 
 const form = useForm({
-  _method: 'put',
   nombre: user.nombre,
   apellidos: user.apellidos,
   usuario: user.usuario,
@@ -16,7 +15,7 @@ const form = useForm({
 })
 
 const update = () => {
-  form.patch(`/perfil/${user.id}`)
+  form.patch('/perfil')
 }
 </script>
 

@@ -33,12 +33,11 @@ const update = () => {
 
 const destroy = () => {
   swal({
-    title: '¿Estás seguro de querer eliminar este usuario?',
-    text: 'Al hacer clic en el botón de confirmar estarás enviando este usuario al modo "Solo Eliminado".',
+    title: '¿Estás seguro de querer eliminar a este usuario?',
     icon: 'warning',
     showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
+    confirmButtonColor: '#CEA915',
+    cancelButtonColor: '#BDBDBD',
     confirmButtonText: 'Confirmar',
     cancelButtonText: 'Cancelar',
   }).then((result) => {
@@ -50,12 +49,11 @@ const destroy = () => {
 
 const restore = () => {
   swal({
-    title: '¿Estás seguro de querer restablecer este usuario?',
-    text: 'Este usuario se restablecerá del modo "Solo Eliminado".',
+    title: '¿Estás seguro de querer restablecer a este usuario?',
     icon: 'warning',
     showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
+    confirmButtonColor: '#CEA915',
+    cancelButtonColor: '#BDBDBD',
     confirmButtonText: 'Restablecer',
     cancelButtonText: 'Cancelar',
   }).then((result) => {
@@ -94,7 +92,7 @@ const restore = () => {
           </SelectInput>
         </div>
         <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
-          <button v-if="!user.deleted_at && auth.user.id !== user.id" class="text-red-600 hover:underline" tabindex="-1" type="button" @click="destroy">Eliminar Usuario</button>
+          <button v-if="!user.deleted_at" class="text-red-600 hover:underline" tabindex="-1" type="button" @click="destroy">Eliminar Usuario</button>
           <LoadingButton :loading="form.processing" class="btn-yellow ml-auto" type="submit">Actualizar</LoadingButton>
         </div>
       </form>

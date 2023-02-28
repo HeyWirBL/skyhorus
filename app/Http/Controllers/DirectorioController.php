@@ -98,7 +98,7 @@ class DirectorioController extends Controller
                         'documento' => json_decode($documento->documento),
                         'deleted_at' => $documento->deleted_at,
                         'ano' => $documento->ano ? $documento->ano->only('ano') : null,
-                        'mes' => $documento->mes ? $documento->mes->only('nombre') : null,
+                        'mes' => $documento->mesDetalle ? $documento->mesDetalle->only('nombre') : null,
                     ]),             
             ],
             'anos' => $ano->query()

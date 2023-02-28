@@ -19,7 +19,8 @@ class UserController extends Controller
     public function index(Request $request): Response
     {
         $filters = $request->all('search', 'role', 'trashed');
-        $query = $request->user()->query()->orderByName()->filter($filters);
+        $query = $request->user()->query()->orderByName()->filter($filters)
+            ->whereNotIn('id', [$request->user()->id]);
 
         $users = $query->paginate(10)->withQueryString()->through(fn ($user) => [
             'id' => $user->id,

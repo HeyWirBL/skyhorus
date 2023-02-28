@@ -1,5 +1,6 @@
 <script setup>
 import { Head } from '@inertiajs/vue3'
+import DeleteUserForm from './Partials/DeleteUserForm.vue'
 import UpdatePasswordForm from './Partials/UpdatePasswordForm.vue'
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm.vue'
 </script>
@@ -13,6 +14,9 @@ import UpdateProfileInformationForm from './Partials/UpdateProfileInformationFor
     </div>
     <div class="max-w-3xl mt-8 bg-white rounded-md shadow overflow-hidden">
       <UpdatePasswordForm />
+    </div>
+    <div class="max-w-3xl mt-8 bg-white rounded-md shadow overflow-hidden">
+      <DeleteUserForm />
     </div>
   </div>
 </template>
