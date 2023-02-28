@@ -1,6 +1,6 @@
 <script setup>
-import { computed } from 'vue'
-import { Link } from '@inertiajs/vue3'
+import { computed, inject, ref } from 'vue'
+import { Link, useForm } from '@inertiajs/vue3'
 import Icon from '@/Components/Icon.vue'
 import Pagination from '@/Components/Pagination.vue'
 
@@ -9,7 +9,93 @@ const props = defineProps({
   pozo: Object,
 })
 
+const swal = inject('$swal')
+
+const selected = ref([])
+const selectAllComPozos = ref(false)
+
+const componentePozoForm = useForm({})
+
 const componentePozos = computed(() => props.pozo.componentePozos)
+
+/**
+ * Helper Function that that checks whether the `selectAllRef` flag is set
+ * to false.
+ *
+ * @param {array} items an array of items.
+ * @param {array} selectedItems an array of selected items.
+ * @param {bool} selectAllRef boolean flag that represents whether all items are selected.
+ */
+const toggleAll = (items, selectedItems, selectAllRef) => {
+  selectedItems.value = []
+  if (!selectAllRef.value) {
+    selectedItems.value = selectedItems.value.length === items.length ? [] : items.map((item) => item.id)
+  }
+}
+
+/**
+ * Helper Function that updates the state of the "select all" checkbox
+ * when individual checkboxes are checked or unchecked.
+ *
+ * @param {array} items list of items that can be selected.
+ * @param {array} selectedItems an array which contains the ids of the items that have been selected.
+ * @param {bool} selectAllRef reference that represents the state of the "select all" checkbox.
+ */
+const changeToggleAll = (items, selectedItems, selectAllRef) => {
+  if (items.length === selectedItems.value.length) {
+    selectAllRef.value = true
+  } else {
+    selectAllRef.value = false
+  }
+}
+
+const toggleAllComPozos = () => {
+  toggleAll(componentePozos.value.data, selected, selectAllComPozos)
+}
+
+const changeToggleAllComPozos = () => {
+  changeToggleAll(componentePozos.value.data, selected, selectAllComPozos)
+}
+
+const removeSelectedItems = () => {
+  if (selected.value.length === 1) {
+    swal({
+      title: '¿Estás seguro de querer eliminar estos componentes de este pozo?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#CEA915',
+      cancelButtonColor: '#BDBDBD',
+      confirmButtonText: 'Confirmar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        if (result.isConfirmed) {
+          componentePozoForm.delete(`/componente-pozos/${selected.value}`, {
+            onSuccess: () => (selected.value = []),
+            onFinish: () => (selectAllComPozos.value = false),
+          })
+        }
+      }
+    })
+  } else {
+    swal({
+      title: '¿Estás seguro de querer eliminar estos componentes de pozos?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#CEA915',
+      cancelButtonColor: '#BDBDBD',
+      confirmButtonText: 'Confirmar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        componentePozoForm.delete(`/componente-pozos?ids=${selected.value.join(',')}`, {
+          onSuccess: () => (selected.value = []),
+          onFinish: () => (selectAllComPozos.value = false),
+        })
+      }
+    })
+  }
+}
 </script>
 
 <template>
@@ -22,14 +108,21 @@ const componentePozos = computed(() => props.pozo.componentePozos)
       </a>
     </div>
 
+    <div class="flex items-center mb-6">
+      <button v-if="componentePozos.data.length !== 0 && can.deleteComponentePozo" class="btn-secondary" type="button" :disabled="!selectAllComPozos && !selected.length" @click="removeSelectedItems">
+        <span>Borrar</span>
+        <span class="hidden md:inline">&nbsp;Elementos Seleccionados</span>
+      </button>
+    </div>
+
     <div class="bg-white shadow rounded-md overflow-x-auto">
       <table class="w-full whitespace-nowrap text-sm">
         <thead class="bg-white border-b-2">
-          <tr>
-            <th v-if="componentePozos.data.length !== 0 && can.editComponentePozo" scope="col" class="p-4 w-4 border-solid border border-gray-200" />
-            <th v-if="componentePozos.data.length !== 0 && can.editComponentePozo" scope="col" class="p-4 border-solid border border-gray-200">
+          <tr v-if="componentePozos.data.length !== 0">
+            <th v-if="can.editComponentePozo" scope="col" class="p-4 w-4 border-solid border border-gray-200" />
+            <th v-if="can.editComponentePozo" scope="col" class="p-4 border-solid border border-gray-200">
               <div class="flex items-center">
-                <input id="checkbox-all-compozos" v-model="selectAllDocPozos" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="toggleAllDocPozos" />
+                <input id="checkbox-all-compozos" v-model="selectAllComPozos" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="toggleAllComPozos" />
                 <label for="checkbox-all-compozos" class="sr-only">checkbox</label>
               </div>
             </th>
@@ -42,17 +135,7 @@ const componentePozos = computed(() => props.pozo.componentePozos)
           </tr>
         </thead>
         <tbody>
-          <template v-for="(compozo, rowIndex) in componentePozos.data" :key="compozo.id">
-            <tr v-if="rowIndex !== 0" class="bg-gray-100">
-              <td class="p-2 whitespace-nowrap border-solid border border-gray-200" />
-              <td class="p-2 whitespace-nowrap border-solid border border-gray-200" />
-              <td class="p-2 whitespace-nowrap border-solid border border-gray-200" />
-              <td class="p-2 whitespace-nowrap border-solid border border-gray-200" />
-              <td class="p-2 whitespace-nowrap border-solid border border-gray-200" />
-              <td class="p-2 whitespace-nowrap border-solid border border-gray-200" />
-              <td class="p-2 whitespace-nowrap border-solid border border-gray-200" />
-              <td class="p-2 whitespace-nowrap border-solid border border-gray-200" />
-            </tr>
+          <template v-for="compozo in componentePozos.data" :key="compozo.id">
             <tr class="bg-gray-50">
               <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
               <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
@@ -81,8 +164,8 @@ const componentePozos = computed(() => props.pozo.componentePozos)
               </td>
               <td class="w-4 p-4 border-solid border border-gray-200">
                 <div class="flex items-center">
-                  <input :id="`checkbox-compozos-${compozo.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="compozo.id" @change="changeToggleAllComPozos" />
-                  <label :for="`checkbox-compozos-${compozo.id}`" class="sr-only">checkbox</label>
+                  <input :id="`checkbox-compozo-${compozo.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="compozo.id" @change="changeToggleAllComPozos" />
+                  <label :for="`checkbox-compozo-${compozo.id}`" class="sr-only">checkbox</label>
                 </div>
               </td>
               <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
@@ -447,6 +530,11 @@ const componentePozos = computed(() => props.pozo.componentePozos)
                   </li>
                 </ul>
               </td>
+            </tr>
+          </template>
+          <template v-if="componentePozos.data.length === 0">
+            <tr class="bg-white">
+              <td class="px-6 py-4 text-left leading-6 border-solid border border-gray-200" colspan="5">No se encontraron componentes registrados en este pozo.</td>
             </tr>
           </template>
         </tbody>
