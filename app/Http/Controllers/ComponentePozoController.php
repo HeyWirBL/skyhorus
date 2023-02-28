@@ -25,11 +25,12 @@ class ComponentePozoController extends Controller
      */
     public function index(Request $request, ComponentePozo $componentePozo): Response
     {
+        $user = Auth::user();
         $can = [
-            'createComponentePozo' => Auth::user()->can('create', ComponentePozo::class),
-            'editComponentePozo' => Auth::user()->can('update', ComponentePozo::class),
-            'restoreComponentePozo' => Auth::user()->can('restore', ComponentePozo::class),
-            'deleteComponentePozo' => Auth::user()->can('delete', ComponentePozo::class),
+            'createComponentePozo' => $user->can('create', ComponentePozo::class),
+            'editComponentePozo' => $user->can('update', ComponentePozo::class),
+            'restoreComponentePozo' => $user->can('restore', ComponentePozo::class),
+            'deleteComponentePozo' => $user->can('delete', ComponentePozo::class),
         ];
 
         $filters = $request->all('search', 'trashed');
@@ -74,14 +75,17 @@ class ComponentePozoController extends Controller
      */
     public function show(ComponentePozoView $view, ComponentePozo $componentePozo, Pozo $pozo): Response
     {
+        $user = Auth::user();
+        $can = [
+            'editComponentePozo' => $user->can('update', ComponentePozo::class),
+            'restoreComponentePozo' => $user->can('restore', ComponentePozo::class),
+            'deleteComponentePozo' => $user->can('delete', ComponentePozo::class),
+        ];
+
         $quimicosData = $view->query()->where('idComPozo', $componentePozo->id)->get();
 
         return Inertia::render('ComponentePozos/Show', [
-            'can' => [
-                'editComponentePozo' => Auth::user()->can('update', ComponentePozo::class),
-                'deleteComponentePozo' => Auth::user()->can('delete', ComponentePozo::class),
-                'restoreComponentePozo' => Auth::user()->can('restore', ComponentePozo::class),
-            ],
+            'can' => $can,
             'componentePozo' => [
                 'id' => $componentePozo->id,
                 'dioxido_carbono' => $componentePozo->dioxido_carbono,
@@ -138,13 +142,13 @@ class ComponentePozoController extends Controller
                 'nombre_componente' => $componentePozo->nombre_componente,
                 'fecha_muestreo' => $componentePozo->fecha_muestreo,
                 'deleted_at' => $componentePozo->deleted_at,
-                'pozo' => $componentePozo->pozo->only('id', 'nombre_pozo'),
+                'pozo' => $componentePozo->pozo ? $componentePozo->pozo->only('id', 'nombre_pozo', 'deleted_at') : null,
             ],
             'pozos' => $pozo->query()
-                ->orderBy('id', 'desc')
+                ->orderByDesc('id')
                 ->get()
                 ->map
-                ->only('id', 'nombre_pozo'),   
+                ->only('id', 'nombre_pozo'),
             'quimicosData' => $quimicosData,
         ]);
     }

@@ -19,7 +19,7 @@ class DocPozoController extends Controller
      */
     public function index(Request $request, DocPozo $docPozo): Response
     {
-        $filters = $request->only('search', 'trashed');
+        $filters = $request->all('search', 'trashed');
         $can = [
             'createDocPozo' => Auth::user()->can('create', DocPozo::class),
             'editDocPozo' => Auth::user()->can('update', DocPozo::class),

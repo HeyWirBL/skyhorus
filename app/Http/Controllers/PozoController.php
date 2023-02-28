@@ -77,113 +77,135 @@ class PozoController extends Controller
     /**
      * Display the information for specific well.
      */
-    public function show(Pozo $pozo): Response
-    {
-        $user = Auth::user();
-        $chartTable = DB::table('graf_lineas_mo');
-
+    public function show(Request $request, Pozo $pozo): Response
+    {        
+        $user = Auth::user();              
+        $filters = $request->all('search', 'trashed');
         $can = [
             // Pozo Policy
-            'editPozo' => $user->can('update', $pozo),
-            'deletePozo' => $user->can('delete', $pozo),
-            'restorePozo' => $user->can('restore', $pozo),
+            'editPozo' => $user->can('update', Pozo::class),
+            'restorePozo' => $user->can('restore', Pozo::class),
+            'deletePozo' => $user->can('delete', Pozo::class),
+            // Doc Pozo Policy
+            'createDocPozo' => $user->can('create', DocPozo::class),
+            'editDocPozo' => $user->can('update', DocPozo::class),
             // Componente Pozo Policy
             'createComponentePozo' => $user->can('create', ComponentePozo::class),
             'editComponentePozo' => $user->can('update', ComponentePozo::class),
             'deleteComponentePozo' => $user->can('delete', ComponentePozo::class),
             'restoreComponentePozo' => $user->can('restore', ComponentePozo::class),
-        ];  
+        ];        
 
-        $pozoData = $pozo->only([
-            'id',
-            'punto_muestreo',
-            'fecha_hora',
-            'identificador',
-            'presion_kgcm2',
-            'presion_psi',
-            'temp_C',
-            'temp_F',
-            'volumen_cm3',
-            'volumen_lts',
-            'observaciones',
-            'nombre_pozo', 
-            'deleted_at',
-        ]);
+        $pozoData = optional($pozo)->only(
+            'id', 'punto_muestreo', 'fecha_hora', 'identificador', 'presion_kgcm2',
+            'presion_psi', 'temp_C', 'temp_F', 'volumen_cm3', 'volumen_lts',
+            'observaciones', 'nombre_pozo', 'deleted_at'
+        );
 
         $pozoData['docPozos'] = $pozo->docPozos()
-            ->get(['id', 'documento', 'fecha_hora']);
-        
-        $pozoData['componentePozos'] = $pozo->componentePozos()
+            ->latest()
+            ->filter($filters)
             ->paginate(10)
             ->withQueryString()
-            ->through(fn ($componentePozo) => [
-                'id' => $componentePozo->id,
-                'dioxido_carbono' => $componentePozo->dioxido_carbono,
-                'pe_dioxido_carbono' => $componentePozo->pe_dioxido_carbono,
-                'mo_dioxido_carbono' => $componentePozo->mo_dioxido_carbono,
-                'den_dioxido_carbono' => $componentePozo->den_dioxido_carbono,
-                'acido_sulfidrico' => $componentePozo->acido_sulfidrico,
-                'pe_acido_sulfidrico' => $componentePozo->pe_acido_sulfidrico,
-                'mo_acido_sulfidrico' => $componentePozo->mo_acido_sulfidrico,
-                'den_acido_sulfidrico' => $componentePozo->den_acido_sulfidrico,
-                'nitrogeno' => $componentePozo->nitrogeno,
-                'pe_nitrogeno' => $componentePozo->pe_nitrogeno,
-                'mo_nitrogeno' => $componentePozo->mo_nitrogeno,
-                'den_nitrogeno' => $componentePozo->den_nitrogeno,
-                'metano' => $componentePozo->metano,
-                'pe_metano' => $componentePozo->pe_metano,
-                'mo_metano' => $componentePozo->mo_metano,
-                'den_metano' => $componentePozo->den_metano,
-                'etano' => $componentePozo->etano,
-                'pe_etano' => $componentePozo->pe_etano,
-                'mo_etano' => $componentePozo->mo_etano,
-                'den_etano' => $componentePozo->den_etano,
-                'propano' => $componentePozo->propano,
-                'pe_propano' => $componentePozo->pe_propano,
-                'mo_propano' => $componentePozo->mo_propano,
-                'den_propano' => $componentePozo->den_propano,
-                'iso_butano' => $componentePozo->iso_butano,
-                'pe_iso_butano' => $componentePozo->pe_iso_butano,
-                'mo_iso_butano' => $componentePozo->mo_iso_butano,
-                'den_iso_butano' => $componentePozo->den_iso_butano,
-                'n_butano' => $componentePozo->n_butano,
-                'pe_n_butano' => $componentePozo->pe_n_butano,
-                'mo_n_butano' => $componentePozo->mo_n_butano,
-                'den_n_butano' => $componentePozo->den_n_butano,
-                'iso_pentano' => $componentePozo->iso_pentano,
-                'pe_iso_pentano' => $componentePozo->pe_iso_pentano,
-                'mo_iso_pentano' => $componentePozo->mo_iso_pentano,
-                'den_iso_pentano' => $componentePozo->den_iso_pentano,
-                'n_pentano' => $componentePozo->n_pentano,
-                'pe_n_pentano' => $componentePozo->pe_n_pentano,
-                'mo_n_pentano' => $componentePozo->mo_n_pentano,
-                'den_n_pentano' => $componentePozo->den_n_pentano,
-                'n_exano' => $componentePozo->n_exano,
-                'pe_n_exano' => $componentePozo->pe_n_exano,
-                'mo_n_exano' => $componentePozo->mo_n_exano,
-                'den_n_exano' => $componentePozo->den_n_exano,                
-                'fecha_recep' => $componentePozo->fecha_recep,
-                'pozo_id' => $componentePozo->pozo_id,
-                'fecha_analisis' => $componentePozo->fecha_analisis,
-                'no_determinacion' => $componentePozo->no_determinacion,
-                'equipo_utilizado' => $componentePozo->equipo_utilizado,
-                'met_laboratorio' => $componentePozo->met_laboratorio,
-                'observaciones' => $componentePozo->observaciones,
-                'nombre_componente' => $componentePozo->nombre_componente,
-                'fecha_muestreo' => $componentePozo->fecha_muestreo,
-                'deleted_at' => $componentePozo->deleted_at,
-                'quimicosData' => $chartTable
-                    ->where('idComPozo', $componentePozo->id)->get(),
+            ->through(fn ($docPozo) => [
+                'id' => $docPozo->id, 
+                'documento' => $docPozo->documento, 
+                'fecha_hora' => $docPozo->fecha_hora, 
+                'deleted_at' => $docPozo->deleted_at,
+            ]);
+
+        $pozoData['componentePozos'] = $pozo->componentePozos()
+            ->orderByDesc('id')
+            ->paginate(10)
+            ->withQueryString()
+            ->through(fn ($cp) => [
+                'id' => $cp->id,
+                'dioxido_carbono' => $cp->dioxido_carbono,
+                'pe_dioxido_carbono' => $cp->pe_dioxido_carbono,
+                'mo_dioxido_carbono' => $cp->mo_dioxido_carbono,
+                'den_dioxido_carbono' => $cp->den_dioxido_carbono,
+                'acido_sulfidrico' => $cp->acido_sulfidrico,
+                'pe_acido_sulfidrico' => $cp->pe_acido_sulfidrico,
+                'mo_acido_sulfidrico' => $cp->mo_acido_sulfidrico,
+                'den_acido_sulfidrico' => $cp->den_acido_sulfidrico,
+                'nitrogeno' => $cp->nitrogeno,
+                'pe_nitrogeno' => $cp->pe_nitrogeno,
+                'mo_nitrogeno' => $cp->mo_nitrogeno,
+                'den_nitrogeno' => $cp->den_nitrogeno,
+                'metano' => $cp->metano,
+                'pe_metano' => $cp->pe_metano,
+                'mo_metano' => $cp->mo_metano,
+                'den_metano' => $cp->den_metano,
+                'etano' => $cp->etano,
+                'pe_etano' => $cp->pe_etano,
+                'mo_etano' => $cp->mo_etano,
+                'den_etano' => $cp->den_etano,
+                'propano' => $cp->propano,
+                'pe_propano' => $cp->pe_propano,
+                'mo_propano' => $cp->mo_propano,
+                'den_propano' => $cp->den_propano,
+                'iso_butano' => $cp->iso_butano,
+                'pe_iso_butano' => $cp->pe_iso_butano,
+                'mo_iso_butano' => $cp->mo_iso_butano,
+                'den_iso_butano' => $cp->den_iso_butano,
+                'n_butano' => $cp->n_butano,
+                'pe_n_butano' => $cp->pe_n_butano,
+                'mo_n_butano' => $cp->mo_n_butano,
+                'den_n_butano' => $cp->den_n_butano,
+                'iso_pentano' => $cp->iso_pentano,
+                'pe_iso_pentano' => $cp->pe_iso_pentano,
+                'mo_iso_pentano' => $cp->mo_iso_pentano,
+                'den_iso_pentano' => $cp->den_iso_pentano,
+                'n_pentano' => $cp->n_pentano,
+                'pe_n_pentano' => $cp->pe_n_pentano,
+                'mo_n_pentano' => $cp->mo_n_pentano,
+                'den_n_pentano' => $cp->den_n_pentano,
+                'n_exano' => $cp->n_exano,
+                'pe_n_exano' => $cp->pe_n_exano,
+                'mo_n_exano' => $cp->mo_n_exano,
+                'den_n_exano' => $cp->den_n_exano,                
+                'fecha_recep' => $cp->fecha_recep,
+                'fecha_analisis' => $cp->fecha_analisis,
+                'no_determinacion' => $cp->no_determinacion,
+                'equipo_utilizado' => $cp->equipo_utilizado,
+                'met_laboratorio' => $cp->met_laboratorio,
+                'observaciones' => $cp->observaciones,
+                'nombre_componente' => $cp->nombre_componente,
+                'fecha_muestreo' => $cp->fecha_muestreo,
+                'deleted_at' => $cp->deleted_at,
+                'quimicosData' => DB::table('graf_lineas_mo')
+                    ->where('idComPozo', $cp->id)
+                    ->get(),
             ]);
 
         $pozoData['cromatografiaGases'] = $pozo->cromatografiaGases()
-            ->get(['id', 'documento', 'fecha_hora']);
+            ->filter($filters)
+            ->orderByDesc('id')
+            ->paginate(10)
+            ->withQueryString()
+            ->through(fn ($cg) => [
+                'id' => $cg->id, 
+                'documento' => $cg->documento, 
+                'fecha_hora' => $cg->fecha_hora, 
+                'deleted_at' => $cg->deleted_at,
+            ]);
 
         $pozoData['cromatografiaLiquidas'] = $pozo->cromatografiaLiquidas()
-            ->get(['id', 'documento', 'fecha_hora']);
+            ->filter($filters)
+            ->orderByDesc('id')
+            ->paginate(10)
+            ->withQueryString()
+            ->through(fn ($cl) => [
+                'id' => $cl->id, 
+                'documento' => $cl->documento, 
+                'fecha_hora' => $cl->fecha_hora, 
+                'deleted_at' => $cl->deleted_at,
+            ]);
 
-        return Inertia::render('Pozos/Show', [            
-            'pozo' => array_merge($pozoData, ['can' => $can]),
+        return Inertia::render('Pozos/Show', [
+            'can' => $can,
+            'filters' => $filters,
+            'pozo' => $pozoData,
         ]);
     }
 
