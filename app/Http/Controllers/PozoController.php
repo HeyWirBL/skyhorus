@@ -78,9 +78,8 @@ class PozoController extends Controller
      * Display the information for specific well.
      */
     public function show(Request $request, Pozo $pozo): Response
-    {
-        $user = Auth::user();
-        $chartTable = DB::table('graf_lineas_mo');
+    {        
+        $user = Auth::user();              
         $filters = $request->all('search', 'trashed');
         $can = [
             // Pozo Policy
@@ -174,7 +173,9 @@ class PozoController extends Controller
                 'nombre_componente' => $cp->nombre_componente,
                 'fecha_muestreo' => $cp->fecha_muestreo,
                 'deleted_at' => $cp->deleted_at,
-                'quimicosData' => $chartTable->where('idComPozo', $cp->id)->get(),
+                'quimicosData' => DB::table('graf_lineas_mo')
+                    ->where('idComPozo', $cp->id)
+                    ->get(),
             ]);
 
         $pozoData['cromatografiaGases'] = $pozo->cromatografiaGases()

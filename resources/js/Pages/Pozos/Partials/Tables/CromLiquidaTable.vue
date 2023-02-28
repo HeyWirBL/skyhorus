@@ -60,10 +60,10 @@ const changeToggleAll = (items, selectedItems, selectAllRef) => {
 }
 
 const toggleAllCromLiq = () => {
-  toggleAll(props.cromatografiaLiquidas.data, selected, selectAllCromLiquida)
+  toggleAll(cromatografiaLiquidas.value.data, selected, selectAllCromLiquida)
 }
 const changeToggleAllCromLiq = () => {
-  changeToggleAll(props.cromatografiaLiquidas.data, selected, selectAllCromLiquida)
+  changeToggleAll(cromatografiaLiquidas.value.data, selected, selectAllCromLiquida)
 }
 
 const reset = () => {
@@ -141,7 +141,7 @@ watch(
       </a>
     </div>
     <div class="flex items-center mb-6">
-      <button v-if="cromatografiaLiquidas.data.length !== 0 && !isTrashed" class="btn-secondary" type="button" :disabled="!selectAllCromGas && !selected.length" @click="removeSelectedItems">
+      <button v-if="cromatografiaLiquidas.data.length !== 0 && !isTrashed" class="btn-secondary" type="button" :disabled="!selectAllCromLiquida && !selected.length" @click="removeSelectedItems">
         <span>Borrar</span>
         <span class="hidden md:inline">&nbsp;Elementos Seleccionados</span>
       </button>
@@ -153,7 +153,7 @@ watch(
             <th v-if="cromatografiaLiquidas.data.length !== 0" scope="col" class="p-4 w-4 border-solid border border-gray-200" />
             <th v-if="cromatografiaLiquidas.data.length !== 0" scope="col" class="p-4 border-solid border border-gray-200">
               <div class="flex items-center">
-                <input id="checkbox-all-cromliquidas" v-model="selectAllCromLiq" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="toggleAllCromLiq" />
+                <input id="checkbox-all-cromliquidas" v-model="selectAllCromLiquida" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="toggleAllCromLiq" />
                 <label for="checkbox-all-cromliquidas" class="sr-only">checkbox</label>
               </div>
             </th>

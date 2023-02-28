@@ -17,6 +17,7 @@ const props = defineProps({
 
 const swal = inject('$swal')
 
+// State of Tabs Links
 const activeTab = ref('')
 
 // Pozo Form
@@ -65,27 +66,19 @@ const restore = () => {
       <DocPozoTable :can="can" :filters="filters" :pozo="pozo" />
     </div>
 
-    <!-- Well Components -->
+    <!-- Pozo Components -->
     <div v-show="activeTab === 'componentepozos'" id="componentepozos" class="mt-12">
-      <h2 class="mb-4 text-2xl font-bold">Componentes de Pozo</h2>
-      <div class="flex items-center">
-        <a class="btn-yellow mr-2" href="#">
-          <span>Importar</span>
-          <span class="hidden md:inline">&nbsp;Excel</span>
-        </a>
-      </div>
-      <div class="mt-6 bg-white rounded shadow overflow-x-auto">
-        <!-- ComPozoTable Component -->
-      </div>
+      <!-- ComPozoTable Component -->
+      <ComPozoTable :can="can" :pozo="pozo" />
     </div>
 
-    <!-- Well Documents -->
+    <!-- Pozo Gas Documents -->
     <div v-show="activeTab === 'cromatografiagas'" id="cromatografiagas" class="mt-12">
       <!-- CromGasTable Component -->
       <CromGasTable :filters="filters" :pozo="pozo" />
     </div>
 
-    <!-- Well Documents -->
+    <!-- Pozo Liquid Documents -->
     <div v-show="activeTab === 'cromatografialiquida'" id="cromatografialiquida" class="mt-12">
       <!-- CromLiquidaTable Component -->
       <CromLiquidaTable :filters="filters" :pozo="pozo" />

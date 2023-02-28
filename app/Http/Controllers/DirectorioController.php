@@ -29,7 +29,6 @@ class DirectorioController extends Controller
 
         $filters = $request->all('search', 'trashed');
         $directorios = $directorio->query()
-            ->with('documentos:id,documento')
             ->latest()
             ->filter($filters)
             ->paginate(10)
@@ -39,11 +38,7 @@ class DirectorioController extends Controller
                 'nombre_dir' => $dir->nombre_dir,
                 'fecha_dir' => $dir->fecha_dir,
                 'deleted_at' => $dir->deleted_at,
-                'documentos' => $dir->documentos
-                    ->map(fn ($doc) => [
-                        'id' => $doc->id,
-                        'documento' => $doc->documento,
-                    ]),
+                'documentos' => $dir->documentos()->get()->map->only('id', 'documento', 'deleted_at'),
             ]);
 
         return Inertia::render('Directorios/Index', compact('can', 'filters', 'directorios'));
