@@ -4,70 +4,86 @@ namespace App\Imports;
 
 use App\Models\ComponentePozo;
 use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
-class ComponentePozosImport implements ToModel
+
+
+class ComponentePozosImport implements ToModel, WithHeadingRow
 {
     /**
     * @param array $row
     *
     * @return |null
     */
+    public $pozoId;
+    public $fechaRecep;
+    public $fechaAnalisis;
+    public $fechaMuest;
+
+    public function __construct($pozoId, $fechaRecep, $fechaAnalisis, $fechaMuest)
+    {
+        $this->pozoId = $pozoId;
+        $this->fechaRecep = $fechaRecep;
+        $this->fechaAnalisis = $fechaAnalisis;
+        $this->fechaMuest = $fechaMuest;
+    }
+
     public function model(array $row)
     {
         return new ComponentePozo([
-            'dioxido_carbono' => $row[0],
-            'pe_dioxido_carbono' => $row[1],
-            'mo_dioxido_carbono' => $row[2],
-            'den_dioxido_carbono' => $row[3],
-            'acido_sulfidrico' => $row[4],
-            'pe_acido_sulfidrico' => $row[5],
-            'mo_acido_sulfidrico' => $row[6],
-            'den_acido_sulfidrico' => $row[7],
-            'nitrogeno' => $row[8],
-            'pe_nitrogeno' => $row[9],
-            'mo_nitrogeno' => $row[10],
-            'den_nitrogeno' => $row[11],
-            'metano' => $row[12],
-            'pe_metano' => $row[13],
-            'mo_metano' => $row[14],
-            'den_metano' => $row[15],
-            'etano' => $row[16],
-            'pe_etano' => $row[17],
-            'mo_etano' => $row[18],
-            'den_etano' => $row[19],
-            'propano' => $row[20],
-            'pe_propano' => $row[21],
-            'mo_propano' => $row[22],
-            'den_propano' => $row[23],
-            'iso_butano' => $row[24],
-            'pe_iso_butano' => $row[25],
-            'mo_iso_butano' => $row[26],
-            'den_iso_butano' => $row[27],
-            'n_butano' => $row[28],
-            'pe_n_butano' => $row[29],
-            'mo_n_butano' => $row[30],
-            'den_n_butano' => $row[31],
-            'iso_pentano' => $row[32],
-            'pe_iso_pentano' => $row[33],
-            'mo_iso_pentano' => $row[34],
-            'den_iso_pentano' => $row[35],
-            'n_pentano' => $row[36],
-            'pe_n_pentano' => $row[37],
-            'mo_n_pentano' => $row[38],
-            'den_n_pentano' => $row[39],
-            'n_exano' => $row[40],
-            'pe_n_exano' => $row[41],
-            'mo_n_exano' => $row[42],
-            'den_n_exano' => $row[43], 
-            'pozo_id' => '3',
-            'fecha_recep' => date("Y-m-d"),
-            'fecha_analisis' => date("Y-m-d"),
-            'no_determinacion' => $row[44],
-            'equipo_utilizado' => $row[45],
-            'met_laboratorio' => $row[46],
-            'observaciones' => $row[47],
-            'nombre_componente' => $row[48],
-            'fecha_muestreo' => date("Y-m-d"),
+            'dioxido_carbono' => $row['dioxido_carbono'],
+            'pe_dioxido_carbono' => $row['pe_dioxido_carbono'],
+            'mo_dioxido_carbono' => $row['mo_dioxido_carbono'],
+            'den_dioxido_carbono' => $row['den_dioxido_carbono'],
+            'acido_sulfidrico' => $row['acido_sulfidrico'],
+            'pe_acido_sulfidrico' => $row['pe_acido_sulfidrico'],
+            'mo_acido_sulfidrico' => $row['mo_acido_sulfidrico'],
+            'den_acido_sulfidrico' => $row['den_acido_sulfidrico'],
+            'nitrogeno' => $row['nitrogeno'],
+            'pe_nitrogeno' => $row['pe_nitrogeno'],
+            'mo_nitrogeno' => $row['mo_nitrogeno'],
+            'den_nitrogeno' => $row['den_nitrogeno'],
+            'metano' => $row['metano'],
+            'pe_metano' => $row['pe_metano'],
+            'mo_metano' => $row['mo_metano'],
+            'den_metano' => $row['den_metano'],
+            'etano' => $row['etano'],
+            'pe_etano' => $row['pe_etano'],
+            'mo_etano' => $row['mo_etano'],
+            'den_etano' => $row['den_etano'],
+            'propano' => $row['propano'],
+            'pe_propano' => $row['pe_propano'],
+            'mo_propano' => $row['mo_propano'],
+            'den_propano' => $row['den_propano'],
+            'iso_butano' => $row['iso_butano'],
+            'pe_iso_butano' => $row['pe_iso_butano'],
+            'mo_iso_butano' => $row['mo_iso_butano'],
+            'den_iso_butano' => $row['den_iso_butano'],
+            'n_butano' => $row['n_butano'],
+            'pe_n_butano' => $row['pe_n_butano'],
+            'mo_n_butano' => $row['mo_n_butano'],
+            'den_n_butano' => $row['den_n_butano'],
+            'iso_pentano' => $row['iso_pentano'],
+            'pe_iso_pentano' => $row['pe_iso_pentano'],
+            'mo_iso_pentano' => $row['mo_iso_pentano'],
+            'den_iso_pentano' => $row['den_iso_pentano'],
+            'n_pentano' => $row['n_pentano'],
+            'pe_n_pentano' => $row['pe_n_pentano'],
+            'mo_n_pentano' => $row['mo_n_pentano'],
+            'den_n_pentano' => $row['den_n_pentano'],
+            'n_exano' => $row['n_exano'],
+            'pe_n_exano' => $row['pe_n_exano'],
+            'mo_n_exano' => $row['mo_n_exano'],
+            'den_n_exano' => $row['den_n_exano'], 
+            'pozo_id' => $this->pozoId,
+            'fecha_recep' => $this->fechaRecep,
+            'fecha_analisis' => $this->fechaAnalisis,
+            'no_determinacion' => $row['no_determinacion'],
+            'equipo_utilizado' => $row['equipo_utilizado'],
+            'met_laboratorio' => $row['met_laboratorio'],
+            'observaciones' => $row['observaciones'],
+            'nombre_componente' => $row['nombre_componente'],
+            'fecha_muestreo' => $this->fechaMuest,
         ]);
     }
 }
