@@ -143,6 +143,7 @@ const store = () => {
 
 const update = () => {
   editUserForm.post(`/users/${editUserForm.id}`, {
+    preserveScroll: true,
     onSuccess: () => {
       editUserForm.reset('password')
       closeModalEditForm()

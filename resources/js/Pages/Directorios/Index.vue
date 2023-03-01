@@ -20,6 +20,8 @@ const props = defineProps({
 const swal = inject('$swal')
 
 const createNewDir = ref(false)
+const editDir = ref(false)
+
 const selected = ref([])
 const selectAllDir = ref(false)
 

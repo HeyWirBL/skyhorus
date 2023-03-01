@@ -72,11 +72,9 @@ class AnoController extends Controller
     /**
      * Show the form for editing an specific year.
      */
-    public function edit(Ano $ano): Response
+    public function edit(Ano $ano)
     {
-        return Inertia::render('Anos/Edit', [
-            'ano' => $ano,    
-        ]);
+        //
     }
 
     /**

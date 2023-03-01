@@ -20,6 +20,8 @@ const props = defineProps({
 const swal = inject('$swal')
 
 const createNewAno = ref(false)
+const editAno = ref(false)
+
 const selected = ref([])
 const selectAllAno = ref(false)
 
@@ -28,9 +30,16 @@ const form = ref({
   trashed: props.filters.trashed,
 })
 
+/* Empty Form for Deleting */
 const anoForm = useForm({})
 
 const createAnoForm = useForm({
+  ano: '',
+})
+
+const editAnoForm = useForm({
+  _method: 'put',
+  id: '',
   ano: '',
 })
 
@@ -83,15 +92,40 @@ const openModalCreateAno = () => {
   createNewAno.value = true
 }
 
+const openModalEditAno = (ano) => {
+  // Set the form values
+  editAnoForm.id = ano.id
+  editAnoForm.ano = ano.ano
+
+  editAno.value = true
+}
+
 const closeModalCreateForm = () => {
   createNewAno.value = false
   createAnoForm.reset()
+}
+
+const closeModalEditForm = () => {
+  editAno.value = false
+  editAnoForm.reset()
 }
 
 const store = () => {
   createAnoForm.post('/anos', {
     preserveScroll: true,
     onSuccess: () => closeModalCreateForm(),
+  })
+}
+
+const update = () => {
+  editAnoForm.post(`/anos/${editAnoForm.id}`, {
+    preserveScroll: true,
+    onSuccess: () => closeModalEditForm(),
+    onFinish: () => {
+      if (!editAnoForm.hasErrors) {
+        editAnoForm.reset()
+      }
+    },
   })
 }
 
@@ -236,6 +270,32 @@ watch(
       </form>
     </Modal>
 
+    <!-- Edit Ano Form Modal -->
+    <Modal :show="editAno">
+      <!-- Modal content -->
+      <div class="relative">
+        <!-- Modal header -->
+        <div class="flex items-start justify-between p-4 border-b rounded-t">
+          <h2 class="text-xl font-semibold">Editar Año [{{ editAnoForm.id }}]</h2>
+          <button class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" type="button" @click="closeModalEditForm">
+            <Icon class="w-4 h-4" name="close" aria-hidden="true" />
+            <span class="sr-only">Cerrar modal</span>
+          </button>
+        </div>
+      </div>
+      <!-- Modal body -->
+      <form @submit.prevent="update">
+        <div class="flex flex-wrap -mb-8 -mr-6 p-8">
+          <TextInput v-model="editAnoForm.ano" :error="editAnoForm.errors.ano" class="pb-8 pr-6 w-full" label="Año" />
+        </div>
+        <!-- Modal footer -->
+        <div class="flex items-center justify-end p-6 space-x-2 border-t border-gray-200">
+          <LoadingButton :loading="editAnoForm.processing" class="btn-yellow mr-2" type="submit">Guardar</LoadingButton>
+          <button class="btn-secondary" @click="closeModalEditForm">Cancelar</button>
+        </div>
+      </form>
+    </Modal>
+
     <div class="bg-white rounded-md shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
         <thead class="text-sm text-left font-bold uppercase bg-white border-b-2">
@@ -254,9 +314,9 @@ watch(
           <tr v-for="ano in anos.data" :key="ano.id" class="bg-white border-b">
             <td v-if="can.editAno" class="px-6 py-4 whitespace-nowrap border-solid border border-gray-200">
               <span class="inline-block whitespace-nowrap" title="Editar año">
-                <Link class="flex items-center" :href="`/anos/${ano.id}/editar`" tabindex="-1">
+                <button class="flex items-center" tabindex="-1" type="button" @click="openModalEditAno(ano)">
                   <Icon class="flex-shrink-0 w-4 h-4 fill-yellow-400" name="pencil" />
-                </Link>
+                </button>
               </span>
             </td>
             <td v-if="can.deleteAno" class="w-4 p-4 border-solid border border-gray-200">
