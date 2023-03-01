@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
 
 class CromatografiaLiquidaController extends Controller
 {
@@ -68,7 +69,7 @@ class CromatografiaLiquidaController extends Controller
                 $fileRoute = time().$filename;
                 $filesize = $file->getSize();
                 $filetype = $file->getClientOriginalExtension();
-                $file->storeAs('public/files/', $fileRoute);
+                Storage::disk('public')->putFileAs('', $file, $fileRoute);
                 $doc = new CromatografiaLiquida();
                 $doc->documento = '{"name": "'.$fileRoute.'", "size": "'.$filesize.'", "type": "'.$filetype.'", "usrName": "'.$filename.'" }';
                 $doc->pozo_id = $request->pozo;
@@ -76,8 +77,19 @@ class CromatografiaLiquidaController extends Controller
                 $doc->save();
             }
         }
-        return redirect(route('documentos'));
+        return redirect(route('cromatografia-liquidas'));
     }
+
+    public function download($document)
+    {
+        if(Storage::disk('public')->exists($document)){
+           return Storage::disk('public')->download($document);
+           //return response('error');
+           
+        }else{
+            return response('¡404! No se pudo encontrar este recurso. Si ves este mensaje, por favor contacta con un administrador. <br/> Powered by: Nerd Rage!', 404);
+        }
+    } 
 
     /**
      * Delete temporary an specific well cromatography.

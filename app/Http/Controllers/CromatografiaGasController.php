@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
 
 class CromatografiaGasController extends Controller
 {
@@ -105,7 +106,7 @@ class CromatografiaGasController extends Controller
                 $fileRoute = time().$filename;
                 $filesize = $file->getSize();
                 $filetype = $file->getClientOriginalExtension();
-                $file->storeAs('public/files/', $fileRoute);
+                Storage::disk('public')->putFileAs('', $file, $fileRoute);
                 $doc = new CromatografiaGas();
                 $doc->documento = '{"name": "'.$fileRoute.'", "size": "'.$filesize.'", "type": "'.$filetype.'", "usrName": "'.$filename.'" }';
                 $doc->pozo_id = $request->pozo;
@@ -115,4 +116,15 @@ class CromatografiaGasController extends Controller
             return redirect(route('cromatografia-gases'));
         }
     }
+
+    public function download($document)
+    {
+        if(Storage::disk('public')->exists($document)){
+           return Storage::disk('public')->download($document);
+           //return response('error');
+           
+        }else{
+            return response('¡404! No se pudo encontrar este recurso. Si ves este mensaje, por favor contacta con un administrador. <br/> Powered by: Nerd Rage!', 404);
+        }
+    } 
 }
