@@ -5,8 +5,11 @@ import debounce from 'lodash/debounce'
 import mapValues from 'lodash/mapValues'
 import pickBy from 'lodash/pickBy'
 import Icon from '@/Components/Icon.vue'
+import LoadingButton from '@/Components/LoadingButton.vue'
+import Modal from '@/Components/Modal.vue'
 import SearchFilter from '@/Components/SearchFilter.vue'
 import Pagination from '@/Components/Pagination.vue'
+import TextInput from '@/Components/TextInput.vue'
 
 const props = defineProps({
   can: Object,
@@ -16,6 +19,7 @@ const props = defineProps({
 
 const swal = inject('$swal')
 
+const createNewAno = ref(false)
 const selected = ref([])
 const selectAllAno = ref(false)
 
@@ -24,7 +28,11 @@ const form = ref({
   trashed: props.filters.trashed,
 })
 
-const formAno = useForm({})
+const anoForm = useForm({})
+
+const createAnoForm = useForm({
+  ano: '',
+})
 
 const isTrashed = computed(() => usePage().url.includes('trashed=only'))
 
@@ -71,6 +79,22 @@ const reset = () => {
   form.value = mapValues(form.value, () => null)
 }
 
+const openModalCreateAno = () => {
+  createNewAno.value = true
+}
+
+const closeModalCreateForm = () => {
+  createNewAno.value = false
+  createAnoForm.reset()
+}
+
+const store = () => {
+  createAnoForm.post('/anos', {
+    preserveScroll: true,
+    onSuccess: () => closeModalCreateForm(),
+  })
+}
+
 const removeSelectedItems = () => {
   if (selected.value.length === 1) {
     swal({
@@ -83,7 +107,7 @@ const removeSelectedItems = () => {
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        formAno.delete(`/anos/${selected.value}`, {
+        anoForm.delete(`/anos/${selected.value}`, {
           onSuccess: () => (selected.value = []),
           onFinish: () => (selectAllAno.value = false),
         })
@@ -100,7 +124,7 @@ const removeSelectedItems = () => {
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        formAno.delete(`/anos?ids=${selected.value.join(',')}`, {
+        anoForm.delete(`/anos?ids=${selected.value.join(',')}`, {
           onSuccess: () => (selected.value = []),
           onFinish: () => (selectAllAno.value = false),
         })
@@ -121,7 +145,7 @@ const restoreSelectedItems = () => {
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        formAno.put(`/anos/${selected.value}/restore`, {
+        anoForm.put(`/anos/${selected.value}/restore`, {
           onSuccess: () => (selected.value = []),
           onFinish: () => (selectAllAno.value = false),
         })
@@ -138,7 +162,7 @@ const restoreSelectedItems = () => {
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        formAno.put(`/anos?ids=${selected.value.join(',')}`, {
+        anoForm.put(`/anos?ids=${selected.value.join(',')}`, {
           onSuccess: () => (selected.value = []),
           onFinish: () => (selectAllAno.value = false),
         })
@@ -162,7 +186,7 @@ watch(
   <div>
     <Head title="Años" />
     <h1 class="mb-8 text-3xl font-bold">Años</h1>
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center mb-6">
       <SearchFilter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
         <label class="block mt-4 text-gray-700">Eliminado:</label>
         <select v-model="form.trashed" class="form-select mt-1 w-full">
@@ -170,12 +194,12 @@ watch(
           <option value="only">Solo Eliminado</option>
         </select>
       </SearchFilter>
-      <Link v-if="can.createAno" class="btn-yellow" href="/anos/crear">
-        <span>Crear</span>
-        <span class="hidden md:inline">&nbsp;Año</span>
-      </Link>
     </div>
     <div class="flex items-center mb-6">
+      <button v-if="can.createAno" class="btn-yellow mr-2" type="button" @click="openModalCreateAno">
+        <span>Crear</span>
+        <span class="hidden md:inline">&nbsp;Año</span>
+      </button>
       <button v-if="can.deleteAno && anos.data.length !== 0 && !isTrashed" class="btn-secondary" type="button" :disabled="!selectAllAno && !selected.length" @click="removeSelectedItems">
         <span>Borrar</span>
         <span class="hidden md:inline">&nbsp;Elementos Seleccionados</span>
@@ -185,6 +209,33 @@ watch(
         <span class="hidden md:inline">&nbsp;Elementos Seleccionados</span>
       </button>
     </div>
+
+    <!-- Create Ano Form Modal -->
+    <Modal :show="createNewAno">
+      <!-- Modal content -->
+      <div class="relative">
+        <!-- Modal header -->
+        <div class="flex items-start justify-between p-4 border-b rounded-t">
+          <h2 class="text-xl font-semibold">Crear Año</h2>
+          <button class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" type="button" @click="closeModalCreateForm">
+            <Icon class="w-4 h-4" name="close" aria-hidden="true" />
+            <span class="sr-only">Cerrar modal</span>
+          </button>
+        </div>
+      </div>
+      <!-- Modal body -->
+      <form @submit.prevent="store">
+        <div class="flex flex-wrap -mb-8 -mr-6 p-8">
+          <TextInput v-model="createAnoForm.ano" :error="createAnoForm.errors.ano" class="pb-8 pr-6 w-full" label="Año" />
+        </div>
+        <!-- Modal footer -->
+        <div class="flex items-center justify-end p-6 space-x-2 border-t border-gray-200">
+          <LoadingButton :loading="createAnoForm.processing" class="btn-yellow mr-2" type="submit">Guardar</LoadingButton>
+          <button class="btn-secondary" @click="closeModalCreateForm">Cancelar</button>
+        </div>
+      </form>
+    </Modal>
+
     <div class="bg-white rounded-md shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
         <thead class="text-sm text-left font-bold uppercase bg-white border-b-2">

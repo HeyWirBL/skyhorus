@@ -173,9 +173,9 @@ const restore = () => {
             </td>
             <td>
               <Link class="flex items-center px-6 py-4" :href="`/documentos/${documento.id}/editar`">
-                {{ documento.documento[0].usrName }}
+                {{ documento.documento.usrName }}
                 <div class="text-xs text-orange-300 ml-3">
-                  {{ formatBytes(documento.documento[0].size) }}
+                  {{ formatBytes(documento.documento.size) }}
                 </div>
               </Link>
             </td>

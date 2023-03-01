@@ -40,9 +40,9 @@ class AnoController extends Controller
     /**
      * Show the form for creating a new year.
      */
-    public function create(): Response
+    public function create()
     {
-        return Inertia::render('Anos/Create');
+        //
     }
 
     /**

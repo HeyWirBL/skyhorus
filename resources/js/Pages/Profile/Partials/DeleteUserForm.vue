@@ -63,8 +63,8 @@ const closeModal = () => {
       </div>
       <!-- Modal footer -->
       <div class="flex items-center justify-end p-6 space-x-2 border-t border-gray-200">
+        <LoadingButton class="btn-danger mr-2" :class="{ 'opacity-25': form.processing }" :loading="form.processing" :disabled="form.processing" @click="deleteUser">Eliminar Cuenta</LoadingButton>
         <button class="btn-secondary" @click="closeModal">Cancelar</button>
-        <LoadingButton class="btn-danger ml-3" :class="{ 'opacity-25': form.processing }" :loading="form.processing" :disabled="form.processing" @click="deleteUser">Eliminar Cuenta</LoadingButton>
       </div>
     </Modal>
   </div>

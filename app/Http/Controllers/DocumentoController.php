@@ -95,7 +95,7 @@ class DocumentoController extends Controller
                 $fileRoute = time().$filename;
                 $filesize = $file->getSize();
                 $filetype = $file->getClientOriginalExtension();
-                /* $file->storeAs('public/files', $fileRoute); */ Storage::disk('public')->putFileAs('', $file, $fileRoute);
+                Storage::disk('public')->putFileAs('', $file, $fileRoute);
                 $document = new Documento();
                 $document->documento = '{"name": "'.$fileRoute.'", "size": "'.$filesize.'", "type": "'.$filetype.'", "usrName": "'.$filename.'" }';
                 $document->directorio_id = $request->directorio_id;
