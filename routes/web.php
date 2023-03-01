@@ -111,9 +111,6 @@ Route::middleware('auth')->group(function () {
     Route::get('anos', [AnoController::class, 'index'])
         ->name('anos');
 
-    Route::get('anos/crear', [AnoController::class, 'create'])
-        ->name('anos.create')->middleware('can:create,App\Models\Ano');
-
     Route::get('anos/{ano}/editar', [AnoController::class, 'edit'])
         ->name('anos.edit')->middleware('can:update,App\Models\Ano');
 
