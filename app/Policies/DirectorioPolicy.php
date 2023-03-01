@@ -18,19 +18,20 @@ class DirectorioPolicy
      */
     public function viewAny(User $user)
     {
-        //
+        $authorizedRoles = ['Administrador', 'Colaborador', 'Consultor', 'Editor'];
+        return in_array($user->rol, $authorizedRoles);
     }
 
     /**
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Directorio  $directorio
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, Directorio $directorio)
+    public function view(User $user)
     {
-        //
+        $authorizedRoles = ['Administrador', 'Colaborador', 'Consultor', 'Editor'];
+        return in_array($user->rol, $authorizedRoles);
     }
 
     /**

@@ -5,8 +5,11 @@ import debounce from 'lodash/debounce'
 import mapValues from 'lodash/mapValues'
 import pickBy from 'lodash/pickBy'
 import Icon from '@/Components/Icon.vue'
+import LoadingButton from '@/Components/LoadingButton.vue'
+import Modal from '@/Components/Modal.vue'
 import Pagination from '@/Components/Pagination.vue'
 import SearchFilter from '@/Components/SearchFilter.vue'
+import TextInput from '@/Components/TextInput.vue'
 
 const props = defineProps({
   can: Object,
@@ -16,6 +19,7 @@ const props = defineProps({
 
 const swal = inject('$swal')
 
+const createNewDir = ref(false)
 const selected = ref([])
 const selectAllDir = ref(false)
 
@@ -24,7 +28,15 @@ const form = ref({
   trashed: props.filters.trashed,
 })
 
-const formDirectorio = useForm({})
+const dirForm = useForm({
+  nombre_dir: '',
+  fecha_dir: '',
+})
+
+const createDirForm = useForm({
+  nombre_dir: '',
+  fecha_dir: '',
+})
 
 const isTrashed = computed(() => usePage().url.includes('trashed=only'))
 
@@ -71,6 +83,22 @@ const reset = () => {
   form.value = mapValues(form.value, () => null)
 }
 
+const openModalCreateForm = () => {
+  createNewDir.value = true
+}
+
+const closeModalCreateForm = () => {
+  createNewDir.value = false
+  createDirForm.reset()
+}
+
+const store = () => {
+  createDirForm.post('/directorios', {
+    preserveScroll: true,
+    onSuccess: () => closeModalCreateForm(),
+  })
+}
+
 const removeSelectedItems = () => {
   if (selected.value.length === 1) {
     swal({
@@ -83,7 +111,7 @@ const removeSelectedItems = () => {
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        formDirectorio.delete(`/directorios/${selected.value}`, {
+        dirForm.delete(`/directorios/${selected.value}`, {
           onSuccess: () => (selected.value = []),
           onFinish: () => (selectAllDir.value = false),
         })
@@ -100,7 +128,7 @@ const removeSelectedItems = () => {
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        formDirectorio.delete(`/directorios?ids=${selected.value.join(',')}`, {
+        dirForm.delete(`/directorios?ids=${selected.value.join(',')}`, {
           onSuccess: () => (selected.value = []),
           onFinish: () => (selectAllDir.value = false),
         })
@@ -121,7 +149,7 @@ const restoreSelectedItems = () => {
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        formDirectorio.put(`/directorios/${selected.value}/restore`, {
+        dirForm.put(`/directorios/${selected.value}/restore`, {
           onSuccess: () => (selected.value = []),
           onFinish: () => (selectAllDir.value = false),
         })
@@ -138,7 +166,7 @@ const restoreSelectedItems = () => {
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        formDirectorio.put(`/directorios?ids=${selected.value.join(',')}`, {
+        dirForm.put(`/directorios?ids=${selected.value.join(',')}`, {
           onSuccess: () => (selected.value = []),
           onFinish: () => (selectAllDir.value = false),
         })
@@ -162,7 +190,7 @@ watch(
   <div>
     <Head title="Directorios" />
     <h1 class="mb-8 text-3xl font-bold">Carpetas</h1>
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center mb-6">
       <SearchFilter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
         <label class="block mt-4 text-gray-700">Eliminado:</label>
         <select v-model="form.trashed" class="form-select mt-1 w-full">
@@ -170,12 +198,12 @@ watch(
           <option value="only">Solo Eliminado</option>
         </select>
       </SearchFilter>
-      <Link v-if="can.createDirectorio" class="btn-yellow" href="/directorios/crear">
-        <span>Crear</span>
-        <span class="hidden md:inline">&nbsp;Directorio</span>
-      </Link>
     </div>
     <div class="flex items-center mb-6">
+      <button v-if="can.createDirectorio" class="btn-yellow mr-2" type="button" @click="openModalCreateForm">
+        <span>Crear</span>
+        <span class="hidden md:inline">&nbsp;Directorio</span>
+      </button>
       <button v-if="can.deleteDirectorio && directorios.data.length !== 0 && !isTrashed" class="btn-secondary" type="button" :disabled="!selectAllDir && !selected.length" @click="removeSelectedItems">
         <span>Borrar</span>
         <span class="hidden md:inline">&nbsp;Elementos Seleccionados</span>
@@ -185,6 +213,34 @@ watch(
         <span class="hidden md:inline">&nbsp;Elementos Seleccionados</span>
       </button>
     </div>
+
+    <!-- Create Directorio Form Modal -->
+    <Modal :show="createNewDir">
+      <!-- Modal content -->
+      <div class="relative">
+        <!-- Modal header -->
+        <div class="flex items-start justify-between p-4 border-b rounded-t">
+          <h2 class="text-xl font-semibold">Crear Directorio</h2>
+          <button class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" type="button" @click="closeModalCreateForm">
+            <Icon class="w-4 h-4" name="close" aria-hidden="true" />
+            <span class="sr-only">Cerrar modal</span>
+          </button>
+        </div>
+      </div>
+      <!-- Modal body -->
+      <form @submit.prevent="store">
+        <div class="flex flex-wrap -mb-8 -mr-6 p-8">
+          <TextInput v-model="createDirForm.nombre_dir" :error="createDirForm.errors.nombre_dir" class="pb-8 pr-6 w-full lg:w-1/2" label="Nombre de carpeta" />
+          <TextInput v-model="createDirForm.fecha_dir" :error="createDirForm.errors.fecha_dir" class="pb-8 pr-6 w-full lg:w-1/2" type="date" label="Fecha de creación" />
+        </div>
+        <!-- Modal footer -->
+        <div class="flex items-center justify-end p-6 space-x-2 border-t border-gray-200">
+          <LoadingButton :loading="createDirForm.processing" class="btn-yellow mr-2" type="submit">Guardar</LoadingButton>
+          <button class="btn-secondary" @click="closeModalCreateForm">Cancelar</button>
+        </div>
+      </form>
+    </Modal>
+
     <div class="bg-white rounded-md shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
         <thead class="text-sm text-left font-bold uppercase bg-white border-b-2">
@@ -205,7 +261,7 @@ watch(
           <tr v-for="dir in directorios.data" :key="dir.id" class="bg-white border-b">
             <td v-if="can.editDirectorio" class="px-6 py-4 whitespace-nowrap border-solid border border-gray-200">
               <span class="inline-block whitespace-nowrap">
-                <Link class="flex items-center" :href="`/directorios/${dir.id}/editar`" tabindex="-1">
+                <Link class="flex items-center" tabindex="-1" :href="`/directorios/${dir.id}/editar`">
                   <Icon class="flex-shrink-0 w-4 h-4 fill-yellow-400" name="pencil" />
                 </Link>
               </span>
@@ -217,7 +273,9 @@ watch(
               </div>
             </td>
             <td class="px-6 py-4 border-solid border border-gray-200">
-              <span class="block">Archivos ({{ dir.documentos.length }})</span>
+              <span class="inline-block whitespace-nowrap">
+                <Link class="text-yellow-500 hover:underline" :href="`/directorios/${dir.id}`"> Archivos ({{ dir.documentos.length }}) </Link>
+              </span>
             </td>
             <td class="px-6 py-4 border-solid border border-gray-200">
               <div class="flex items-center">

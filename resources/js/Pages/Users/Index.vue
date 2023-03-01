@@ -267,8 +267,8 @@ watch(
         </div>
         <!-- Modal footer -->
         <div class="flex items-center justify-end p-6 space-x-2 border-t border-gray-200">
+          <LoadingButton :loading="createUserForm.processing" class="btn-yellow mr-2" type="submit">Guardar</LoadingButton>
           <button class="btn-secondary" @click="closeModalCreateForm">Cancelar</button>
-          <LoadingButton :loading="createUserForm.processing" class="btn-yellow ml-3" type="submit">Guardar</LoadingButton>
         </div>
       </form>
     </Modal>
@@ -277,7 +277,7 @@ watch(
       <table class="w-full whitespace-nowrap">
         <thead class="text-sm text-left font-bold uppercase bg-white border-b-2">
           <tr>
-            <th v-if="can.editUser && users.data.length !== 0" scope="col" class="p-4 w-4 border-solid border border-gray-200" />
+            <th v-if="can.viewUser && users.data.length !== 0" scope="col" class="p-4 w-4 border-solid border border-gray-200" />
             <th v-if="can.deleteUser && users.data.length !== 0" scope="col" class="p-4 border-solid border border-gray-200">
               <div class="flex items-center">
                 <input id="checkbox-all-users" v-model="selectAllUsers" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="toggleAllUsers" />
