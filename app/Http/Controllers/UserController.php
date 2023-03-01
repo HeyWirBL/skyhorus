@@ -34,6 +34,7 @@ class UserController extends Controller
 
         return Inertia::render('Users/Index', [
             'can' => [
+                'viewUser' => $request->user()->can('view', User::class),
                 'createUser' => $request->user()->can('create', User::class),
                 'editUser' => $request->user()->can('update', User::class),
                 'restoreUser' => $request->user()->can('restore', User::class),
@@ -77,9 +78,25 @@ class UserController extends Controller
     /**
      * Display the information for specific user.
      */
-    public function show(User $user)
+    public function show(Request $request, User $user)
     {
-        //
+        $can = [
+            'restoreUser' => $request->user()->can('restore', User::class),
+            'deleteUser' => $request->user()->can('delete', User::class),
+        ];
+        $userData = [
+            'id' => $user->id,
+            'nombre' => $user->nombre,
+            'apellidos' => $user->apellidos,
+            'usuario' => $user->usuario,
+            'email' => $user->email,
+            'rol' => $user->rol,
+            'telefono' => $user->telefono,
+            'direccion' => $user->direccion,
+            'deleted_at' => $user->deleted_at,
+        ];
+
+        return Inertia::render('Users/Show', compact('can', 'userData'));
     }
 
     /**
@@ -102,6 +119,7 @@ class UserController extends Controller
             'direccion' => $user->direccion,
             'deleted_at' => $user->deleted_at,
         ];
+
         return Inertia::render('Users/Edit', compact('can', 'userData'));
     }
 

@@ -293,10 +293,15 @@ watch(
         </thead>
         <tbody>
           <tr v-for="user in users.data" :key="user.id" class="bg-white border-b">
-            <td v-if="can.editUser || can.deleteUser || can.restoreUser" class="px-6 py-4 whitespace-nowrap border-solid border border-gray-200">
-              <span class="inline-block whitespace-nowrap" title="Editar usuario">
-                <Link class="flex items-center" :href="`/users/${user.id}/editar`" tabindex="-1">
+            <td class="px-6 py-4 whitespace-nowrap border-solid border border-gray-200">
+              <span v-if="can.editUser" class="inline-block whitespace-nowrap" title="Editar usuario">
+                <Link class="flex items-center mr-2" :href="`/users/${user.id}/editar`" tabindex="-1">
                   <Icon class="flex-shrink-0 w-4 h-4 fill-yellow-400" name="pencil" />
+                </Link>
+              </span>
+              <span v-if="can.viewUser" class="inline-block whitespace-nowrap" title="Ver usuario">
+                <Link class="flex items-center" :href="`/users/${user.id}`" tabindex="-1">
+                  <Icon class="flex-shrink-0 w-4 h-4 fill-yellow-400" name="eye" />
                 </Link>
               </span>
             </td>
