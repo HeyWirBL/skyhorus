@@ -161,7 +161,7 @@ watch(
   <div>
     <Head title="Pozos" />
     <h1 class="mb-8 text-3xl font-bold">Pozos</h1>
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center mb-6">
       <SearchFilter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
         <label class="block mt-4 text-gray-700">Eliminado:</label>
         <select v-model="form.trashed" class="form-select mt-1 w-full">
@@ -169,12 +169,12 @@ watch(
           <option value="only">Solo Eliminado</option>
         </select>
       </SearchFilter>
-      <Link v-if="can.createPozo" class="btn-yellow" href="/pozos/crear">
-        <span>Crear</span>
-        <span class="hidden md:inline">&nbsp;Pozo</span>
-      </Link>
     </div>
     <div class="flex items-center mb-6">
+      <button v-if="can.createPozo" class="btn-yellow mr-2" type="button">
+        <span>Crear</span>
+        <span class="hidden md:inline">&nbsp;Pozo</span>
+      </button>
       <button v-if="pozos.data.length !== 0 && can.deletePozo && !isTrashed" class="btn-secondary" type="button" :disabled="!selectAllPozos && !selected.length" @click="removeSelectedItems">
         <span>Borrar</span>
         <span class="hidden md:inline">&nbsp;Elementos Seleccionados</span>

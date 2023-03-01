@@ -29,6 +29,8 @@ class UserController extends Controller
             'usuario' => $user->usuario,
             'email' => $user->email,
             'rol' => $user->rol,
+            'telefono' => $user->telefono,
+            'direccion' => $user->direccion,
             'deleted_at' => $user->deleted_at,
         ]);
 
@@ -102,25 +104,9 @@ class UserController extends Controller
     /**
      * Show the form for editing an specific user.
      */
-    public function edit(Request $request, User $user): Response
+    public function edit(User $user)
     {
-        $can = [
-            'restoreUser' => $request->user()->can('restore', User::class),
-            'deleteUser' => $request->user()->can('delete', User::class),
-        ];
-        $userData = [
-            'id' => $user->id,
-            'nombre' => $user->nombre,
-            'apellidos' => $user->apellidos,
-            'usuario' => $user->usuario,
-            'email' => $user->email,
-            'rol' => $user->rol,
-            'telefono' => $user->telefono,
-            'direccion' => $user->direccion,
-            'deleted_at' => $user->deleted_at,
-        ];
-
-        return Inertia::render('Users/Edit', compact('can', 'userData'));
+        //
     }
 
     /**

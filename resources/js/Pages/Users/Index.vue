@@ -21,6 +21,8 @@ const props = defineProps({
 const swal = inject('$swal')
 
 const createNewUser = ref(false)
+const editUser = ref(false)
+
 const selected = ref([])
 const selectAllUsers = ref(false)
 
@@ -42,6 +44,19 @@ const createUserForm = useForm({
   password: '',
   telefono: null,
   direccion: null,
+  rol: '',
+})
+
+const editUserForm = useForm({
+  _method: 'put',
+  id: '',
+  nombre: '',
+  apellidos: '',
+  usuario: '',
+  email: '',
+  password: '',
+  telefono: '',
+  direccion: '',
   rol: '',
 })
 
@@ -94,15 +109,49 @@ const openModalCreateForm = () => {
   createNewUser.value = true
 }
 
+const openModalEditForm = (user) => {
+  // Set form field values
+  editUserForm.id = user.id
+  editUserForm.nombre = user.nombre
+  editUserForm.apellidos = user.apellidos
+  editUserForm.usuario = user.usuario
+  editUserForm.email = user.email
+  editUserForm.password = ''
+  editUserForm.telefono = user.telefono
+  editUserForm.direccion = user.direccion
+  editUserForm.rol = user.rol
+
+  editUser.value = true
+}
+
 const closeModalCreateForm = () => {
   createNewUser.value = false
   createUserForm.reset()
+}
+
+const closeModalEditForm = () => {
+  editUser.value = false
+  editUserForm.reset()
 }
 
 const store = () => {
   createUserForm.post('/users', {
     preserveScroll: true,
     onSuccess: () => closeModalCreateForm(),
+  })
+}
+
+const update = () => {
+  editUserForm.post(`/users/${editUserForm.id}`, {
+    onSuccess: () => {
+      editUserForm.reset('password')
+      closeModalEditForm()
+    },
+    onFinish: () => {
+      if (!editUserForm.hasErrors) {
+        editUserForm.reset()
+      }
+    },
   })
 }
 
@@ -273,6 +322,46 @@ watch(
       </form>
     </Modal>
 
+    <!-- Edit User Form Modal -->
+    <Modal :show="editUser">
+      <!-- Modal content -->
+      <div class="relative">
+        <!-- Modal header -->
+        <div class="flex items-start justify-between p-4 border-b rounded-t">
+          <h2 class="text-xl font-semibold">Editar Usuario [{{ editUserForm.id }}]</h2>
+          <button class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" type="button" @click="closeModalEditForm">
+            <Icon class="w-4 h-4" name="close" aria-hidden="true" />
+            <span class="sr-only">Cerrar modal</span>
+          </button>
+        </div>
+      </div>
+      <!-- Modal body -->
+      <form @submit.prevent="update">
+        <div class="flex flex-wrap -mb-8 -mr-6 p-8">
+          <TextInput v-model="editUserForm.nombre" :error="editUserForm.errors.nombre" class="pb-8 pr-6 w-full lg:w-1/2" label="Nombre" />
+          <TextInput v-model="editUserForm.apellidos" :error="editUserForm.errors.apellidos" class="pb-8 pr-6 w-full lg:w-1/2" label="Apellidos" />
+          <TextInput v-model="editUserForm.usuario" :error="editUserForm.errors.usuario" class="pb-8 pr-6 w-full lg:w-1/2" label="Usuario" />
+          <TextInput v-model="editUserForm.email" :error="editUserForm.errors.email" class="pb-8 pr-6 w-full lg:w-1/2" label="Correo electrónico" />
+          <TextInput v-model="editUserForm.password" :error="editUserForm.errors.password" class="pb-8 pr-6 w-full lg:w-1/2" type="password" autocomplete="new-password" label="Contraseña" />
+          <TextInput v-model="editUserForm.telefono" :error="editUserForm.errors.telefono" class="pb-8 pr-6 w-full lg:w-1/2" label="Teléfono" />
+          <TextInput v-model="editUserForm.direccion" :error="editUserForm.errors.telefono" class="pb-8 pr-6 w-full lg:w-1/2" label="Dirección" />
+          <SelectInput v-model="editUserForm.rol" :error="editUserForm.errors.rol" class="pb-8 pr-6 w-full lg:w-1/2" label="Rol">
+            <option value="">Por favor seleccione</option>
+            <option value="Administrador">Administrador</option>
+            <option value="Usuario">Usuario</option>
+            <option value="Colaborador">Colaborador</option>
+            <option value="Consultor">Consultor</option>
+            <option value="Editor">Editor</option>
+          </SelectInput>
+        </div>
+        <!-- Modal footer -->
+        <div class="flex items-center justify-end p-6 space-x-2 border-t border-gray-200">
+          <LoadingButton :loading="editUserForm.processing" class="btn-yellow mr-2" type="submit">Guardar</LoadingButton>
+          <button class="btn-secondary" @click="closeModalEditForm">Cancelar</button>
+        </div>
+      </form>
+    </Modal>
+
     <div class="bg-white rounded-md shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
         <thead class="text-sm text-left font-bold uppercase bg-white border-b-2">
@@ -295,9 +384,9 @@ watch(
           <tr v-for="user in users.data" :key="user.id" class="bg-white border-b">
             <td class="px-6 py-4 whitespace-nowrap border-solid border border-gray-200">
               <span v-if="can.editUser" class="inline-block whitespace-nowrap" title="Editar usuario">
-                <Link class="flex items-center mr-2" :href="`/users/${user.id}/editar`" tabindex="-1">
+                <button class="flex items-center mr-2" tabindex="-1" type="button" @click="openModalEditForm(user)">
                   <Icon class="flex-shrink-0 w-4 h-4 fill-yellow-400" name="pencil" />
-                </Link>
+                </button>
               </span>
               <span v-if="can.viewUser" class="inline-block whitespace-nowrap" title="Ver usuario">
                 <Link class="flex items-center" :href="`/users/${user.id}`" tabindex="-1">

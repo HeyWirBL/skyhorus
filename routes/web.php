@@ -39,9 +39,6 @@ Route::middleware('auth')->group(function () {
     Route::get('users/{user}', [UserController::class, 'show'])
         ->name('users.show')->middleware('can:view,App\Models\User');
 
-    Route::get('users/{user}/editar', [UserController::class, 'edit'])
-        ->name('users.edit')->middleware('can:update,App\Models\User');
-
     Route::post('users', [UserController::class, 'store'])
         ->name('users.store')->middleware('can:create,App\Models\User');
 

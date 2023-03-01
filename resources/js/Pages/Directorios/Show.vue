@@ -32,13 +32,36 @@ const form = ref({
 
 const docForm = useForm({})
 
-const documentos = computed(() => props.directorioData.documentos)
-const isTrashed = computed(() => usePage().url.includes('trashed=only'))
-
 const dirForm = useForm({
   nombre_dir: props.directorioData.nombre_dir,
   fecha_dir: props.directorioData.fecha_dir,
 })
+
+const documentos = computed(() => props.directorioData.documentos)
+const isTrashed = computed(() => usePage().url.includes('trashed=only'))
+
+const convertDocument = computed(() => documentos.value.data)
+
+const documentoData = computed(() => convertDocument.value.map((d) => d.documento))
+
+const displayDocumento = computed(() => {
+  const usrNames = []
+  const size = []
+  if (Array.isArray(documentoData.value)) {
+    documentoData.value.forEach((innerArray) => {
+      if (Array.isArray(innerArray)) {
+        innerArray.forEach((doc) => {
+          //console.log(doc.usrName)
+          usrNames.push(doc.usrName)
+          size.push(doc.size)
+        })
+      }
+    })
+  }
+  return usrNames
+})
+
+//const documentosData = convertDocument.value.map((d) => d.id)
 
 /**
  * Helper Function that that checks whether the `selectAllRef` flag is set
@@ -252,6 +275,10 @@ watch(
               </div>
             </td>
             <td class="px-6 py-4 border-solid border border-gray-200">
+              <div v-for="(usrName, size, index) in displayDocumento" :key="index">
+                <p>Name: {{ usrName }}</p>
+                <p>Size: {{ filesize(size) }}</p>
+              </div>
               <div class="flex items-center leading-snug">
                 <a class="text-yellow-400 hover:underline focus:text-yellow-500" :href="`/documentos/${documento.documento.name}/descargar`">
                   {{ documento.documento.usrName }}
