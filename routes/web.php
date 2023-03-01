@@ -79,11 +79,11 @@ Route::middleware('auth')->group(function () {
     Route::get('directorios', [DirectorioController::class, 'index'])
         ->name('directorios');
 
-    Route::get('directorios/crear', [DirectorioController::class, 'create'])
-        ->name('directorios.create')->middleware('can:create,App\Models\Directorio');
-
     Route::get('directorios/{directorio}/editar', [DirectorioController::class, 'edit'])
         ->name('directorios.edit')->middleware('can:update,App\Models\Directorio');
+
+    Route::get('directorios/{directorio}', [DirectorioController::class, 'show'])
+        ->name('directorios.show')->middleware('can:view,App\Models\Directorio');
 
     Route::post('directorios', [DirectorioController::class, 'store'])
         ->name('directorios.store')->middleware('can:create,App\Models\Directorio');

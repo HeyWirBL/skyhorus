@@ -43,7 +43,7 @@ const restore = () => {
       <div class="col-span-full xl:col-auto">
         <div class="p-4 mb-4 bg-white border border-gray-200 rounded-md shadow 2xl:col-span-2 sm:p-6">
           <div class="items-center sm:flex xl:block 2xl:flex sm:space-x-4 xl:space-x-0 2xl:space-x-4">
-            <img class="mb-4 rounded-md w-28 h-28 sm:mb-0 xl:mb-4 2xl:mb-0" :src="'../storage/images/user.png'" alt="Usuario de PetroHorus" />
+            <img class="mb-4 rounded-md w-28 h-28 sm:mb-0 xl:mb-4 2xl:mb-0" :src="'../storage/images/user.jpg'" alt="Usuario de PetroHorus" />
             <div>
               <h3 class="mb-1 text-xl font-bold leading-tight">{{ userData.nombre }} {{ userData.apellidos }}</h3>
               <div class="mb-4 text-sm"><span class="font-bold">Tipo de Rol</span>: {{ userData.rol }}</div>

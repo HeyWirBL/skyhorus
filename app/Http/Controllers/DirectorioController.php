@@ -47,9 +47,9 @@ class DirectorioController extends Controller
     /**
      * Show the form for creating a new folder.
      */
-    public function create(): Response
+    public function create()
     {
-        return Inertia::render('Directorios/Create');
+        //
     }
 
     /**
@@ -72,50 +72,62 @@ class DirectorioController extends Controller
     /**
      * Display the information for specific folder.
      */
-    public function show(Directorio $directorio)
+    public function show(Request $request, Directorio $directorio, Ano $ano, MesDetalle $mes)
     {
-        //
+        $can = [
+            'restoreDirectorio' => Auth::user()->can('restore', Directorio::class),
+            'deleteDirectorio' => Auth::user()->can('delete', Directorio::class),
+        ];
+
+        $filters = $request->only('search', 'year', 'month', 'trashed');
+
+        $directorioData = [
+            'id' => $directorio->id,
+            'nombre_dir' => $directorio->nombre_dir,
+            'fecha_dir' => $directorio->fecha_dir,
+            'deleted_at' => $directorio->deleted_at,
+            'documentos' => $directorio->documentos()
+                ->filter($filters)
+                ->paginate(10)
+                ->withQueryString()
+                ->through(fn ($documento) => [
+                    'id' => $documento->id,
+                    'documento' => json_decode($documento->documento),
+                    'deleted_at' => $documento->deleted_at,
+                    'ano' => $documento->ano ? $documento->ano->only('ano') : null,
+                    'mes' => $documento->mesDetalle ? $documento->mesDetalle->only('nombre') : null,
+                ]),  
+        ];
+
+        $anos = $ano->query()
+            ->latest()
+            ->get(['id', 'ano']);
+
+        $meses = $mes->query()
+            ->latest()
+            ->get(['id', 'nombre']);
+
+        return Inertia::render('Directorios/Show', compact('can', 'filters', 'directorioData', 'anos', 'meses'));
     }
 
     /**
      * Show the form for editing an specific folder.
      */
-    public function edit(Request $request, Directorio $directorio, Ano $ano, MesDetalle $mes): Response
+    public function edit(Directorio $directorio): Response
     {
-        return Inertia::render('Directorios/Edit', [
-            'can' => [
-                'restoreDirectorio' => Auth::user()->can('restore', Directorio::class),
-                'deleteDirectorio' => Auth::user()->can('delete', Directorio::class),
-            ],
-            'filters' => $request->all('search', 'year', 'month', 'trashed'),
-            'directorio' => [
-                'id' => $directorio->id,
-                'nombre_dir' => $directorio->nombre_dir,
-                'fecha_dir' => $directorio->fecha_dir,
-                'deleted_at' => $directorio->deleted_at,
-                'documentos' => $directorio->documentos()
-                    ->filter($request->only('search', 'year', 'month', 'trashed'))
-                    ->paginate(10)
-                    ->withQueryString()
-                    ->through(fn ($documento) => [
-                        'id' => $documento->id,
-                        'documento' => json_decode($documento->documento),
-                        'deleted_at' => $documento->deleted_at,
-                        'ano' => $documento->ano ? $documento->ano->only('ano') : null,
-                        'mes' => $documento->mesDetalle ? $documento->mesDetalle->only('nombre') : null,
-                    ]),             
-            ],
-            'anos' => $ano->query()
-                ->latest()
-                ->get()
-                ->map
-                ->only('id', 'ano'),
-            'meses' => $mes->query()
-                ->latest()
-                ->get()
-                ->map
-                ->only('id', 'nombre'),           
-        ]);
+        $can = [
+            'restoreDirectorio' => Auth::user()->can('restore', Directorio::class),
+            'deleteDirectorio' => Auth::user()->can('delete', Directorio::class),
+        ];
+
+        $directorioData = [
+            'id' => $directorio->id,
+            'nombre_dir' => $directorio->nombre_dir,
+            'fecha_dir' => $directorio->fecha_dir,
+            'deleted_at' => $directorio->deleted_at,             
+        ];
+
+        return Inertia::render('Directorios/Edit', compact('can', 'directorioData'));
     }
 
     /**
