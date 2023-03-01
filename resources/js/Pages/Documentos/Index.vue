@@ -5,6 +5,7 @@ import debounce from 'lodash/debounce'
 import mapValues from 'lodash/mapValues'
 import pickBy from 'lodash/pickBy'
 import Icon from '@/Components/Icon.vue'
+import Modal from '@/Components/Modal.vue'
 import SearchFilter from '@/Components/SearchFilter.vue'
 import Pagination from '@/Components/Pagination.vue'
 
@@ -17,6 +18,7 @@ const props = defineProps({
 
 const swal = inject('$swal')
 
+const createNewDocumento = ref(false)
 const selected = ref([])
 const selectAllDocs = ref(false)
 
@@ -169,7 +171,7 @@ watch(
   <div>
     <Head title="Documentos" />
     <h1 class="mb-8 text-3xl font-bold">Documentos</h1>
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center mb-6">
       <SearchFilter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
         <label class="block mt-4 text-gray-700">Año:</label>
         <select v-model="form.year" class="form-select mt-1 w-full">
@@ -187,12 +189,12 @@ watch(
           <option value="only">Solo Eliminado</option>
         </select>
       </SearchFilter>
-      <Link class="btn-yellow" href="/documentos/crear">
-        <span>Subir</span>
-        <span class="hidden md:inline">&nbsp;Documentos</span>
-      </Link>
     </div>
     <div class="flex items-center mb-6">
+      <button class="btn-yellow mr-2" type="button">
+        <span>Subir</span>
+        <span class="hidden md:inline">&nbsp;Documentos</span>
+      </button>
       <button v-if="documentos.data.length !== 0 && !isTrashed" class="btn-secondary mr-2" type="button" :disabled="!selectAllDocs && !selected.length" @click="removeSelectedItems">
         <span>Borrar</span>
         <span class="hidden md:inline">&nbsp;Elementos Seleccionados</span>
@@ -202,6 +204,33 @@ watch(
         <span class="hidden md:inline">&nbsp;Elementos Seleccionados</span>
       </button>
     </div>
+
+    <!-- Create Documento Form Modal -->
+    <Modal :show="createNewDocumento">
+      <!-- Modal content -->
+      <div class="relative">
+        <!-- Modal header -->
+        <div class="flex items-start justify-between p-4 border-b rounded-t">
+          <h2 class="text-xl font-semibold">Crear Año</h2>
+          <button class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" type="button" @click="closeModalCreateForm">
+            <Icon class="w-4 h-4" name="close" aria-hidden="true" />
+            <span class="sr-only">Cerrar modal</span>
+          </button>
+        </div>
+      </div>
+      <!-- Modal body -->
+      <form @submit.prevent="store">
+        <div class="flex flex-wrap -mb-8 -mr-6 p-8">
+          <TextInput v-model="createAnoForm.ano" :error="createAnoForm.errors.ano" class="pb-8 pr-6 w-full" label="Año" />
+        </div>
+        <!-- Modal footer -->
+        <div class="flex items-center justify-end p-6 space-x-2 border-t border-gray-200">
+          <LoadingButton :loading="createAnoForm.processing" class="btn-yellow mr-2" type="submit">Guardar</LoadingButton>
+          <button class="btn-secondary" @click="closeModalCreateForm">Cancelar</button>
+        </div>
+      </form>
+    </Modal>
+
     <div class="bg-white rounded-md shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
         <thead class="text-sm text-left font-bold uppercase bg-white border-b-2">

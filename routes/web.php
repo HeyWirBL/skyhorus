@@ -13,8 +13,6 @@ use App\Http\Controllers\MenuController;
 use App\Http\Controllers\PozoController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
-use App\Models\CromatografiaGas;
-use App\Models\CromatografiaLiquida;
 use Illuminate\Support\Facades\Route;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
