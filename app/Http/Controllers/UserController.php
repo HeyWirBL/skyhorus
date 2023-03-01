@@ -47,9 +47,9 @@ class UserController extends Controller
     /**
      * Show the form for creating a new user.
      */
-    public function create(): Response
+    public function create()
     {
-        return Inertia::render('Users/Create');
+        //
     }
 
     /**
@@ -71,7 +71,6 @@ class UserController extends Controller
         ]);
 
         User::create($validatedData);
-
         return redirect()->route('users')->with('success', 'Usuario creado.');
     }
 
@@ -88,23 +87,22 @@ class UserController extends Controller
      */
     public function edit(Request $request, User $user): Response
     {
-        return Inertia::render('Users/Edit', [
-            'can' => [
-                'restoreUser' => $request->user()->can('restore', User::class),
-                'deleteUser' => $request->user()->can('delete', User::class),
-            ],
-            'user' => [
-                'id' => $user->id,
-                'nombre' => $user->nombre,
-                'apellidos' => $user->apellidos,
-                'usuario' => $user->usuario,
-                'email' => $user->email,
-                'rol' => $user->rol,
-                'telefono' => $user->telefono,
-                'direccion' => $user->direccion,
-                'deleted_at' => $user->deleted_at,
-            ],    
-        ]);
+        $can = [
+            'restoreUser' => $request->user()->can('restore', User::class),
+            'deleteUser' => $request->user()->can('delete', User::class),
+        ];
+        $userData = [
+            'id' => $user->id,
+            'nombre' => $user->nombre,
+            'apellidos' => $user->apellidos,
+            'usuario' => $user->usuario,
+            'email' => $user->email,
+            'rol' => $user->rol,
+            'telefono' => $user->telefono,
+            'direccion' => $user->direccion,
+            'deleted_at' => $user->deleted_at,
+        ];
+        return Inertia::render('Users/Edit', compact('can', 'userData'));
     }
 
     /**
@@ -125,12 +123,10 @@ class UserController extends Controller
             'rol' => ['required', 'string'],
         ]);
 
-        $user->update($request->only(
-            'nombre', 'apellidos', 'usuario', 'email', 'telefono', 'direccion', 'rol'
-        ));
+        $user->update($request->only('nombre', 'apellidos', 'usuario', 'email', 'telefono', 'direccion', 'rol'));
 
-        if ($request->get('password')) {
-            $user->update(['password' => $request->get('password')]);
+        if ($request->filled('password')) {
+            $user->update(['password' => $request->input('password')]);
         }
 
         return Redirect::back()->with('success', 'Usuario actualizado.');

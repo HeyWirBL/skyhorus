@@ -8,25 +8,25 @@ import TrashedMessage from '@/Shared/TrashedMessage.vue'
 
 const props = defineProps({
   can: Object,
-  user: Object,
+  userData: Object,
 })
 
 const swal = inject('$swal')
 
 const form = useForm({
   _method: 'put',
-  nombre: props.user.nombre,
-  apellidos: props.user.apellidos,
-  usuario: props.user.usuario,
-  email: props.user.email,
+  nombre: props.userData.nombre,
+  apellidos: props.userData.apellidos,
+  usuario: props.userData.usuario,
+  email: props.userData.email,
   password: '',
-  telefono: props.user.telefono,
-  direccion: props.user.direccion,
-  rol: props.user.rol,
+  telefono: props.userData.telefono,
+  direccion: props.userData.direccion,
+  rol: props.userData.rol,
 })
 
 const update = () => {
-  form.post(`/users/${props.user.id}`, {
+  form.post(`/users/${props.userData.id}`, {
     onSuccess: () => form.reset('password'),
   })
 }
@@ -42,7 +42,7 @@ const destroy = () => {
     cancelButtonText: 'Cancelar',
   }).then((result) => {
     if (result.isConfirmed) {
-      form.delete(`/users/${props.user.id}`)
+      form.delete(`/users/${props.userData.id}`)
     }
   })
 }
@@ -58,7 +58,7 @@ const restore = () => {
     cancelButtonText: 'Cancelar',
   }).then((result) => {
     if (result.isConfirmed) {
-      form.put(`/users/${props.user.id}/restore`)
+      form.put(`/users/${props.userData.id}/restore`)
     }
   })
 }
@@ -71,7 +71,7 @@ const restore = () => {
       <Link class="text-yellow-400 hover:text-yellow-600" href="/users">Usuarios</Link>
       <span class="text-yellow-400 font-medium">&nbsp;/</span> {{ form.nombre }} {{ form.apellidos }}
     </h1>
-    <TrashedMessage v-if="user.deleted_at && can.restoreUser" class="mb-6" @restore="restore">Este usuario ha sido eliminado.</TrashedMessage>
+    <TrashedMessage v-if="userData.deleted_at && can.restoreUser" class="mb-6" @restore="restore">Este usuario ha sido eliminado.</TrashedMessage>
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
       <form @submit.prevent="update">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
@@ -92,7 +92,7 @@ const restore = () => {
           </SelectInput>
         </div>
         <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
-          <button v-if="!user.deleted_at && can.deleteUser" class="text-red-600 hover:underline" tabindex="-1" type="button" @click="destroy">Eliminar Usuario</button>
+          <button v-if="!userData.deleted_at && can.deleteUser" class="text-red-600 hover:underline" tabindex="-1" type="button" @click="destroy">Eliminar Usuario</button>
           <LoadingButton :loading="form.processing" class="btn-yellow ml-auto" type="submit">Actualizar</LoadingButton>
         </div>
       </form>

@@ -5,8 +5,12 @@ import debounce from 'lodash/debounce'
 import mapValues from 'lodash/mapValues'
 import pickBy from 'lodash/pickBy'
 import Icon from '@/Components/Icon.vue'
+import LoadingButton from '@/Components/LoadingButton.vue'
+import Modal from '@/Components/Modal.vue'
 import Pagination from '@/Components/Pagination.vue'
 import SearchFilter from '@/Components/SearchFilter.vue'
+import SelectInput from '@/Components/SelectInput.vue'
+import TextInput from '@/Components/TextInput.vue'
 
 const props = defineProps({
   can: Object,
@@ -16,6 +20,7 @@ const props = defineProps({
 
 const swal = inject('$swal')
 
+const createNewUser = ref(false)
 const selected = ref([])
 const selectAllUsers = ref(false)
 
@@ -25,7 +30,20 @@ const form = ref({
   trashed: props.filters.trashed,
 })
 
+/* Empty Form for Deleting */
 const userForm = useForm({})
+
+/* Form for creating new user */
+const createUserForm = useForm({
+  nombre: '',
+  apellidos: '',
+  usuario: '',
+  email: '',
+  password: '',
+  telefono: null,
+  direccion: null,
+  rol: '',
+})
 
 const isTrashed = computed(() => usePage().url.includes('trashed=only'))
 
@@ -70,6 +88,22 @@ const changeToggleAllUsers = () => {
 
 const reset = () => {
   form.value = mapValues(form.value, () => null)
+}
+
+const openModalCreateForm = () => {
+  createNewUser.value = true
+}
+
+const closeModalCreateForm = () => {
+  createNewUser.value = false
+  createUserForm.reset()
+}
+
+const store = () => {
+  createUserForm.post('/users', {
+    preserveScroll: true,
+    onSuccess: () => closeModalCreateForm(),
+  })
 }
 
 const removeSelectedItems = () => {
@@ -163,7 +197,7 @@ watch(
   <div>
     <Head title="Usuarios" />
     <h1 class="mb-8 text-3xl font-bold">Usuarios</h1>
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center mb-6">
       <SearchFilter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
         <label class="block text-gray-700">Rol:</label>
         <select v-model="form.role" class="form-select mt-1 w-full">
@@ -181,12 +215,13 @@ watch(
           usuarios
         </select>
       </SearchFilter>
-      <Link v-if="can.createUser" class="btn-yellow" href="/users/crear">
+    </div>
+
+    <div class="flex items-center mb-6">
+      <button v-if="can.createUser" class="btn-yellow mr-2" type="button" @click="openModalCreateForm">
         <span>Crear</span>
         <span class="hidden md:inline">&nbsp;Usuario</span>
-      </Link>
-    </div>
-    <div class="flex items-center mb-6">
+      </button>
       <button v-if="can.deleteUser && users.data.length !== 0 && !isTrashed" class="btn-secondary" type="button" :disabled="!selectAllUsers && !selected.length" @click="removeSelectedItems">
         <span>Borrar</span>
         <span class="hidden md:inline">&nbsp;Elementos Seleccionados</span>
@@ -196,6 +231,48 @@ watch(
         <span class="hidden md:inline">&nbsp;Elementos Seleccionados</span>
       </button>
     </div>
+
+    <!-- Create User Form Modal -->
+    <Modal :show="createNewUser">
+      <!-- Modal content -->
+      <div class="relative">
+        <!-- Modal header -->
+        <div class="flex items-start justify-between p-4 border-b rounded-t">
+          <h2 class="text-xl font-semibold">Crear Usuario</h2>
+          <button class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" type="button" @click="closeModalCreateForm">
+            <Icon class="w-4 h-4" name="close" aria-hidden="true" />
+            <span class="sr-only">Cerrar modal</span>
+          </button>
+        </div>
+      </div>
+      <!-- Modal body -->
+      <form @submit.prevent="store">
+        <!-- Inputs -->
+        <div class="flex flex-wrap -mb-8 -mr-6 p-8">
+          <TextInput v-model="createUserForm.nombre" :error="createUserForm.errors.nombre" class="pb-8 pr-6 w-full lg:w-1/2" label="Nombre" />
+          <TextInput v-model="createUserForm.apellidos" :error="createUserForm.errors.apellidos" class="pb-8 pr-6 w-full lg:w-1/2" label="Apellidos" />
+          <TextInput v-model="createUserForm.usuario" :error="createUserForm.errors.usuario" class="pb-8 pr-6 w-full lg:w-1/2" label="Usuario" />
+          <TextInput v-model="createUserForm.email" :error="createUserForm.errors.email" class="pb-8 pr-6 w-full lg:w-1/2" label="Correo electrónico" />
+          <TextInput v-model="createUserForm.password" :error="createUserForm.errors.password" class="pb-8 pr-6 w-full lg:w-1/2" type="password" autocomplete="new-password" label="Contraseña" />
+          <TextInput v-model="createUserForm.telefono" :error="createUserForm.errors.telefono" class="pb-8 pr-6 w-full lg:w-1/2" label="Teléfono" />
+          <TextInput v-model="createUserForm.direccion" :error="createUserForm.errors.telefono" class="pb-8 pr-6 w-full lg:w-1/2" label="Dirección" />
+          <SelectInput v-model="createUserForm.rol" :error="createUserForm.errors.rol" class="pb-8 pr-6 w-full lg:w-1/2" label="Rol">
+            <option value="">Por favor seleccione</option>
+            <option value="Administrador">Administrador</option>
+            <option value="Usuario">Usuario</option>
+            <option value="Colaborador">Colaborador</option>
+            <option value="Consultor">Consultor</option>
+            <option value="Editor">Editor</option>
+          </SelectInput>
+        </div>
+        <!-- Modal footer -->
+        <div class="flex items-center justify-end p-6 space-x-2 border-t border-gray-200">
+          <button class="btn-secondary" @click="closeModalCreateForm">Cancelar</button>
+          <LoadingButton :loading="createUserForm.processing" class="btn-yellow ml-3" type="submit">Guardar</LoadingButton>
+        </div>
+      </form>
+    </Modal>
+
     <div class="bg-white rounded-md shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
         <thead class="text-sm text-left font-bold uppercase bg-white border-b-2">
