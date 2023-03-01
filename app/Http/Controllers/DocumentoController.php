@@ -95,7 +95,7 @@ class DocumentoController extends Controller
                 $fileRoute = time().$filename;
                 $filesize = $file->getSize();
                 $filetype = $file->getClientOriginalExtension();
-                $file->storeAs('public/files/', $fileRoute);
+                /* $file->storeAs('public/files', $fileRoute); */ Storage::disk('public')->putFileAs('', $file, $fileRoute);
                 $document = new Documento();
                 $document->documento = '{"name": "'.$fileRoute.'", "size": "'.$filesize.'", "type": "'.$filetype.'", "usrName": "'.$filename.'" }';
                 $document->directorio_id = $request->directorio_id;
@@ -110,7 +110,9 @@ class DocumentoController extends Controller
    public function download($document)
     {
         if(Storage::disk('public')->exists($document)){
-            return Storage::disk('public')->download($document);
+           return Storage::disk('public')->download($document);
+           //return response('error');
+           
         }else{
             return response('¡404! No se pudo encontrar este recurso. Si ves este mensaje, por favor contacta con un administrador. <br/> Powered by: Nerd Rage!', 404);
         }
