@@ -222,7 +222,7 @@ watch(
             </td>
             <td class="px-6 py-4 border-solid border border-gray-200">
               <div class="flex items-center leading-snug">
-                <a class="text-yellow-400 hover:underline focus:text-yellow-500" :href="`/cromatografia-gases/${cromatografiaGas.documento}/descargar`">
+                <a class="text-yellow-400 hover:underline focus:text-yellow-500" :href="`/cromatografia-gases/${cromatografiaGas.documento.name}/descargar`">
                   {{ cromatografiaGas.documento }}
                 </a>
                 <span class="text-xs ml-2"> size </span>

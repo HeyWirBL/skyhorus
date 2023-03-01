@@ -266,7 +266,7 @@ watch(
             <td class="px-6 py-4 border-solid border border-gray-200">
               <div class="flex items-center leading-snug">
                 <a class="text-yellow-400 hover:underline focus:text-yellow-500" :href="`/documentos/${documento.documento.name}/descargar`">
-                  {{ documento.documento }}
+                  {{ documento.documento.usrName }}
                 </a>
                 <span class="text-xs ml-2"> size </span>
                 <span v-if="documento.deleted_at" title="Esta documento ha sido eliminado.">

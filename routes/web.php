@@ -206,6 +206,9 @@ Route::middleware('auth')->group(function () {
 
     Route::post('doc-pozos', [DocPozoController::class, 'store'])
         ->name('doc-pozos.store');
+    
+    Route::get('doc-pozos/{documento}/descargar', [DocPozoController::class, 'download'])
+        ->name('doc-pozos.download');
 
     Route::put('doc-pozos/{docPozo}/restore', [DocPozoController::class, 'restore'])
         ->name('doc-pozos.restore')->middleware('can:restore,App\Models\DocPozo');
@@ -286,6 +289,9 @@ Route::middleware('auth')->group(function () {
     Route::post('cromatografia-gases', [CromatografiaGasController::class, 'store'])
         ->name('cromatografia-gases.store');
 
+    Route::get('cromatografia-gases/{documento}/descargar', [CromatografiaGasController::class, 'download'])
+        ->name('cromatografia-gases.download');
+
     Route::put('cromatografia-gases/{cromatografiaGas}/restore', [CromatografiaGasController::class, 'restore'])
         ->name('cromatografia-gases.restore')
         ->middleware('can:restore,App\Models\CromatografiaGas');
@@ -325,6 +331,9 @@ Route::middleware('auth')->group(function () {
 
     Route::post('cromatografia-liquidas', [CromatografiaLiquidaController::class, 'store'])
         ->name('cromatografia-liquidas.store');
+
+    Route::get('cromatografia-liquidas/{documento}/descargar', [CromatografiaLiquidaController::class, 'download'])
+        ->name('cromatografia-liquidas.download');
 
     /* Gráficas Generales */
     Route::resource('graficas', GraficaController::class)->only(['index']);
