@@ -7,7 +7,6 @@ use App\Imports\ComponentePozosImport;
 use App\Models\ComponentePozo;
 use App\Models\ComponentePozoView;
 use App\Models\Pozo;
-use GrahamCampbell\ResultType\Success;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Http\Request;
@@ -68,6 +67,76 @@ class ComponentePozoController extends Controller
         return Inertia::render('ComponentePozos/Create', [
             'pozos' => $pozos,
         ]);
+    }
+
+    /**
+     * Store a newly created componente pozo in database.
+     * 
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function store(Request $request): RedirectResponse
+    {
+        $validatedData = $request->validate([
+            'dioxido_carbono' => ['required', 'max:50'],
+            'pe_dioxido_carbono' => ['required', 'max:50'],
+            'mo_dioxido_carbono' => ['required', 'max:50'],
+            'den_dioxido_carbono' => ['required', 'max:50'],
+            'acido_sulfidrico' => ['required', 'max:50'],
+            'pe_acido_sulfidrico' => ['required', 'max:50'],
+            'mo_acido_sulfidrico' => ['required', 'max:50'],
+            'den_acido_sulfidrico' => ['required', 'max:50'],
+            'nitrogeno' => ['required', 'max:50'],
+            'pe_nitrogeno' => ['required', 'max:50'],
+            'mo_nitrogeno' => ['required', 'max:50'],
+            'den_nitrogeno' => ['required', 'max:50'],
+            'metano' => ['required', 'max:50'],
+            'pe_metano' => ['required', 'max:50'],
+            'mo_metano' => ['required', 'max:50'],
+            'den_metano' => ['required', 'max:50'],
+            'etano' => ['required', 'max:50'],
+            'pe_etano' => ['required', 'max:50'],
+            'mo_etano' => ['required', 'max:50'],
+            'den_etano' => ['required', 'max:50'],
+            'propano' => ['required', 'max:50'],
+            'pe_propano' => ['required', 'max:50'],
+            'mo_propano' => ['required', 'max:50'],
+            'den_propano' => ['required', 'max:50'],
+            'iso_butano' => ['required', 'max:50'],
+            'pe_iso_butano' => ['required', 'max:50'],
+            'mo_iso_butano' => ['required', 'max:50'],
+            'den_iso_butano' => ['required', 'max:50'],
+            'n_butano' => ['required', 'max:50'],
+            'pe_n_butano' => ['required', 'max:50'],
+            'mo_n_butano' => ['required', 'max:50'],
+            'den_n_butano' => ['required', 'max:50'],
+            'iso_pentano' => ['required', 'max:50'],
+            'pe_iso_pentano' => ['required', 'max:50'],
+            'mo_iso_pentano' => ['required', 'max:50'],
+            'den_iso_pentano' => ['required', 'max:50'],
+            'n_pentano' => ['required', 'max:50'],
+            'pe_n_pentano' => ['required', 'max:50'],
+            'mo_n_pentano' => ['required', 'max:50'],
+            'den_n_pentano' => ['required', 'max:50'],
+            'n_exano' => ['required', 'max:50'],
+            'pe_n_exano' => ['required', 'max:50'],
+            'mo_n_exano' => ['required', 'max:50'],
+            'den_n_exano' => ['required', 'max:50'],            
+            'fecha_recep' => ['required', 'date'],
+            'pozo_id' => [
+                'required',
+                Rule::exists('pozos', 'id'),
+            ],
+            'fecha_analisis' => ['required', 'date'],
+            'no_determinacion' => ['required', 'max:100'],
+            'equipo_utilizado' => ['required', 'max:100'],
+            'met_laboratorio' => ['required', 'max:255'],
+            'observaciones' => ['nullable'],
+            'nombre_componente' => ['required', 'max:100'],
+            'fecha_muestreo' => ['nullable', 'date'],
+        ]);
+        
+        ComponentePozo::create($validatedData);        
+        return Redirect::back()->with('success', 'Componentes de pozo creados.');
     }
 
     /**

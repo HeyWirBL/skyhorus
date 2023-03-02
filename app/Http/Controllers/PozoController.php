@@ -31,7 +31,7 @@ class PozoController extends Controller
 
         $pozos = $query->paginate(10)->through(fn ($p) => [
             'id' => $p->id,
-            'punto_muestreo' => $pozo->punto_muestreo,
+            'punto_muestreo' => $p->punto_muestreo,
             'fecha_hora' => $p->fecha_hora,
             'identificador' => $p->identificador,
             'presion_kgcm2' => $p->presion_kgcm2,
@@ -259,7 +259,7 @@ class PozoController extends Controller
             'temp_F' => 'required|max:150',
             'volumen_cm3' => ['required', 'max:150'],
             'volumen_lts' => ['required', 'max:150'],
-            'observaciones' => ['nullable'],
+            'observaciones' => ['nullable', 'max:150'],
             'nombre_pozo' => ['required', 'max:150'],
         ]);
 

@@ -218,6 +218,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('componente-pozos/crear', [ComponentePozoController::class, 'create'])
         ->name('componente-pozos.create')->middleware('can:create,App\Models\ComponentePozo');
+
+    Route::post('componente-pozos', [ComponentePozoController::class, 'store'])
+        ->name('componente-pozos.store')->middleware('can:create,App\Models\ComponentePozo');
         
     Route::get('componente-pozos/{componentePozo}', [ComponentePozoController::class, 'show'])
         ->name('componente-pozos.show');
@@ -242,7 +245,7 @@ Route::middleware('auth')->group(function () {
         ->name('componente-pozos.destroyAll')
         ->middleware('can:delete,App\Models\ComponentePozo');
 
-    Route::post('/componente-pozos', function (Request $request) {
+    Route::post('/componente-pozos/import', function (Request $request) {
             $file = $request->file('file');
         
             // Parse the Excel file and extract the data
@@ -262,7 +265,7 @@ Route::middleware('auth')->group(function () {
     Route::get('componente-pozos/export/{componentePozo}', [ComponentePozoController::class, 'export'])
         ->name('componente-pozos.export');
     
-    Route::post('componente-pozos', [ComponentePozoController::class, 'import'])
+    Route::post('componente-pozos/import', [ComponentePozoController::class, 'import'])
         ->name('componente-pozos.import');
 
     /* Cromatografías: Gas */
