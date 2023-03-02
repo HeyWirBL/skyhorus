@@ -1,9 +1,18 @@
 <script setup>
-import { computed } from 'vue'
-import { Link, usePage } from '@inertiajs/vue3'
-import Icon from '@/Components/Icon.vue'
-
+import { computed, ref, watch } from 'vue'
+import { Link, usePage, router } from '@inertiajs/vue3'
+import Icon from '@/Components/Icon.vue';
+import Dropside from '@/Components/Dropside.vue';
 const currentUrl = computed(() => usePage().url.substring(1))
+
+const props = defineProps({
+    datefilter: Object,
+});
+
+const df = ref({
+  month: props.datefilter,
+  year: props.datefilter,
+});
 
 const isUrl = (...urls) => {
   if (urls[0] === '') {
@@ -11,23 +20,30 @@ const isUrl = (...urls) => {
   }
   return urls.filter((url) => currentUrl.value.startsWith(url)).length
 }
+
+watch( df.value, () => {
+  router.get('/componente-pozos',df.value,{ preserveState: true, replace: true, preserveScroll: true })
+}
+)
+
 </script>
 
 <script>
 export default {
-  data() {
-    return {
-      show: true,
-    }
-  },
-  watch: {
-    '$page.props.auth.can': {
-      handler() {
-        this.show = true
-      },
-      deep: true,
+    data() {
+        return {
+            show: true,
+        };
     },
-  },
+    watch: {
+        "$page.props.auth.can": {
+            handler() {
+                this.show = true;
+            },
+            deep: true,
+        },
+    },
+    components: { Dropside }
 }
 </script>
 
@@ -132,6 +148,46 @@ export default {
             <div class="ml-2" :class="isUrl('componente-pozos') ? 'text-white' : 'text-zinc-300 group-hover:text-white'">Componentes</div>
           </Link>
         </div>
+        <Dropside :auto-close="false">
+          <template #default>
+            <div class="group flex text-base items-center p-2 pl-11 mt-1 rounded-md text-white justify-between hover:cursor-pointer hover:bg-zinc-700" :class="isUrl('componente-pozos') ? '' : 'hidden'">
+              Filtrar
+              <Icon class="w-5 h-5 ml-20 fill-white align-middle" name="cheveron-right"/>
+            </div>
+          </template>
+          <template #dropdown>
+            <div class="flex px-4 py-4 bg-zinc-800 rounded shadow-lg">
+              <div class="flex flex-col mx-2">
+                <label class="text-zinc-300 mb-2">Año:</label>
+                <select class="rounded-lg bg-zinc-500 text-zinc-300" v-model="df.year">
+                  <option :value="null"></option>
+                  <option value="2020">2020</option>
+                  <option value="2021">2021</option>
+                  <option value="2020">2022</option>
+                  <option value="2023">2023</option>
+                </select>
+              </div>
+              <div class="flex flex-col mx-2">
+                <label class="text-zinc-300 mb-2">Mes:</label>
+                <select class="rounded-lg bg-zinc-500 text-zinc-300" v-model="df.month">
+                  <option :value="null"></option>
+                  <option value="1">Enero</option>
+                  <option value="2">Febrero</option>
+                  <option value="3">Marzo</option>
+                  <option value="4">Abril</option>
+                  <option value="5">Mayo</option>
+                  <option value="6">Junio</option>
+                  <option value="7">Julio</option>
+                  <option value="8">Agosto</option>
+                  <option value="9">Septiembre</option>
+                  <option value="10">Octubre</option>
+                  <option value="11">Noviembre</option>
+                  <option value="12">Diciembre</option>
+                </select>
+              </div>
+            </div>
+          </template>
+        </Dropside>
         <!-- End Well Components Catalog -->
       </div>
     </div>

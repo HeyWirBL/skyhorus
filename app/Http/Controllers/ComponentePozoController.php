@@ -34,8 +34,9 @@ class ComponentePozoController extends Controller
         ];
 
         $filters = $request->all('search', 'trashed');
+        $dateFilter = $request->all('year', 'month');
 
-        $componentePozos = $componentePozo->query()->filter($filters)
+        $componentePozos = $componentePozo->query()->filter($filters)->datefilter($dateFilter)
             ->orderByDesc('id')
             ->with('pozo')
             ->paginate(10)
@@ -45,6 +46,7 @@ class ComponentePozoController extends Controller
                 'equipo_utilizado' => $cp->equipo_utilizado,
                 'nombre_componente' => $cp->nombre_componente,
                 'fecha_recep' => $cp->fecha_recep,
+                'fecha_muestreo' =>$cp->fecha_muestreo,
                 'deleted_at' => $cp->deleted_at,
                 'pozo' => optional($cp->pozo)->only('nombre_pozo', 'deleted_at'),
             ]); 
