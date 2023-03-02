@@ -113,21 +113,9 @@ class DirectorioController extends Controller
     /**
      * Show the form for editing an specific folder.
      */
-    public function edit(Directorio $directorio): Response
+    public function edit(Directorio $directorio)
     {
-        $can = [
-            'restoreDirectorio' => Auth::user()->can('restore', Directorio::class),
-            'deleteDirectorio' => Auth::user()->can('delete', Directorio::class),
-        ];
-
-        $directorioData = [
-            'id' => $directorio->id,
-            'nombre_dir' => $directorio->nombre_dir,
-            'fecha_dir' => $directorio->fecha_dir,
-            'deleted_at' => $directorio->deleted_at,             
-        ];
-
-        return Inertia::render('Directorios/Edit', compact('can', 'directorioData'));
+        //
     }
 
     /**
