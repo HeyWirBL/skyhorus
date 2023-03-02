@@ -293,9 +293,9 @@ class ComponentePozoController extends Controller
             'no_determinacion' => ['required', 'max:100'],
             'equipo_utilizado' => ['required', 'max:100'],
             'met_laboratorio' => ['required', 'max:255'],
-            'observaciones' => ['required'],
+            'observaciones' => ['nullable'],
             'nombre_componente' => ['required', 'max:100'],
-            'fecha_muestreo' => ['required', 'date'],
+            'fecha_muestreo' => ['nullable', 'date'],
         ]);
 
         $componentePozo->update($validated);

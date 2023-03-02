@@ -137,6 +137,64 @@ const createComPozoForm = useForm({
   fecha_muestreo: null,
 })
 
+const editComPozoForm = useForm({
+  _method: 'put',
+  id: '',
+  dioxido_carbono: '',
+  pe_dioxido_carbono: '',
+  mo_dioxido_carbono: '',
+  den_dioxido_carbono: '',
+  acido_sulfidrico: '',
+  pe_acido_sulfidrico: '',
+  mo_acido_sulfidrico: '',
+  den_acido_sulfidrico: '',
+  nitrogeno: '',
+  pe_nitrogeno: '',
+  mo_nitrogeno: '',
+  den_nitrogeno: '',
+  metano: '',
+  pe_metano: '',
+  mo_metano: '',
+  den_metano: '',
+  etano: '',
+  pe_etano: '',
+  mo_etano: '',
+  den_etano: '',
+  propano: '',
+  pe_propano: '',
+  mo_propano: '',
+  den_propano: '',
+  iso_butano: '',
+  pe_iso_butano: '',
+  mo_iso_butano: '',
+  den_iso_butano: '',
+  n_butano: '',
+  pe_n_butano: '',
+  mo_n_butano: '',
+  den_n_butano: '',
+  iso_pentano: '',
+  pe_iso_pentano: '',
+  mo_iso_pentano: '',
+  den_iso_pentano: '',
+  n_pentano: '',
+  pe_n_pentano: '',
+  mo_n_pentano: '',
+  den_n_pentano: '',
+  n_exano: '',
+  pe_n_exano: '',
+  mo_n_exano: '',
+  den_n_exano: '',
+  pozo_id: '',
+  fecha_recep: '',
+  fecha_analisis: '',
+  no_determinacion: '',
+  equipo_utilizado: '',
+  met_laboratorio: '',
+  observaciones: '',
+  nombre_componente: '',
+  fecha_muestreo: '',
+})
+
 const componentePozos = computed(() => props.pozo.componentePozos)
 
 const selectedComponentePozo = computed(() => {
@@ -216,6 +274,67 @@ const openModalCreateComPozoForm = () => {
   nextTick(() => createInputRef.value.focus())
 }
 
+const openModalEditComPozoForm = (compozo) => {
+  // Set form field values
+  editComPozoForm.id = compozo.id
+  editComPozoForm.dioxido_carbono = compozo.dioxido_carbono
+  editComPozoForm.pe_dioxido_carbono = compozo.pe_dioxido_carbono
+  editComPozoForm.mo_dioxido_carbono = compozo.mo_dioxido_carbono
+  editComPozoForm.den_dioxido_carbono = compozo.den_dioxido_carbono
+  editComPozoForm.acido_sulfidrico = compozo.acido_sulfidrico
+  editComPozoForm.pe_acido_sulfidrico = compozo.pe_acido_sulfidrico
+  editComPozoForm.mo_acido_sulfidrico = compozo.mo_acido_sulfidrico
+  editComPozoForm.den_acido_sulfidrico = compozo.den_acido_sulfidrico
+  editComPozoForm.nitrogeno = compozo.nitrogeno
+  editComPozoForm.pe_nitrogeno = compozo.pe_nitrogeno
+  editComPozoForm.mo_nitrogeno = compozo.mo_nitrogeno
+  editComPozoForm.den_nitrogeno = compozo.den_nitrogeno
+  editComPozoForm.metano = compozo.metano
+  editComPozoForm.pe_metano = compozo.pe_metano
+  editComPozoForm.mo_metano = compozo.mo_metano
+  editComPozoForm.den_metano = compozo.den_metano
+  editComPozoForm.etano = compozo.etano
+  editComPozoForm.pe_etano = compozo.pe_etano
+  editComPozoForm.mo_etano = compozo.mo_etano
+  editComPozoForm.den_etano = compozo.den_etano
+  editComPozoForm.propano = compozo.propano
+  editComPozoForm.pe_propano = compozo.pe_propano
+  editComPozoForm.mo_propano = compozo.mo_propano
+  editComPozoForm.den_propano = compozo.den_propano
+  editComPozoForm.iso_butano = compozo.iso_butano
+  editComPozoForm.pe_iso_butano = compozo.pe_iso_butano
+  editComPozoForm.mo_iso_butano = compozo.mo_iso_butano
+  editComPozoForm.den_iso_butano = compozo.den_iso_butano
+  editComPozoForm.n_butano = compozo.n_butano
+  editComPozoForm.pe_n_butano = compozo.pe_n_butano
+  editComPozoForm.mo_n_butano = compozo.mo_n_butano
+  editComPozoForm.den_n_butano = compozo.den_n_butano
+  editComPozoForm.iso_pentano = compozo.iso_pentano
+  editComPozoForm.pe_iso_pentano = compozo.pe_iso_pentano
+  editComPozoForm.mo_iso_pentano = compozo.mo_iso_pentano
+  editComPozoForm.den_iso_pentano = compozo.den_iso_pentano
+  editComPozoForm.n_pentano = compozo.n_pentano
+  editComPozoForm.pe_n_pentano = compozo.pe_n_pentano
+  editComPozoForm.mo_n_pentano = compozo.mo_n_pentano
+  editComPozoForm.den_n_pentano = compozo.den_n_pentano
+  editComPozoForm.n_exano = compozo.n_exano
+  editComPozoForm.pe_n_exano = compozo.pe_n_exano
+  editComPozoForm.mo_n_exano = compozo.mo_n_exano
+  editComPozoForm.den_n_exano = compozo.den_n_exano
+  editComPozoForm.pozo_id = props.pozo.id
+  editComPozoForm.fecha_recep = compozo.fecha_recep
+  editComPozoForm.fecha_analisis = compozo.fecha_analisis
+  editComPozoForm.no_determinacion = compozo.no_determinacion
+  editComPozoForm.equipo_utilizado = compozo.equipo_utilizado
+  editComPozoForm.met_laboratorio = compozo.met_laboratorio
+  editComPozoForm.observaciones = compozo.observaciones
+  editComPozoForm.nombre_componente = compozo.nombre_componente
+  editComPozoForm.fecha_muestreo = compozo.fecha_muestreo
+
+  editComPozo.value = true
+  nextTick(() => editInputRef.value.focus())
+}
+
 const openModalMessageMetLab = (id) => {
   selectedCompozo.value = componentePozos.value.data.find((compozo) => compozo.id === id)
   showMessageMetLab.value = true
@@ -235,6 +354,11 @@ const closeModalCreateComPozoForm = () => {
   createNewComPozo.value = false
 }
 
+const closeModalEditComPozoForm = () => {
+  editComPozo.value = false
+  editComPozoForm.reset()
+}
+
 const closeModalMessageMetLab = () => {
   showMessageMetLab.value = false
 }
@@ -252,6 +376,19 @@ const store = () => {
     preserveScroll: true,
     onSuccess: () => closeModalCreateComPozoForm(),
     onError: () => createInputRef.value.focus(),
+  })
+}
+
+const update = () => {
+  editComPozoForm.post(`/componente-pozos/${editComPozoForm.id}`, {
+    preserveScroll: true,
+    onSuccess: () => closeModalEditComPozoForm(),
+    onError: () => editInputRef.value.focus(),
+    onFinish: () => {
+      if (!editComPozoForm.hasErrors) {
+        editComPozoForm.reset()
+      }
+    },
   })
 }
 
@@ -407,6 +544,103 @@ const removeSelectedItems = () => {
       <!-- Modal footer -->
     </Modal>
 
+    <!-- Edit Com Pozo Form Modal -->
+    <Modal :show="editComPozo" style="max-width: 1015px">
+      <!-- Modal content -->
+      <div class="relative">
+        <!-- Modal header -->
+        <div class="flex items-start justify-between p-4 border-b rounded-t">
+          <h2 class="text-xl font-semibold">Editar Componentes Pozo [{{ editComPozoForm.id }}]</h2>
+          <button class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" type="button" @click="closeModalEditComPozoForm">
+            <Icon class="w-4 h-4" name="close" aria-hidden="true" />
+            <span class="sr-only">Cerrar modal</span>
+          </button>
+        </div>
+      </div>
+      <!-- Modal body -->
+      <form @submit.prevent="update">
+        <div class="relative flex flex-wrap p-4 overflow-y-auto" style="height: 513.6px">
+          <TextInput ref="editInputRef" v-model="editComPozoForm.nombre_componente" :error="editComPozoForm.errors.nombre_componente" class="pb-4 pr-6 w-full lg:w-1/2" label="Nombre del grupo de componentes" />
+          <div class="pb-4 pr-6 w-full lg:w-1/2">
+            <label class="form-label" for="text-input-pozo">Pozo/Instalación:</label>
+            <div class="pt-2">
+              <span class="block">{{ pozo.nombre_pozo }}</span>
+            </div>
+            <input id="text-input-pozo" type="hidden" :value="pozo.id" />
+          </div>
+          <TextInput v-model="editComPozoForm.dioxido_carbono" :error="editComPozoForm.errors.dioxido_carbono" class="pb-4 pr-6" label="Dióxido de carbono - PM" />
+          <TextInput v-model="editComPozoForm.pe_dioxido_carbono" :error="editComPozoForm.errors.pe_dioxido_carbono" class="pb-4 pr-6" label="Dióxido de carbono - % Peso" />
+          <TextInput v-model="editComPozoForm.mo_dioxido_carbono" :error="editComPozoForm.errors.mo_dioxido_carbono" class="pb-4 pr-6" label="Dióxido de carbono - % MOL" />
+          <TextInput v-model="editComPozoForm.den_dioxido_carbono" :error="editComPozoForm.errors.den_dioxido_carbono" class="pb-4 pr-6" label="Dióxido de carbono - Densidad" />
+
+          <TextInput v-model="editComPozoForm.acido_sulfidrico" :error="editComPozoForm.errors.acido_sulfidrico" class="pb-4 pr-6" label="Ácido sulfhídrico - PM" />
+          <TextInput v-model="editComPozoForm.pe_acido_sulfidrico" :error="editComPozoForm.errors.pe_acido_sulfidrico" class="pb-4 pr-6" label="Ácido sulfhídrico - % Peso" />
+          <TextInput v-model="editComPozoForm.mo_acido_sulfidrico" :error="editComPozoForm.errors.mo_acido_sulfidrico" class="pb-4 pr-6" label="Ácido sulfhídrico - % MOL" />
+          <TextInput v-model="editComPozoForm.den_acido_sulfidrico" :error="editComPozoForm.errors.den_acido_sulfidrico" class="pb-4 pr-6" label="Ácido sulfhídrico - Densidad" />
+
+          <TextInput v-model="editComPozoForm.nitrogeno" :error="editComPozoForm.errors.nitrogeno" class="pb-4 pr-6" label="Nitrógeno - PM" />
+          <TextInput v-model="editComPozoForm.pe_nitrogeno" :error="editComPozoForm.errors.pe_nitrogeno" class="pb-4 pr-6" label="Nitrógeno - % Peso" />
+          <TextInput v-model="editComPozoForm.mo_nitrogeno" :error="editComPozoForm.errors.mo_nitrogeno" class="pb-4 pr-6" label="Nitrógeno - % MOL" />
+          <TextInput v-model="editComPozoForm.den_nitrogeno" :error="editComPozoForm.errors.den_nitrogeno" class="pb-4 pr-6" label="Nitrógeno - Densidad" />
+
+          <TextInput v-model="editComPozoForm.metano" :error="editComPozoForm.errors.metano" class="pb-4 pr-6" label="Metano - PM" />
+          <TextInput v-model="editComPozoForm.pe_metano" :error="editComPozoForm.errors.pe_metano" class="pb-4 pr-6" label="Metano - % Peso" />
+          <TextInput v-model="editComPozoForm.mo_metano" :error="editComPozoForm.errors.mo_metano" class="pb-4 pr-6" label="Metano - % MOL" />
+          <TextInput v-model="editComPozoForm.den_metano" :error="editComPozoForm.errors.den_metano" class="pb-4 pr-6" label="Metano - Densidad" />
+
+          <TextInput v-model="editComPozoForm.etano" :error="editComPozoForm.errors.etano" class="pb-4 pr-6" label="Etano - PM" />
+          <TextInput v-model="editComPozoForm.pe_etano" :error="editComPozoForm.errors.pe_etano" class="pb-4 pr-6" label="Etano - % Peso" />
+          <TextInput v-model="editComPozoForm.mo_etano" :error="editComPozoForm.errors.mo_etano" class="pb-4 pr-6" label="Etano - % MOL" />
+          <TextInput v-model="editComPozoForm.den_etano" :error="editComPozoForm.errors.den_etano" class="pb-4 pr-6" label="Etano - Densidad" />
+
+          <TextInput v-model="editComPozoForm.propano" :error="editComPozoForm.errors.propano" class="pb-4 pr-6" label="Propano - PM" />
+          <TextInput v-model="editComPozoForm.pe_propano" :error="editComPozoForm.errors.pe_propano" class="pb-4 pr-6" label="Propano - % Peso" />
+          <TextInput v-model="editComPozoForm.mo_propano" :error="editComPozoForm.errors.mo_propano" class="pb-4 pr-6" label="Propano - % MOL" />
+          <TextInput v-model="editComPozoForm.den_propano" :error="editComPozoForm.errors.den_propano" class="pb-4 pr-6" label="Propano - Densidad" />
+
+          <TextInput v-model="editComPozoForm.iso_butano" :error="editComPozoForm.errors.iso_butano" class="pb-4 pr-6" label="Iso-Butano - PM" />
+          <TextInput v-model="editComPozoForm.pe_iso_butano" :error="editComPozoForm.errors.pe_iso_butano" class="pb-4 pr-6" label="Iso-Butano - % Peso" />
+          <TextInput v-model="editComPozoForm.mo_iso_butano" :error="editComPozoForm.errors.mo_iso_butano" class="pb-4 pr-6" label="Iso-Butano - % MOL" />
+          <TextInput v-model="editComPozoForm.den_iso_butano" :error="editComPozoForm.errors.den_iso_butano" class="pb-4 pr-6" label="Iso-Butano - Densidad" />
+
+          <TextInput v-model="editComPozoForm.n_butano" :error="editComPozoForm.errors.n_butano" class="pb-4 pr-6" label="n-Butano - PM" />
+          <TextInput v-model="editComPozoForm.pe_n_butano" :error="editComPozoForm.errors.pe_n_butano" class="pb-4 pr-6" label="n-Butano - % Peso" />
+          <TextInput v-model="editComPozoForm.mo_n_butano" :error="editComPozoForm.errors.mo_n_butano" class="pb-4 pr-6" label="n-Butano - % MOL" />
+          <TextInput v-model="editComPozoForm.den_n_butano" :error="editComPozoForm.errors.den_n_butano" class="pb-4 pr-6" label="n-Butano - Densidad" />
+
+          <TextInput v-model="editComPozoForm.iso_pentano" :error="editComPozoForm.errors.iso_pentano" class="pb-4 pr-6" label="Iso-Pentano - PM" />
+          <TextInput v-model="editComPozoForm.pe_iso_pentano" :error="editComPozoForm.errors.pe_iso_pentano" class="pb-4 pr-6" label="Iso-Pentano - % Peso" />
+          <TextInput v-model="editComPozoForm.mo_iso_pentano" :error="editComPozoForm.errors.mo_iso_pentano" class="pb-4 pr-6" label="Iso-Pentano - % MOL" />
+          <TextInput v-model="editComPozoForm.den_iso_pentano" :error="editComPozoForm.errors.den_iso_pentano" class="pb-4 pr-6" label="Iso-Pentano - Densidad" />
+
+          <TextInput v-model="editComPozoForm.n_pentano" :error="editComPozoForm.errors.n_pentano" class="pb-4 pr-6" label="n-Pentano - PM" />
+          <TextInput v-model="editComPozoForm.pe_n_pentano" :error="editComPozoForm.errors.pe_n_pentano" class="pb-4 pr-6" label="n-Pentano - % Peso" />
+          <TextInput v-model="editComPozoForm.mo_n_pentano" :error="editComPozoForm.errors.mo_n_pentano" class="pb-4 pr-6" label="n-Pentano - % MOL" />
+          <TextInput v-model="editComPozoForm.den_n_pentano" :error="editComPozoForm.errors.den_n_pentano" class="pb-4 pr-6" label="n-Pentano - Densidad" />
+
+          <TextInput v-model="editComPozoForm.n_exano" :error="editComPozoForm.errors.n_exano" class="pb-4 pr-6" label="**n-Exano - PM" />
+          <TextInput v-model="editComPozoForm.pe_n_exano" :error="editComPozoForm.errors.pe_n_exano" class="pb-4 pr-6" label="**n-Exano - % Peso" />
+          <TextInput v-model="editComPozoForm.mo_n_exano" :error="editComPozoForm.errors.mo_n_exano" class="pb-4 pr-6" label="**n-Exano - % MOL" />
+          <TextInput v-model="editComPozoForm.den_n_exano" :error="editComPozoForm.errors.den_n_exano" class="pb-4 pr-6" label="**n-Exano - Densidad" />
+
+          <TextInput v-model="editComPozoForm.fecha_recep" :error="editComPozoForm.errors.fecha_recep" class="pb-4 pr-6 w-full lg:w-1/2" type="date" label="Fecha de recepción" />
+          <TextInput v-model="editComPozoForm.fecha_analisis" :error="editComPozoForm.errors.fecha_analisis" class="pb-4 pr-6 w-full lg:w-1/2" type="date" label="Fecha de análisis" />
+          <TextInput v-model="editComPozoForm.fecha_muestreo" :error="editComPozoForm.errors.fecha_muestreo" class="pb-4 pr-6 w-full lg:w-1/2" type="date" label="Fecha de muestreo" />
+          <TextInput v-model="editComPozoForm.no_determinacion" :error="editComPozoForm.errors.no_determinacion" class="pb-4 pr-6 w-full lg:w-1/2" label="Número de determinación" />
+
+          <TextInput v-model="editComPozoForm.equipo_utilizado" :error="editComPozoForm.errors.equipo_utilizado" class="pb-4 pr-6 w-full lg:w-1/2" label="Equipo utilizado" />
+          <TextInput v-model="editComPozoForm.met_laboratorio" :error="editComPozoForm.errors.met_laboratorio" class="pb-4 pr-6 w-full lg:w-1/2" label="Método de laboratorio" />
+
+          <TextareaInput v-model="editComPozoForm.observaciones" :error="editComPozoForm.errors.observaciones" class="pb-8 pr-6 w-full" label="Observaciones" placeholder="Ingresar observaciones adicionales" />
+        </div>
+        <div class="flex flex-shrink-0 flex-wrap items-center justify-end p-4 space-x-2 border-t border-gray-200">
+          <LoadingButton :loading="editComPozoForm.processing" class="btn-yellow mr-2" type="submit">Guardar</LoadingButton>
+          <button class="btn-secondary" @click="closeModalEditComPozoForm">Cancelar</button>
+        </div>
+      </form>
+      <!-- Modal footer -->
+    </Modal>
+
     <Modal :show="showMessageMetLab" @close="closeModalMessageMetLab">
       <div class="relative">
         <!-- Modal Header -->
@@ -517,7 +751,7 @@ const removeSelectedItems = () => {
             <tr class="bg-white">
               <td class="p-4 whitespace-nowrap border-solid border border-gray-200">
                 <span v-if="can.editComponentePozo" class="inline-block whitespace-nowrap" title="Editar componentes de pozo">
-                  <button class="flex items-center mr-2" tabindex="-1" type="button" @click="openModalEditForm(pozo)">
+                  <button class="flex items-center mr-2" tabindex="-1" type="button" @click="openModalEditComPozoForm(compozo)">
                     <Icon class="flex-shrink-0 w-4 h-4 fill-yellow-400" name="pencil" />
                   </button>
                 </span>
