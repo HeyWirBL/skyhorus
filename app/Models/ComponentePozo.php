@@ -94,5 +94,18 @@ class ComponentePozo extends Model
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {
             $trashed === 'only' ? $query->onlyTrashed() : '';
         });
-    }    
+    }
+    
+    public function scopeDatefilter($query, array $filters)
+    {
+        $query->when($filters['year'] ?? null, function($query, $year){
+            $query->where(function($query) use ($year){
+                $query->whereYear('fecha_muestreo', $year);
+            });
+        })->when($filters['month'] ?? null, function($query, $month){
+            $query->where(function($query) use ($month){
+                $query->whereMonth('fecha_muestreo', $month);
+            });
+        });
+    }
 }

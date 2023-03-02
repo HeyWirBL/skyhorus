@@ -11,6 +11,7 @@ import Pagination from '@/Components/Pagination.vue'
 const props = defineProps({
   can: Object,
   filters: Object,
+  datefilter: Object,
   componentePozos: Object,
 })
 
@@ -22,6 +23,10 @@ const selectAllComPozos = ref(false)
 const form = ref({
   search: props.filters.search,
   trashed: props.filters.trashed,
+})
+const df = ref({
+  month: props.datefilter, 
+  year: props.datefilter,
 })
 
 const componentePozoForm = useForm({})
@@ -157,6 +162,12 @@ watch(
     deep: true,
   },
 )
+watch(df.value, () => {
+  router.get('/componente-pozos', df.value, {
+    preserveState: true,
+    preserveScroll: true,
+  })
+})
 </script>
 
 <template>
@@ -200,7 +211,7 @@ watch(
             <th scope="col" class="px-6 py-3 border-solid border border-gray-200">Pozo/Instalación</th>
             <th scope="col" class="px-6 py-3 border-solid border border-gray-200">Nombre del Componente</th>
             <th scope="col" class="px-6 py-3 border-solid border border-gray-200">Equipo Utilizado</th>
-            <th scope="col" class="px-6 py-3 border-solid border border-gray-200" colspan="2">Fecha de Recepción</th>
+            <th scope="col" class="px-6 py-3 border-solid border border-gray-200" colspan="2">Fecha de Muestreo</th>
           </tr>
         </thead>
         <tbody>
@@ -234,7 +245,7 @@ watch(
               <span class="block">{{ componentePozo.equipo_utilizado }}</span>
             </td>
             <td class="px-6 py-4">
-              <span class="block">{{ componentePozo.fecha_recep }}</span>
+              <span class="block">{{ componentePozo.fecha_muestreo }}</span>
             </td>
             <td class="w-px">
               <Link class="flex items-center px-6" :href="`/componente-pozos/${componentePozo.id}`" tabindex="-1">
