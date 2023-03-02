@@ -47,6 +47,7 @@ const createUserForm = useForm({
   rol: '',
 })
 
+/* Form for editing a user */ 
 const editUserForm = useForm({
   _method: 'put',
   id: '',
@@ -316,7 +317,7 @@ watch(
           </SelectInput>
         </div>
         <!-- Modal footer -->
-        <div class="flex items-center justify-end p-6 space-x-2 border-t border-gray-200">
+        <div class="flex items-center justify-end p-4 space-x-2 border-t border-gray-200">
           <LoadingButton :loading="createUserForm.processing" class="btn-yellow mr-2" type="submit">Guardar</LoadingButton>
           <button class="btn-secondary" @click="closeModalCreateForm">Cancelar</button>
         </div>
@@ -356,7 +357,7 @@ watch(
           </SelectInput>
         </div>
         <!-- Modal footer -->
-        <div class="flex items-center justify-end p-6 space-x-2 border-t border-gray-200">
+        <div class="flex items-center justify-end p-4 space-x-2 border-t border-gray-200">
           <LoadingButton :loading="editUserForm.processing" class="btn-yellow mr-2" type="submit">Guardar</LoadingButton>
           <button class="btn-secondary" @click="closeModalEditForm">Cancelar</button>
         </div>

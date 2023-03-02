@@ -30,12 +30,16 @@ const form = ref({
   trashed: props.filters.trashed,
 })
 
-const dirForm = useForm({
+const dirForm = useForm({})
+
+const createDirForm = useForm({
   nombre_dir: '',
   fecha_dir: '',
 })
 
-const createDirForm = useForm({
+const editDirForm = useForm({
+  _method: 'put',
+  id: '',
   nombre_dir: '',
   fecha_dir: '',
 })
@@ -89,15 +93,40 @@ const openModalCreateForm = () => {
   createNewDir.value = true
 }
 
+const openModalEditForm = (dir) => {
+  // Set the form values
+  editDirForm.id = dir.id
+  editDirForm.nombre_dir = dir.nombre_dir
+  editDirForm.fecha_dir = dir.fecha_dir
+  editDir.value = true
+}
+
 const closeModalCreateForm = () => {
   createNewDir.value = false
   createDirForm.reset()
+}
+
+const closeModalEditForm = () => {
+  editDir.value = false
+  editDirForm.reset()
 }
 
 const store = () => {
   createDirForm.post('/directorios', {
     preserveScroll: true,
     onSuccess: () => closeModalCreateForm(),
+  })
+}
+
+const update = () => {
+  editDirForm.post(`/directorios/${editDirForm.id}`, {
+    preserveScroll: true,
+    onSuccess: () => closeModalEditForm(),
+    onFinish: () => {
+      if (!editDirForm.hasErrors) {
+        editDirForm.reset()
+      }
+    },
   })
 }
 
@@ -236,9 +265,36 @@ watch(
           <TextInput v-model="createDirForm.fecha_dir" :error="createDirForm.errors.fecha_dir" class="pb-8 pr-6 w-full lg:w-1/2" type="date" label="Fecha de creación" />
         </div>
         <!-- Modal footer -->
-        <div class="flex items-center justify-end p-6 space-x-2 border-t border-gray-200">
+        <div class="flex items-center justify-end p-4 space-x-2 border-t border-gray-200">
           <LoadingButton :loading="createDirForm.processing" class="btn-yellow mr-2" type="submit">Guardar</LoadingButton>
           <button class="btn-secondary" @click="closeModalCreateForm">Cancelar</button>
+        </div>
+      </form>
+    </Modal>
+
+    <!-- Edit Directorio Form Modal -->
+    <Modal :show="editDir">
+      <!-- Modal content -->
+      <div class="relative">
+        <!-- Modal header -->
+        <div class="flex items-start justify-between p-4 border-b rounded-t">
+          <h2 class="text-xl font-semibold">Editar Directorio [{{ editDirForm.id }}]</h2>
+          <button class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" type="button" @click="closeModalEditForm">
+            <Icon class="w-4 h-4" name="close" aria-hidden="true" />
+            <span class="sr-only">Cerrar modal</span>
+          </button>
+        </div>
+      </div>
+      <!-- Modal body -->
+      <form @submit.prevent="update">
+        <div class="flex flex-wrap -mb-8 -mr-6 p-8">
+          <TextInput v-model="editDirForm.nombre_dir" :error="editDirForm.errors.nombre_dir" class="pb-8 pr-6 w-full lg:w-1/2" label="Nombre de carpeta" />
+          <TextInput v-model="editDirForm.fecha_dir" :error="editDirForm.errors.fecha_dir" class="pb-8 pr-6 w-full lg:w-1/2" type="date" label="Fecha de creación" />
+        </div>
+        <!-- Modal footer -->
+        <div class="flex items-center justify-end p-4 space-x-2 border-t border-gray-200">
+          <LoadingButton :loading="editDirForm.processing" class="btn-yellow mr-2" type="submit">Guardar</LoadingButton>
+          <button class="btn-secondary" @click="closeModalEditForm">Cancelar</button>
         </div>
       </form>
     </Modal>
@@ -262,10 +318,10 @@ watch(
         <tbody>
           <tr v-for="dir in directorios.data" :key="dir.id" class="bg-white border-b">
             <td v-if="can.editDirectorio" class="px-6 py-4 whitespace-nowrap border-solid border border-gray-200">
-              <span class="inline-block whitespace-nowrap">
-                <Link class="flex items-center" tabindex="-1" :href="`/directorios/${dir.id}/editar`">
+              <span class="inline-block whitespace-nowrap" title="Editar directorio">
+                <button class="flex items-center" tabindex="-1" type="button" @click="openModalEditForm(dir)">
                   <Icon class="flex-shrink-0 w-4 h-4 fill-yellow-400" name="pencil" />
-                </Link>
+                </button>
               </span>
             </td>
             <td v-if="can.deleteDirectorio" class="w-4 p-4 border-solid border border-gray-200">

@@ -202,7 +202,7 @@ watch(
     <Head :title="dirForm.nombre_dir" />
     <h1 class="mb-8 text-3xl font-bold">
       <Link class="text-yellow-400 hover:text-yellow-600" href="/directorios">Carpetas</Link>
-      <span class="text-yellow-400 font-medium">&nbsp;/</span> {{ dirForm.nombre_dir }}
+      <span class="text-yellow-400 font-medium">&nbsp;/</span> {{ dirForm.nombre_dir }} ({{ documentos.total }})
     </h1>
 
     <TrashedMessage v-if="directorioData.deleted_at && can.restoreDirectorio" class="mb-6" @restore="restore">Esta carpeta ha sido eliminada.</TrashedMessage>

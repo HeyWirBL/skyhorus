@@ -263,7 +263,7 @@ watch(
           <TextInput v-model="createAnoForm.ano" :error="createAnoForm.errors.ano" class="pb-8 pr-6 w-full" label="Año" />
         </div>
         <!-- Modal footer -->
-        <div class="flex items-center justify-end p-6 space-x-2 border-t border-gray-200">
+        <div class="flex items-center justify-end p-4 space-x-2 border-t border-gray-200">
           <LoadingButton :loading="createAnoForm.processing" class="btn-yellow mr-2" type="submit">Guardar</LoadingButton>
           <button class="btn-secondary" @click="closeModalCreateForm">Cancelar</button>
         </div>
@@ -289,7 +289,7 @@ watch(
           <TextInput v-model="editAnoForm.ano" :error="editAnoForm.errors.ano" class="pb-8 pr-6 w-full" label="Año" />
         </div>
         <!-- Modal footer -->
-        <div class="flex items-center justify-end p-6 space-x-2 border-t border-gray-200">
+        <div class="flex items-center justify-end p-4 space-x-2 border-t border-gray-200">
           <LoadingButton :loading="editAnoForm.processing" class="btn-yellow mr-2" type="submit">Guardar</LoadingButton>
           <button class="btn-secondary" @click="closeModalEditForm">Cancelar</button>
         </div>

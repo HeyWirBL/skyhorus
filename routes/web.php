@@ -74,9 +74,6 @@ Route::middleware('auth')->group(function () {
     Route::get('directorios', [DirectorioController::class, 'index'])
         ->name('directorios');
 
-    Route::get('directorios/{directorio}/editar', [DirectorioController::class, 'edit'])
-        ->name('directorios.edit')->middleware('can:update,App\Models\Directorio');
-
     Route::get('directorios/{directorio}', [DirectorioController::class, 'show'])
         ->name('directorios.show')->middleware('can:view,App\Models\Directorio');
 
@@ -165,9 +162,6 @@ Route::middleware('auth')->group(function () {
     //Route::resource('pozos', PozoController::class);
     Route::get('pozos', [PozoController::class, 'index'])
         ->name('pozos');
-
-    Route::get('pozos/crear', [PozoController::class, 'create'])
-        ->name('pozos.create')->middleware('can:create,App\Models\Pozo');
 
     Route::get('pozos/{pozo}', [PozoController::class, 'show'])
         ->name('pozos.show');

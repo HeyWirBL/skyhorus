@@ -1,5 +1,5 @@
 <script setup>
-import { computed, inject, ref, watch } from 'vue'
+import { computed, inject, nextTick, ref, watch } from 'vue'
 import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3'
 import debounce from 'lodash/debounce'
 import mapValues from 'lodash/mapValues'
@@ -7,6 +7,10 @@ import pickBy from 'lodash/pickBy'
 import Icon from '@/Components/Icon.vue'
 import SearchFilter from '@/Components/SearchFilter.vue'
 import Pagination from '@/Components/Pagination.vue'
+import LoadingButton from '@/Components/LoadingButton.vue'
+import Modal from '@/Components/Modal.vue'
+import TextInput from '@/Components/TextInput.vue'
+import TextareaInput from '@/Components/TextareaInput.vue'
 
 const props = defineProps({
   can: Object,
@@ -16,15 +20,53 @@ const props = defineProps({
 
 const swal = inject('$swal')
 
+const createNewPozo = ref(false)
+const editPozo = ref(false)
+
 const selected = ref([])
 const selectAllPozos = ref(false)
+const createInputRef = ref(null)
+const editInputRef = ref(null)
 
 const form = ref({
   search: props.filters.search,
   trashed: props.filters.trashed,
 })
 
+/* Emtpy Form for deleting */
 const pozoForm = useForm({})
+
+/* Form for creating a new Pozo */
+const createPozoForm = useForm({
+  punto_muestreo: '',
+  fecha_hora: '',
+  identificador: '',
+  presion_kgcm2: '',
+  presion_psi: '',
+  temp_C: '',
+  temp_F: '',
+  volumen_cm3: '',
+  volumen_lts: '',
+  observaciones: null,
+  nombre_pozo: '',
+})
+
+/* Form for editing a Pozo */
+const editPozoForm = useForm({
+  _method: 'put',
+  id: '',
+  punto_muestreo: '',
+  fecha_hora: '',
+  identificador: '',
+  presion_kgcm2: '',
+  presion_psi: '',
+  temp_C: '',
+  temp_F: '',
+  volumen_cm3: '',
+  volumen_lts: '',
+  observaciones: '',
+  nombre_pozo: '',
+})
 
 const isTrashed = computed(() => usePage().url.includes('trashed=only'))
 
@@ -68,6 +110,36 @@ const changeToggleAllPozos = () => {
 
 const reset = () => {
   form.value = mapValues(form.value, () => null)
+}
+
+const openModalCreateForm = () => {
+  createNewPozo.value = true
+
+  nextTick(() => createInputRef.value.focus())
+}
+
+const openModalEditForm = (pozo) => {
+  // Set form field values
+  editPozoForm.id = pozo.id
+  ;(editPozoForm.punto_muestreo = pozo.punto_muestreo), (editPozoForm.fecha_hora = pozo.fecha_hora), (editPozoForm.identificador = pozo.identificador), (editPozoForm.presion_kgcm2 = pozo.presion_kgcm2), (editPozoForm.presion_psi = pozo.presion_psi), (editPozoForm.temp_C = pozo.temp_C), (editPozoForm.temp_F = pozo.temp_F), (editPozoForm.volumen_cm3 = pozo.volumen_cm3), (editPozoForm.volumen_lts = pozo.volumen_lts), (editPozoForm.observaciones = pozo.observaciones), (editPozoForm.nombre_pozo = pozo.nombre_pozo), (editPozo.value = true)
+}
+
+const closeModalCreateForm = () => {
+  createNewPozo.value = false
+  createPozoForm.reset()
+}
+
+const closeModalEditForm = () => {
+  editPozo.value = false
+  editPozoForm.reset()
+}
+
+const store = () => {
+  createPozoForm.post('/pozos', {
+    preserveScroll: true,
+    onSuccess: () => closeModalCreateForm(),
+    onError: () => createInputRef.value.focus(),
+  })
 }
 
 const removeSelectedItems = () => {
@@ -171,7 +243,7 @@ watch(
       </SearchFilter>
     </div>
     <div class="flex items-center mb-6">
-      <button v-if="can.createPozo" class="btn-yellow mr-2" type="button">
+      <button v-if="can.createPozo" class="btn-yellow mr-2" type="button" @click="openModalCreateForm">
         <span>Crear</span>
         <span class="hidden md:inline">&nbsp;Pozo</span>
       </button>
@@ -184,6 +256,43 @@ watch(
         <span class="hidden md:inline">&nbsp;Elementos Seleccionados</span>
       </button>
     </div>
+
+    <!-- Create Pozo Form Modal -->
+    <Modal :show="createNewPozo" style="max-width: 800px">
+      <!-- Modal content -->
+      <div class="relative">
+        <!-- Modal header -->
+        <div class="flex items-start justify-between p-4 border-b rounded-t">
+          <h2 class="text-xl font-semibold">Crear Pozo</h2>
+          <button class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" type="button" @click="closeModalCreateForm">
+            <Icon class="w-4 h-4" name="close" aria-hidden="true" />
+            <span class="sr-only">Cerrar modal</span>
+          </button>
+        </div>
+      </div>
+      <!-- Modal body -->
+      <form @submit.prevent="store">
+        <!-- Inputs -->
+        <div class="flex flex-wrap -mb-8 -mr-6 p-4">
+          <TextInput ref="createInputRef" v-model="createPozoForm.nombre_pozo" :error="createPozoForm.errors.nombre_pozo" class="pb-4 pr-6 w-full lg:w-1/2" label="Pozo o Instalación" />
+          <TextInput v-model="createPozoForm.temp_C" :error="createPozoForm.errors.temp_C" class="pb-4 pr-6 w-full lg:w-1/2" label="°C" />
+          <TextInput v-model="createPozoForm.punto_muestreo" :error="createPozoForm.errors.punto_muestreo" class="pb-4 pr-6 w-full lg:w-1/2" label="Punto de muestreo" />
+          <TextInput v-model="createPozoForm.temp_F" :error="createPozoForm.errors.temp_F" class="pb-4 pr-6 w-full lg:w-1/2" label="°F" />
+          <TextInput v-model="createPozoForm.fecha_hora" :error="createPozoForm.errors.fecha_hora" class="pb-4 pr-6 w-full lg:w-1/2" label="Fecha" type="date" />
+          <TextInput v-model="createPozoForm.volumen_cm3" :error="createPozoForm.errors.volumen_cm3" class="pb-4 pr-6 w-full lg:w-1/2" label="CM3" />
+          <TextInput v-model="createPozoForm.identificador" :error="createPozoForm.errors.identificador" class="pb-4 pr-6 w-full lg:w-1/2" label="Identificador" />
+          <TextInput v-model="createPozoForm.volumen_lts" :error="createPozoForm.errors.volumen_lts" class="pb-4 pr-6 w-full lg:w-1/2" label="Volumen LTS" />
+          <TextInput v-model="createPozoForm.presion_psi" :error="createPozoForm.errors.presion_psi" class="pb-4 pr-6 w-full lg:w-1/2" label="PSIA" />
+          <TextInput v-model="createPozoForm.presion_kgcm2" :error="createPozoForm.errors.presion_kgcm2" class="pb-4 pr-6 w-full lg:w-1/2" label="KG/CM2" />
+          <TextareaInput v-model="createPozoForm.observaciones" :error="createPozoForm.errors.observaciones" class="pb-8 pr-6 w-full" label="Observaciones" placeholder="Ingresar observaciones adicionales" />
+        </div>
+        <!-- Modal footer -->
+        <div class="flex items-center justify-end p-4 space-x-2 border-t border-gray-200">
+          <LoadingButton :loading="createPozoForm.processing" class="btn-yellow mr-2" type="submit">Guardar</LoadingButton>
+          <button class="btn-secondary" @click="closeModalCreateForm">Cancelar</button>
+        </div>
+      </form>
+    </Modal>
 
     <div class="bg-white rounded-md shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
