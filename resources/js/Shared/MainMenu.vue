@@ -3,11 +3,15 @@ import { computed, ref, watch } from 'vue'
 import { Link, usePage, router } from '@inertiajs/vue3'
 import Icon from '@/Components/Icon.vue';
 import Dropside from '@/Components/Dropside.vue';
+
 const currentUrl = computed(() => usePage().url.substring(1))
 
 const props = defineProps({
     datefilter: Object,
 });
+
+const anos = computed(() => usePage().props.anos);
+const meses = computed(()=> usePage().props.meses);
 
 const df = ref({
   month: props.datefilter,
@@ -152,7 +156,7 @@ export default {
           <template #default>
             <div class="group flex text-base items-center p-2 pl-11 mt-1 rounded-md text-white justify-between hover:cursor-pointer hover:bg-zinc-700" :class="isUrl('componente-pozos') ? '' : 'hidden'">
               Filtrar
-              <Icon class="w-5 h-5 ml-20 fill-white align-middle" name="cheveron-right"/>
+              <Icon class="w-2 h-2 ml-20 fill-white align-middle" name="fulner"/>
             </div>
           </template>
           <template #dropdown>
@@ -161,28 +165,14 @@ export default {
                 <label class="text-zinc-300 mb-2">Año:</label>
                 <select class="rounded-lg bg-zinc-500 text-zinc-300" v-model="df.year">
                   <option :value="null"></option>
-                  <option value="2020">2020</option>
-                  <option value="2021">2021</option>
-                  <option value="2020">2022</option>
-                  <option value="2023">2023</option>
+                  <option v-for="ano in anos" :value="ano.ano">{{ ano.ano }}</option>
                 </select>
               </div>
               <div class="flex flex-col mx-2">
                 <label class="text-zinc-300 mb-2">Mes:</label>
                 <select class="rounded-lg bg-zinc-500 text-zinc-300" v-model="df.month">
                   <option :value="null"></option>
-                  <option value="1">Enero</option>
-                  <option value="2">Febrero</option>
-                  <option value="3">Marzo</option>
-                  <option value="4">Abril</option>
-                  <option value="5">Mayo</option>
-                  <option value="6">Junio</option>
-                  <option value="7">Julio</option>
-                  <option value="8">Agosto</option>
-                  <option value="9">Septiembre</option>
-                  <option value="10">Octubre</option>
-                  <option value="11">Noviembre</option>
-                  <option value="12">Diciembre</option>
+                  <option v-for="mes in meses" :value="mes.id">{{ mes.nombre }}</option>
                 </select>
               </div>
             </div>
