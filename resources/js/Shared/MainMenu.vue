@@ -3,12 +3,11 @@ import { computed, ref, watch } from 'vue'
 import { Link, usePage, router } from '@inertiajs/vue3'
 import Icon from '@/Components/Icon.vue';
 import Dropside from '@/Components/Dropside.vue';
-
 const currentUrl = computed(() => usePage().url.substring(1))
 
 const props = defineProps({
-    datefilter: Object,
-});
+  datefilter: Object,
+})
 
 const anos = computed(() => usePage().props.anos);
 const meses = computed(()=> usePage().props.meses);
@@ -16,7 +15,7 @@ const meses = computed(()=> usePage().props.meses);
 const df = ref({
   month: props.datefilter,
   year: props.datefilter,
-});
+})
 
 const isUrl = (...urls) => {
   if (urls[0] === '') {
@@ -25,29 +24,27 @@ const isUrl = (...urls) => {
   return urls.filter((url) => currentUrl.value.startsWith(url)).length
 }
 
-watch( df.value, () => {
-  router.get('/componente-pozos',df.value,{ preserveState: true, replace: true, preserveScroll: true })
-}
-)
-
+watch(df.value, () => {
+  router.get('/componente-pozos', df.value, { preserveState: true, replace: true, preserveScroll: true })
+})
 </script>
 
 <script>
 export default {
-    data() {
-        return {
-            show: true,
-        };
+  components: { Dropside },
+  data() {
+    return {
+      show: true,
+    }
+  },
+  watch: {
+    '$page.props.auth.can': {
+      handler() {
+        this.show = true
+      },
+      deep: true,
     },
-    watch: {
-        "$page.props.auth.can": {
-            handler() {
-                this.show = true;
-            },
-            deep: true,
-        },
-    },
-    components: { Dropside }
+  },
 }
 </script>
 
@@ -146,7 +143,7 @@ export default {
         <!-- End Well Documents Catalog -->
 
         <!-- End Well Components Catalog -->
-        <div>
+        <div class="mb-2">
           <Link class="group flex text-base items-center p-2 pl-11 rounded-md" :class="isUrl('componente-pozos') ? 'bg-yellow-500' : 'hover:bg-zinc-700'" href="/componente-pozos">
             <Icon class="w-6 h-6" :class="isUrl('componente-pozos') ? 'fill-white' : 'fill-zinc-300 group-hover:fill-white'" name="components" />
             <div class="ml-2" :class="isUrl('componente-pozos') ? 'text-white' : 'text-zinc-300 group-hover:text-white'">Componentes</div>

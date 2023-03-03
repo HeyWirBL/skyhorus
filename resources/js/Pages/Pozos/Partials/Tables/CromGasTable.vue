@@ -1,15 +1,10 @@
 <script setup>
-import { computed, inject, ref, watch } from 'vue'
-import { Link, router, useForm, usePage } from '@inertiajs/vue3'
-import debounce from 'lodash/debounce'
-import mapValues from 'lodash/mapValues'
-import pickBy from 'lodash/pickBy'
+import { computed, inject, ref } from 'vue'
+import { Link, useForm } from '@inertiajs/vue3'
 import Icon from '@/Components/Icon.vue'
-import SearchFilter from '@/Components/SearchFilter.vue'
 import Pagination from '@/Components/Pagination.vue'
 
 const props = defineProps({
-  filters: Object,
   pozo: Object,
 })
 
@@ -18,14 +13,8 @@ const swal = inject('$swal')
 const selected = ref([])
 const selectAllCromGas = ref(false)
 
-const form = ref({
-  search: props.filters.search,
-  trashed: props.filters.trashed,
-})
-
 const cromatografiaGasForm = useForm({})
 
-const isTrashed = computed(() => usePage().url.includes('trashed=only'))
 const cromatografiaGases = computed(() => props.pozo.cromatografiaGases)
 
 /**
@@ -64,10 +53,6 @@ const toggleAllCromGas = () => {
 }
 const changeToggleAllCromGas = () => {
   changeToggleAll(cromatografiaGases.value.data, selected, selectAllCromGas)
-}
-
-const reset = () => {
-  form.value = mapValues(form.value, () => null)
 }
 
 const filesize = (size) => {
@@ -112,36 +97,17 @@ const removeSelectedItems = () => {
     })
   }
 }
-
-watch(
-  () => form.value,
-  debounce(function () {
-    router.get(`/pozos/${props.pozo.id}`, pickBy(form.value), { preserveScroll: true, preserveState: true, replace: true })
-  }, 300),
-  {
-    deep: true,
-  },
-)
 </script>
 
 <template>
   <div>
     <h2 class="mb-8 text-2xl font-bold">Cromatografía de Gas</h2>
-    <div class="flex items-center justify-between mb-6">
-      <SearchFilter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
-        <label class="block mt-4 text-gray-700">Eliminado:</label>
-        <select v-model="form.trashed" class="form-select mt-1 w-full">
-          <option :value="null" />
-          <option value="only">Solo Eliminado</option>
-        </select>
-      </SearchFilter>
-      <a class="btn-yellow" href="#">
+    <div class="flex items-center mb-6">
+      <button class="btn-yellow mr-2" type="button">
         <span>Subir</span>
         <span class="hidden md:inline">&nbsp;Documentos</span>
-      </a>
-    </div>
-    <div class="flex items-center mb-6">
-      <button v-if="cromatografiaGases.data.length !== 0 && !isTrashed" class="btn-secondary" type="button" :disabled="!selectAllCromGas && !selected.length" @click="removeSelectedItems">
+      </button>
+      <button v-if="cromatografiaGases.data.length !== 0" class="btn-secondary" type="button" :disabled="!selectAllCromGas && !selected.length" @click="removeSelectedItems">
         <span>Borrar</span>
         <span class="hidden md:inline">&nbsp;Elementos Seleccionados</span>
       </button>
@@ -201,7 +167,7 @@ watch(
             </td>
           </tr>
           <tr v-if="cromatografiaGases.data.length === 0">
-            <td class="px-6 py-4" colspan="5">No se encontraron documentos {{ form.trashed === 'only' ? 'eliminados' : 'registrados' }}.</td>
+            <td class="px-6 py-4" colspan="5">No se encontraron documentos registrados.</td>
           </tr>
         </tbody>
       </table>

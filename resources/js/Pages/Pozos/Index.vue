@@ -121,7 +121,21 @@ const openModalCreateForm = () => {
 const openModalEditForm = (pozo) => {
   // Set form field values
   editPozoForm.id = pozo.id
-  ;(editPozoForm.punto_muestreo = pozo.punto_muestreo), (editPozoForm.fecha_hora = pozo.fecha_hora), (editPozoForm.identificador = pozo.identificador), (editPozoForm.presion_kgcm2 = pozo.presion_kgcm2), (editPozoForm.presion_psi = pozo.presion_psi), (editPozoForm.temp_C = pozo.temp_C), (editPozoForm.temp_F = pozo.temp_F), (editPozoForm.volumen_cm3 = pozo.volumen_cm3), (editPozoForm.volumen_lts = pozo.volumen_lts), (editPozoForm.observaciones = pozo.observaciones), (editPozoForm.nombre_pozo = pozo.nombre_pozo), (editPozo.value = true)
+  editPozoForm.punto_muestreo = pozo.punto_muestreo
+  editPozoForm.fecha_hora = pozo.fecha_hora
+  editPozoForm.identificador = pozo.identificador
+  editPozoForm.presion_kgcm2 = pozo.presion_kgcm2
+  editPozoForm.presion_psi = pozo.presion_psi
+  editPozoForm.temp_C = pozo.temp_C
+  editPozoForm.temp_F = pozo.temp_F
+  editPozoForm.volumen_cm3 = pozo.volumen_cm3
+  editPozoForm.volumen_lts = pozo.volumen_lts
+  editPozoForm.observaciones = pozo.observaciones
+  editPozoForm.nombre_pozo = pozo.nombre_pozo
+
+  editPozo.value = true
+
+  nextTick(() => editInputRef.value.focus())
 }
 
 const closeModalCreateForm = () => {
@@ -139,6 +153,18 @@ const store = () => {
     preserveScroll: true,
     onSuccess: () => closeModalCreateForm(),
     onError: () => createInputRef.value.focus(),
+  })
+}
+
+const update = () => {
+  editPozoForm.post(`/pozos/${editPozoForm.id}`, {
+    preserveScroll: true,
+    onSuccess: () => closeModalEditForm(),
+    onFinish: () => {
+      if (!editPozoForm.hasErrors) {
+        editPozoForm.reset()
+      }
+    },
   })
 }
 
@@ -294,10 +320,48 @@ watch(
       </form>
     </Modal>
 
+    <!-- Edit Pozo Form Modal -->
+    <Modal :show="editPozo" style="max-width: 800px">
+      <!-- Modal content -->
+      <div class="relative">
+        <!-- Modal header -->
+        <div class="flex items-start justify-between p-4 border-b rounded-t">
+          <h2 class="text-xl font-semibold">Editar Pozo [{{ editPozoForm.id }}]</h2>
+          <button class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" type="button" @click="closeModalEditForm">
+            <Icon class="w-4 h-4" name="close" aria-hidden="true" />
+            <span class="sr-only">Cerrar modal</span>
+          </button>
+        </div>
+      </div>
+      <!-- Modal body -->
+      <form @submit.prevent="update">
+        <!-- Inputs -->
+        <div class="flex flex-wrap -mb-8 -mr-6 p-4">
+          <TextInput ref="editInputRef" v-model="editPozoForm.nombre_pozo" :error="editPozoForm.errors.nombre_pozo" class="pb-4 pr-6 w-full lg:w-1/2" label="Pozo o Instalación" />
+          <TextInput v-model="editPozoForm.temp_C" :error="editPozoForm.errors.temp_C" class="pb-4 pr-6 w-full lg:w-1/2" label="°C" />
+          <TextInput v-model="editPozoForm.punto_muestreo" :error="editPozoForm.errors.punto_muestreo" class="pb-4 pr-6 w-full lg:w-1/2" label="Punto de muestreo" />
+          <TextInput v-model="editPozoForm.temp_F" :error="editPozoForm.errors.temp_F" class="pb-4 pr-6 w-full lg:w-1/2" label="°F" />
+          <TextInput v-model="editPozoForm.fecha_hora" :error="editPozoForm.errors.fecha_hora" class="pb-4 pr-6 w-full lg:w-1/2" label="Fecha" type="date" />
+          <TextInput v-model="editPozoForm.volumen_cm3" :error="editPozoForm.errors.volumen_cm3" class="pb-4 pr-6 w-full lg:w-1/2" label="CM3" />
+          <TextInput v-model="editPozoForm.identificador" :error="editPozoForm.errors.identificador" class="pb-4 pr-6 w-full lg:w-1/2" label="Identificador" />
+          <TextInput v-model="editPozoForm.volumen_lts" :error="editPozoForm.errors.volumen_lts" class="pb-4 pr-6 w-full lg:w-1/2" label="Volumen LTS" />
+          <TextInput v-model="editPozoForm.presion_psi" :error="editPozoForm.errors.presion_psi" class="pb-4 pr-6 w-full lg:w-1/2" label="PSIA" />
+          <TextInput v-model="editPozoForm.presion_kgcm2" :error="editPozoForm.errors.presion_kgcm2" class="pb-4 pr-6 w-full lg:w-1/2" label="KG/CM2" />
+          <TextareaInput v-model="editPozoForm.observaciones" :error="editPozoForm.errors.observaciones" class="pb-8 pr-6 w-full" label="Observaciones" placeholder="Ingresar observaciones adicionales" />
+        </div>
+        <!-- Modal footer -->
+        <div class="flex items-center justify-end p-4 space-x-2 border-t border-gray-200">
+          <LoadingButton :loading="editPozoForm.processing" class="btn-yellow mr-2" type="submit">Guardar</LoadingButton>
+          <button class="btn-secondary" @click="closeModalEditForm">Cancelar</button>
+        </div>
+      </form>
+    </Modal>
+
     <div class="bg-white rounded-md shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
         <thead class="text-sm text-left font-bold uppercase bg-white border-b-2">
           <tr>
+            <th v-if="can.deletePozo && pozos.data.length !== 0" scope="col" class="p-4 w-4 border-solid border border-gray-200" />
             <th v-if="pozos.data.length !== 0 && can.deletePozo" scope="col" class="p-4 border-solid border border-gray-200">
               <div class="flex items-center">
                 <input id="checkbox-all-pozos" v-model="selectAllPozos" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="toggleAllPozos" />
@@ -307,11 +371,23 @@ watch(
             <th scope="col" class="px-6 py-3 border-solid border border-gray-200">No.</th>
             <th scope="col" class="px-6 py-3 border-solid border border-gray-200">Pozo/Instalación</th>
             <th scope="col" class="px-6 py-3 border-solid border border-gray-200">Identificador</th>
-            <th scope="col" class="px-6 py-3 border-solid border border-gray-200" colspan="2">Fecha del Muestreo</th>
+            <th scope="col" class="px-6 py-3 border-solid border border-gray-200">Fecha del Muestreo</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="pozo in pozos.data" :key="pozo.id" class="bg-white border-b">
+            <td class="px-6 py-4 whitespace-nowrap border-solid border border-gray-200">
+              <span v-if="can.editPozo" class="inline-block whitespace-nowrap" title="Editar pozo">
+                <button class="flex items-center mr-2" tabindex="-1" type="button" @click="openModalEditForm(pozo)">
+                  <Icon class="flex-shrink-0 w-4 h-4 fill-yellow-400" name="pencil" />
+                </button>
+              </span>
+              <span class="inline-block whitespace-nowrap" title="Ver pozo">
+                <Link class="flex items-center" :href="`/pozos/${pozo.id}`" tabindex="-1">
+                  <Icon class="flex-shrink-0 w-4 h-4 fill-yellow-400" name="eye" />
+                </Link>
+              </span>
+            </td>
             <td v-if="can.deletePozo" class="w-4 p-4 border-solid border border-gray-200">
               <div class="flex items-center">
                 <input :id="`checkbox-pozo-${pozo.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="pozo.id" @change="changeToggleAllPozos" />
@@ -334,11 +410,6 @@ watch(
             </td>
             <td class="px-6 py-4">
               <span class="block">{{ pozo.fecha_hora }}</span>
-            </td>
-            <td class="w-px">
-              <Link class="flex items-center px-6" :href="`/pozos/${pozo.id}`" tabindex="-1">
-                <Icon class="block w-6 h-6 fill-gray-400" name="cheveron-right" />
-              </Link>
             </td>
           </tr>
           <tr v-if="pozos.data.length === 0">

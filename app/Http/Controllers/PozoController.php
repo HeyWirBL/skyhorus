@@ -31,7 +31,7 @@ class PozoController extends Controller
 
         $pozos = $query->paginate(10)->through(fn ($p) => [
             'id' => $p->id,
-            'punto_muestreo' => $pozo->punto_muestreo,
+            'punto_muestreo' => $p->punto_muestreo,
             'fecha_hora' => $p->fecha_hora,
             'identificador' => $p->identificador,
             'presion_kgcm2' => $p->presion_kgcm2,
@@ -88,7 +88,6 @@ class PozoController extends Controller
     public function show(Request $request, Pozo $pozo): Response
     {        
         $user = Auth::user();              
-        $filters = $request->all('search', 'trashed');
         $can = [
             // Pozo Policy
             'editPozo' => $user->can('update', Pozo::class),
@@ -112,7 +111,6 @@ class PozoController extends Controller
 
         $pozoData['docPozos'] = $pozo->docPozos()
             ->latest()
-            ->filter($filters)
             ->paginate(10)
             ->withQueryString()
             ->through(fn ($docPozo) => [
@@ -188,7 +186,6 @@ class PozoController extends Controller
             ]);
 
         $pozoData['cromatografiaGases'] = $pozo->cromatografiaGases()
-            ->filter($filters)
             ->orderByDesc('id')
             ->paginate(10)
             ->withQueryString()
@@ -200,7 +197,6 @@ class PozoController extends Controller
             ]);
 
         $pozoData['cromatografiaLiquidas'] = $pozo->cromatografiaLiquidas()
-            ->filter($filters)
             ->orderByDesc('id')
             ->paginate(10)
             ->withQueryString()
@@ -213,7 +209,6 @@ class PozoController extends Controller
 
         return Inertia::render('Pozos/Show', [
             'can' => $can,
-            'filters' => $filters,
             'pozo' => $pozoData,
         ]);
     }
@@ -259,7 +254,7 @@ class PozoController extends Controller
             'temp_F' => 'required|max:150',
             'volumen_cm3' => ['required', 'max:150'],
             'volumen_lts' => ['required', 'max:150'],
-            'observaciones' => ['nullable'],
+            'observaciones' => ['nullable', 'max:150'],
             'nombre_pozo' => ['required', 'max:150'],
         ]);
 
