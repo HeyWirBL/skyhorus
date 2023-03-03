@@ -189,22 +189,6 @@ const updateComponentePozo = () => {
   })
 }
 
-const destroy = () => {
-  swal({
-    title: '¿Estás seguro de querer eliminar estos componentes de este pozo?',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#CEA915',
-    cancelButtonColor: '#BDBDBD',
-    confirmButtonText: 'Confirmar',
-    cancelButtonText: 'Cancelar',
-  }).then((result) => {
-    if (result.isConfirmed) {
-      form.delete(`/componente-pozos/${props.componentePozo.id}`)
-    }
-  })
-}
-
 const restore = () => {
   swal({
     title: '¿Estás seguro de querer restablecer estos componentes de este pozo?',
@@ -236,10 +220,6 @@ const closeModalMessageObs = () => {
 
 const closeModalChart = () => {
   showChart.value = false
-}
-
-const download = () => {
-  return window.open('/componente-pozos/export/' + props.componentePozo.id, '_blank')
 }
 
 const truncateMessageMetLab = computed(() => {

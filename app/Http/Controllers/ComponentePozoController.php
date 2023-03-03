@@ -22,7 +22,7 @@ class ComponentePozoController extends Controller
     /**
      * Display a listing of wells components.
      */
-    public function index(Request $request, ComponentePozo $componentePozo): Response
+    public function index(Request $request, ComponentePozo $componentePozo, Pozo $pozo): Response
     {
         $user = Auth::user();
         $can = [
@@ -42,7 +42,57 @@ class ComponentePozoController extends Controller
             ->withQueryString()
             ->through(fn ($cp) => [
                 'id' => $cp->id,
+                'dioxido_carbono' => $cp->dioxido_carbono,
+                'pe_dioxido_carbono' => $cp->pe_dioxido_carbono,
+                'mo_dioxido_carbono' => $cp->mo_dioxido_carbono,
+                'den_dioxido_carbono' => $cp->den_dioxido_carbono,
+                'acido_sulfidrico' => $cp->acido_sulfidrico,
+                'pe_acido_sulfidrico' => $cp->pe_acido_sulfidrico,
+                'mo_acido_sulfidrico' => $cp->mo_acido_sulfidrico,
+                'den_acido_sulfidrico' => $cp->den_acido_sulfidrico,
+                'nitrogeno' => $cp->nitrogeno,
+                'pe_nitrogeno' => $cp->pe_nitrogeno,
+                'mo_nitrogeno' => $cp->mo_nitrogeno,
+                'den_nitrogeno' => $cp->den_nitrogeno,
+                'metano' => $cp->metano,
+                'pe_metano' => $cp->pe_metano,
+                'mo_metano' => $cp->mo_metano,
+                'den_metano' => $cp->den_metano,
+                'etano' => $cp->etano,
+                'pe_etano' => $cp->pe_etano,
+                'mo_etano' => $cp->mo_etano,
+                'den_etano' => $cp->den_etano,
+                'propano' => $cp->propano,
+                'pe_propano' => $cp->pe_propano,
+                'mo_propano' => $cp->mo_propano,
+                'den_propano' => $cp->den_propano,
+                'iso_butano' => $cp->iso_butano,
+                'pe_iso_butano' => $cp->pe_iso_butano,
+                'mo_iso_butano' => $cp->mo_iso_butano,
+                'den_iso_butano' => $cp->den_iso_butano,
+                'n_butano' => $cp->n_butano,
+                'pe_n_butano' => $cp->pe_n_butano,
+                'mo_n_butano' => $cp->mo_n_butano,
+                'den_n_butano' => $cp->den_n_butano,
+                'iso_pentano' => $cp->iso_pentano,
+                'pe_iso_pentano' => $cp->pe_iso_pentano,
+                'mo_iso_pentano' => $cp->mo_iso_pentano,
+                'den_iso_pentano' => $cp->den_iso_pentano,
+                'n_pentano' => $cp->n_pentano,
+                'pe_n_pentano' => $cp->pe_n_pentano,
+                'mo_n_pentano' => $cp->mo_n_pentano,
+                'den_n_pentano' => $cp->den_n_pentano,
+                'n_exano' => $cp->n_exano,
+                'pe_n_exano' => $cp->pe_n_exano,
+                'mo_n_exano' => $cp->mo_n_exano,
+                'den_n_exano' => $cp->den_n_exano,                
+                'fecha_recep' => $cp->fecha_recep,
+                'pozo_id' => $cp->pozo_id,
+                'fecha_analisis' => $cp->fecha_analisis,
+                'no_determinacion' => $cp->no_determinacion,
                 'equipo_utilizado' => $cp->equipo_utilizado,
+                'met_laboratorio' => $cp->met_laboratorio,
+                'observaciones' => $cp->observaciones,
                 'nombre_componente' => $cp->nombre_componente,
                 'fecha_recep' => $cp->fecha_recep,
                 'fecha_muestreo' =>$cp->fecha_muestreo,
@@ -50,7 +100,9 @@ class ComponentePozoController extends Controller
                 'pozo' => optional($cp->pozo)->only('nombre_pozo', 'deleted_at'),
             ]); 
 
-        return Inertia::render('ComponentePozos/Index', compact('can', 'filters', 'componentePozos'));
+        $pozos = $pozo->query()->orderByDesc('id')->get()->map->only('id', 'nombre_pozo');
+
+        return Inertia::render('ComponentePozos/Index', compact('can', 'filters', 'componentePozos', 'pozos'));
     }
 
     /**
