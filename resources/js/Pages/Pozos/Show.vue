@@ -10,7 +10,6 @@ import TextareaInput from '@/Components/TextareaInput.vue'
 
 const props = defineProps({
   can: Object,
-  filters: Object,
   pozo: Object,
 })
 
@@ -106,6 +105,6 @@ const update = () => {
     </Modal>
 
     <!-- Pozo Table Component -->
-    <PozoInfo :can="can" :filters="filters" :pozo="pozo" />
+    <PozoInfo :can="can" :pozo="pozo" />
   </div>
 </template>
