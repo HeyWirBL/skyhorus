@@ -127,20 +127,11 @@ watch(
 <template>
   <div>
     <h2 class="mb-8 text-2xl font-bold">Cromatografía de Gas</h2>
-    <div class="flex items-center justify-between mb-6">
-      <SearchFilter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
-        <label class="block mt-4 text-gray-700">Eliminado:</label>
-        <select v-model="form.trashed" class="form-select mt-1 w-full">
-          <option :value="null" />
-          <option value="only">Solo Eliminado</option>
-        </select>
-      </SearchFilter>
-      <a class="btn-yellow" href="#">
+    <div class="flex items-center mb-6">
+      <button class="btn-yellow mr-2" type="button">
         <span>Subir</span>
         <span class="hidden md:inline">&nbsp;Documentos</span>
-      </a>
-    </div>
-    <div class="flex items-center mb-6">
+      </button>
       <button v-if="cromatografiaGases.data.length !== 0 && !isTrashed" class="btn-secondary" type="button" :disabled="!selectAllCromGas && !selected.length" @click="removeSelectedItems">
         <span>Borrar</span>
         <span class="hidden md:inline">&nbsp;Elementos Seleccionados</span>
