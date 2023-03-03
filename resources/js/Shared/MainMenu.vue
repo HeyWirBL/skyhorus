@@ -149,11 +149,12 @@ export default {
             <div class="ml-2" :class="isUrl('componente-pozos') ? 'text-white' : 'text-zinc-300 group-hover:text-white'">Componentes</div>
           </Link>
         </div>
-        <Dropside :auto-close="false">
+        <div v-if="isUrl('componente-pozos')">
+          <Dropside :auto-close="false">
           <template #default>
-            <div class="group flex text-base items-center p-2 pl-11 mt-1 rounded-md text-white justify-between hover:cursor-pointer hover:bg-zinc-700" :class="isUrl('componente-pozos') ? '' : 'hidden'">
-              Filtrar
-              <Icon class="w-2 h-2 ml-20 fill-white align-middle" name="fulner"/>
+            <div class="group flex text-base items-center p-2 pl-11 mt-1 rounded-md text-white justify-between hover:cursor-pointer hover:bg-zinc-700 w-48">
+              <p class="text-sm ml-12">Filtrar com.</p>
+              <Icon class=" fill-zinc-300 align-middle" name="fulner"/>
             </div>
           </template>
           <template #dropdown>
@@ -175,6 +176,7 @@ export default {
             </div>
           </template>
         </Dropside>
+        </div>
         <!-- End Well Components Catalog -->
       </div>
     </div>
