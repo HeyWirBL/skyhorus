@@ -79,25 +79,31 @@ class DocumentoController extends Controller
                 'mes_detalle_id' => ['required', Rule::exists('mes_detalles', 'id')],
             ]);
 
-            $files = $request->file('documento');
+            $hasFiles = $request->hasFile('documento');
 
-            foreach ($files as $file) {
-                $filename = time() . '_' . $file->getClientOriginalName();
-                // store the file in the "files" directory inside the "storage/app/public" disk
-                $path = Storage::disk('public')->putFileAs('files', $file, $filename);
-                $documento = $documento->create([
-                    'directorio_id' => $request->input('directorio_id'),
-                    'ano_id' => $request->input('ano_id'),
-                    'mes_detalle_id' => $request->input('mes_detalle_id'),
-                    'documento' => json_encode([
-                        'name' => asset('storage/' . $path), // generate a public URL for the file
-                        'usrName' => $filename,
-                        'size' => $file->getSize(),
-                        'type' => $file->getMimeType(),
-                    ]),
-                ]);
-            }            
-            return Redirect::back()->with('success', 'Subido correctamente.');
+            if ($hasFiles) {
+                $files = $request->file('documento');
+
+                foreach ($files as $file) {
+                    $filename = time() . '_' . $file->getClientOriginalName();
+                    // store the file in the "files" directory inside the "storage/app/public" disk
+                    $path = Storage::disk('public')->putFileAs('files', $file, $filename);
+                    $documento = $documento->create([
+                        'directorio_id' => $request->input('directorio_id'),
+                        'ano_id' => $request->input('ano_id'),
+                        'mes_detalle_id' => $request->input('mes_detalle_id'),
+                        'documento' => json_encode([
+                            'name' => asset('storage/' . $path), // generate a public URL for the file
+                            'usrName' => $filename,
+                            'size' => $file->getSize(),
+                            'type' => $file->getMimeType(),
+                        ]),
+                    ]);
+                }         
+                return Redirect::back()->with('success', 'Subido correctamente.');
+            } else {
+                return Redirect::back()->with('error', 'No se han subido archivos en el formulario.');
+            }
         } catch (\Illuminate\Validation\ValidationException $e) {
             return Redirect::back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
