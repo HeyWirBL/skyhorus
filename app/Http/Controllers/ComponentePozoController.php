@@ -17,6 +17,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use Illuminate\Support\Facades\Storage;
 
 class ComponentePozoController extends Controller
 {
@@ -471,5 +472,18 @@ class ComponentePozoController extends Controller
     public function export(Request $request)
     {
         return Excel::download(new ComponentePozosExport($request->id), 'componentes_pozo.pdf', \Maatwebsite\Excel\Excel::MPDF);
+    }
+
+    //download the excel format
+    public function downloadFormat()
+    {   
+        $format = 'Componentes de pozo.xlsx';
+        
+        if(Storage::disk('public')->exists('formats/'.$format)){
+            return Storage::disk('public')->download('formats/'.$format);
+            //return response('error');           
+         }else{
+            return response('¡404! No se pudo encontrar este recurso. Si ves este mensaje, por favor contacta con un administrador. <br/> Powered by: Nerd Rage!', 404);
+         }
     }
 }
