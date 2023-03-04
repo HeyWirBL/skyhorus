@@ -24,6 +24,7 @@ const props = defineProps({
 const swal = inject('$swal')
 
 const uploadNewDoc = ref(false)
+const editUploadedDoc = ref(false)
 
 const selected = ref([])
 const selectAllDocs = ref(false)
@@ -40,6 +41,15 @@ const docForm = useForm({})
 const uploadDocForm = useForm({
   documento: [],
   directorio_id: props.directorioData.id,
+  ano_id: '',
+  mes_detalle_id: '',
+})
+
+const editUploadedDocForm = useForm({
+  _method: 'put',
+  id: '',
+  documento: [],
+  directorio_id: '',
   ano_id: '',
   mes_detalle_id: '',
 })
@@ -111,8 +121,24 @@ const filesize = (size, precision = 2) => {
 
 const openModalUploadForm = () => (uploadNewDoc.value = true)
 
+const openModalEditUploadedForm = (documento) => {
+  // Set form field values
+  editUploadedDocForm.id = documento.id  
+  editUploadedDocForm.documento = [documento.documento] 
+  editUploadedDocForm.directorio_id = documento.directorio_id
+  editUploadedDocForm.ano_id = documento.ano_id
+  editUploadedDocForm.mes_detalle_id = documento.mes_detalle_id
+
+  editUploadedDoc.value = true
+}
+
 const closeModalUploadForm = () => {
   uploadNewDoc.value = false
+}
+
+const closeModalEditUploadedForm = () => {
+  editUploadedDoc.value = false
+  editUploadedDocForm.reset()
 }
 
 const reset = () => {
@@ -125,6 +151,19 @@ const store = () => {
     onSuccess: () => {
       closeModalUploadForm()
       uploadDocForm.reset()
+    },
+  })
+}
+
+const update = () => {
+  editUploadedDocForm.post(`/documentos/${editUploadedDocForm.id}`, {
+    preserveScroll: true,
+    onSuccess: () => (editUploadedDoc.value = false),
+    onError: (error) => console.error(error),
+    onFinish: () => {
+      if (!editUploadedDocForm.hasErrors) {
+        editUploadedDocForm.reset()
+      }
     },
   })
 }
@@ -320,6 +359,48 @@ watch(
       </form>
     </Modal>
 
+    <Modal :show="editUploadedDoc">
+      <!-- Modal content -->
+      <div class="relative">
+        <!-- Modal header -->
+        <div class="flex items-start justify-between p-4 border-b rounded-t">
+          <h2 class="text-xl font-semibold">Editar Documentos [{{ editUploadedDocForm.id }}]</h2>
+          <button class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" type="button" @click="closeModalEditUploadedForm">
+            <Icon class="w-4 h-4" name="close" aria-hidden="true" />
+            <span class="sr-only">Cerrar modal</span>
+          </button>
+        </div>
+      </div>
+      <form @submit.prevent="update">
+        <div class="relative flex flex-wrap p-4">
+          <div class="w-full pb-4">
+            <!-- DropZone Component -->
+            <DropZone v-model="editUploadedDocForm.documento" :errors="editUploadedDocForm.errors.documento" label="Documento:" />
+          </div>
+          <div class="pb-4 pr-6 w-full">
+            <label class="form-label" for="text-input-dir">Carpeta:</label>
+            <div>
+              <span class="block text-yellow-500">{{ directorioData.nombre_dir }}</span>
+            </div>
+            <input id="text-input-dir" type="hidden" :value="directorioData.id" />
+          </div>
+          <SelectInput v-model="editUploadedDocForm.ano_id" :error="editUploadedDocForm.errors.ano_id" class="pb-4 pr-6 w-full lg:w-1/2" label="Año">
+            <option value="">Por favor seleccione</option>
+            <option v-for="ano in anos" :key="ano.id" :value="ano.id">{{ ano.ano }}</option>
+          </SelectInput>
+          <SelectInput v-model="editUploadedDocForm.mes_detalle_id" :error="editUploadedDocForm.errors.mes_detalle_id" class="pb-4 pr-6 w-full lg:w-1/2" label="Mes">
+            <option value="">Por favor seleccione</option>
+            <option v-for="mes in meses" :key="mes.id" :value="mes.id">{{ mes.nombre }}</option>
+          </SelectInput>
+        </div>
+        <!-- Modal footer -->
+        <div class="flex items-center justify-end p-4 space-x-2 border-t border-gray-200">
+          <LoadingButton :loading="editUploadedDocForm.processing" class="btn-yellow mr-2" type="submit">Guardar</LoadingButton>
+          <button class="btn-secondary" @click="closeModalEditUploadedForm">Cancelar</button>
+        </div>
+      </form>
+    </Modal>
+
     <div class="bg-white rounded-md shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
         <thead class="text-sm text-left font-bold uppercase bg-white border-b-2">
@@ -341,9 +422,9 @@ watch(
           <tr v-for="documento in documentos.data" :key="documento.id" class="bg-white border-b">
             <td class="px-6 py-4 whitespace-nowrap border-solid border border-gray-200">
               <span class="inline-block whitespace-nowrap">
-                <Link class="flex items-center" :href="`/documentos/${documento.id}/editar`" tabindex="-1">
+                <button class="flex items-center" tabindex="-1" type="button" @click="openModalEditUploadedForm(documento)">
                   <Icon class="flex-shrink-0 w-4 h-4 fill-yellow-400" name="pencil" />
-                </Link>
+                </button>
               </span>
             </td>
             <td class="w-4 p-4 border-solid border border-gray-200">
@@ -354,7 +435,7 @@ watch(
             </td>
             <td class="px-6 py-4 border-solid border border-gray-200">
               <div class="flex items-center leading-snug">
-                <a class="text-yellow-400 hover:underline focus:text-yellow-500" :href="`/documentos/${documento.documento.name}/descargar`">
+                <a class="text-yellow-400 hover:underline focus:text-yellow-500" :href="`/documentos/${documento.id}/descargar`">
                   {{ documento.documento.usrName }}
                 </a>
                 <span class="text-xs ml-2"> {{ filesize(documento.documento.size) }} </span>

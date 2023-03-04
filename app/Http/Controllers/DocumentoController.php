@@ -93,7 +93,7 @@ class DocumentoController extends Controller
                         'ano_id' => $request->input('ano_id'),
                         'mes_detalle_id' => $request->input('mes_detalle_id'),
                         'documento' => json_encode([
-                            'name' => asset('storage/' . $path), // generate a public URL for the file
+                            'name' => 'storage/' . $path, // generate a public URL for the file
                             'usrName' => $filename,
                             'size' => $file->getSize(),
                             'type' => $file->getMimeType(),
@@ -111,15 +111,95 @@ class DocumentoController extends Controller
         }
     }
 
-   public function download($document)
+    
+    /**
+     * Update document's information in database.
+     * 
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function update(Request $request, Documento $documento): RedirectResponse
     {
-        if(Storage::disk('public')->exists($document)){
-           return Storage::disk('public')->download($document);
-           //return response('error');           
-        }else{
-            return response('¡404! No se pudo encontrar este recurso. Si ves este mensaje, por favor contacta con un administrador. <br/> Powered by: Nerd Rage!', 404);
+        try {            
+            $request->validate([                
+                'directorio_id' => ['required', Rule::exists('directorios', 'id')],
+                'ano_id' => ['required', Rule::exists('anos', 'id')],
+                'mes_detalle_id' => ['required', Rule::exists('mes_detalles', 'id')],
+            ]);
+
+            $hasFiles = $request->hasFile('documento');
+
+            if ($hasFiles) {
+                $request->validate([
+                    'documento.*' => ['required', 'max:8000'], // MAX 8 MB per file
+                ]);
+
+                $files = $request->file('documento');
+
+                foreach ($files as $file) {
+                    $filename = time() . '_' . $file->getClientOriginalName();
+                    // store the file in the "files" directory inside the "storage/app/public" disk
+                    $path = Storage::disk('public')->putFileAs('files', $file, $filename);
+                    $documento->update([                        
+                        'documento' => json_encode([
+                            'name' => 'storage/' . $path, // generate a public URL for the file
+                            'usrName' => $filename,
+                            'size' => $file->getSize(),
+                            'type' => $file->getMimeType(),
+                        ]),
+                    ]);
+                }                                
+            }
+
+            $documento->update([
+                'directorio_id' => $request->input('directorio_id'),
+                'ano_id' => $request->input('ano_id'),
+                'mes_detalle_id' => $request->input('mes_detalle_id'),
+            ]);
+        
+            if (!$hasFiles && !$documento->documento) {
+                return Redirect::back()->with('error', 'Debe subir al menos un archivo.');
+            }
+            
+            return Redirect::back()->with('success', 'Actualizado correctamente.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return Redirect::back()->withErrors($e->errors())->withInput();
+        } catch (\Exception $e) {
+            return Redirect::back()->with('error', 'Error al subir el archivo: ' . $e->getMessage());
         }
-    } 
+    }
+
+    /**
+     * Download an specific documento store in disk.
+     */
+    public function download($id)
+    {
+        try {
+            $documento = Documento::findOrFail($id);
+            $documentoData = json_decode($documento->documento, true);
+
+            // Extract the file path and name from the documentoData array
+            $filePath = $documentoData['name'];
+            $fileName = $documentoData['usrName'];         
+
+            // Get the full path of the file in the storage/app/public folder
+            $fullPath = public_path($filePath);
+
+            // Check if the file exists
+            if (!file_exists($fullPath)) {
+                return back()->with('error', 'Error al descargar el archivo: el archivo no existe.');
+            }   
+
+            // Set the response headers
+            $headers = [
+                'Content-Type' => $documentoData['type'],
+                'Content-Disposition' => 'attachment; filename="'.$fileName.'"',
+            ];
+
+            return response()->download($fullPath, $fileName, $headers);
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error al descargar el archivo: ' . $e->getMessage());
+        }
+    }
 
     /**
      * Delete temporary an specific document.

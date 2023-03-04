@@ -155,7 +155,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('documentos', [DocumentoController::class, 'destroyAll'])
         ->name('documentos.destroyAll');
 
-    Route::get('documentos/{documento}/descargar', [DocumentoController::class, 'download'])
+    Route::get('documentos/{id}/descargar', [DocumentoController::class, 'download'])
         ->name('documento.download');
 
     /* Catálogo de Pozos */
@@ -195,7 +195,7 @@ Route::middleware('auth')->group(function () {
     Route::post('doc-pozos', [DocPozoController::class, 'store'])
         ->name('doc-pozos.store');
     
-    Route::get('doc-pozos/{documento}/descargar', [DocPozoController::class, 'download'])
+    Route::get('doc-pozos/{id}/descargar', [DocPozoController::class, 'download'])
         ->name('doc-pozos.download');
 
     Route::put('doc-pozos/{docPozo}/restore', [DocPozoController::class, 'restore'])
