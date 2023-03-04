@@ -1,14 +1,12 @@
 <script setup>
 import { ref } from 'vue'
 import { Head, Link, useForm } from '@inertiajs/vue3'
-import FileUpload from '@/Components/FileUpload.vue'
-import TextareaInput from '@/Components/TextareaInput.vue'
 
 defineProps({
   pozos: Array,
 })
 
-var file = ref([]);
+var file = ref([])
 const form = useForm({
   file: [],
   pozoId: '',
@@ -17,9 +15,9 @@ const form = useForm({
   fechaMuest: '',
 })
 
-function importExcel(){
-  for( let i = 0; i < file.value.length; i++){
-    form.file[i] = file.value[i];
+function importExcel() {
+  for (let i = 0; i < file.value.length; i++) {
+    form.file[i] = file.value[i]
   }
 
   const response = form.post('/componente-pozos/import', {
@@ -47,7 +45,7 @@ function importExcel(){
       <form @submit.prevent="importExcel">
         <div class="flex flex-col flex-wrap mb-4 -mr-6 p-8">
           <!-- <FileUpload class="pb-8 pr-6 w-full lg:w-1/2" type="file" label="Elegir archivo" accept=".xlsx, .xls, .csv"  @input="file = $event.target.files"/>  -->
-          <input type="file" accept=".xlsx, .xls, .csv" @input="file = $event.target.files">
+          <input type="file" accept=".xlsx, .xls, .csv" @input="file = $event.target.files" />
           <!-- <div class="pb-8 pr-6 w-full lg:w-1/2">
             <label>Copiar y pegar texto</label>
             <TextareaInput />
@@ -55,25 +53,25 @@ function importExcel(){
           <div class="flex flex-wrap py-4 mt-4 w-full mb-4">
             <div class="flex flex-col pr-6">
               <label class="form-label">ID del pozo (buscar por nombre)</label>
-              <input list="datalist" type="text" v-model="form.pozoId" placeholder="Buscar un pozo">
+              <input v-model="form.pozoId" list="datalist" type="text" placeholder="Buscar un pozo" />
               <datalist id="datalist">
                 <option v-for="pozo in pozos" :key="pozo.id" :value="pozo.id">{{ pozo.nombre_pozo }}</option>
               </datalist>
             </div>
             <div class="flex flex-col pr-6">
               <label class="form-label">Fecha de recepción</label>
-              <input type="date" v-model="form.fechaRecep">
+              <input v-model="form.fechaRecep" type="date" />
             </div>
             <div class="flex flex-col pr-6">
               <label class="form-label">Fecha de análisis</label>
-              <input type="date" v-model="form.fechaAnalisis">
+              <input v-model="form.fechaAnalisis" type="date" />
             </div>
             <div class="flex flex-col pr-6">
               <label class="form-label">Fecha de muestreo</label>
-              <input type="date" v-model="form.fechaMuest">
+              <input v-model="form.fechaMuest" type="date" />
             </div>
           </div>
-          <p>Descarga el formato para importar componentes <a class="text-yellow-400" href="/formato">aquí.</a></p> 
+          <p>Descarga el formato para importar componentes <a class="text-yellow-400" href="/formato">aquí.</a></p>
         </div>
         <div class="flex items-center mb-6 ml-8">
           <button class="btn-yellow" type="submit">Importar</button>

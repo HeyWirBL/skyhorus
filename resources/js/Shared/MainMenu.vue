@@ -1,16 +1,16 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
 import { Link, usePage, router } from '@inertiajs/vue3'
-import Icon from '@/Components/Icon.vue';
-import Dropside from '@/Components/Dropside.vue';
+import Icon from '@/Components/Icon.vue'
+import Dropside from '@/Components/Dropside.vue'
 const currentUrl = computed(() => usePage().url.substring(1))
 
 const props = defineProps({
   datefilter: Object,
 })
 
-const anos = computed(() => usePage().props.anos);
-const meses = computed(()=> usePage().props.meses);
+const anos = computed(() => usePage().props.anos)
+const meses = computed(() => usePage().props.meses)
 
 const df = ref({
   month: props.datefilter,
@@ -151,31 +151,31 @@ export default {
         </div>
         <div v-if="isUrl('componente-pozos')">
           <Dropside :auto-close="false">
-          <template #default>
-            <div class="group flex text-base items-center p-2 pl-11 mt-1 rounded-md text-white justify-between hover:cursor-pointer hover:bg-zinc-700 w-48">
-              <p class="text-sm ml-12">Filtrar com.</p>
-              <Icon class=" fill-zinc-300 align-middle" name="fulner"/>
-            </div>
-          </template>
-          <template #dropdown>
-            <div class="flex px-4 py-4 bg-zinc-800 rounded shadow-lg">
-              <div class="flex flex-col mx-2">
-                <label class="text-zinc-300 mb-2">Año:</label>
-                <select class="rounded-lg bg-zinc-500 text-zinc-300" v-model="df.year">
-                  <option :value="null"></option>
-                  <option v-for="ano in anos" :value="ano.ano">{{ ano.ano }}</option>
-                </select>
+            <template #default>
+              <div class="group flex text-base items-center p-2 pl-11 mt-1 rounded-md text-white justify-between hover:cursor-pointer hover:bg-zinc-700 w-48">
+                <p class="text-sm ml-12">Filtrar com.</p>
+                <Icon class="fill-zinc-300 align-middle" name="fulner" />
               </div>
-              <div class="flex flex-col mx-2">
-                <label class="text-zinc-300 mb-2">Mes:</label>
-                <select class="rounded-lg bg-zinc-500 text-zinc-300" v-model="df.month">
-                  <option :value="null"></option>
-                  <option v-for="mes in meses" :value="mes.id">{{ mes.nombre }}</option>
-                </select>
+            </template>
+            <template #dropdown>
+              <div class="flex px-4 py-4 bg-zinc-800 rounded shadow-lg">
+                <div class="flex flex-col mx-2">
+                  <label class="text-zinc-300 mb-2">Año:</label>
+                  <select v-model="df.year" class="rounded-lg bg-zinc-500 text-zinc-300">
+                    <option :value="null" />
+                    <option v-for="ano in anos" :key="ano.id" :value="ano.ano">{{ ano.ano }}</option>
+                  </select>
+                </div>
+                <div class="flex flex-col mx-2">
+                  <label class="text-zinc-300 mb-2">Mes:</label>
+                  <select v-model="df.month" class="rounded-lg bg-zinc-500 text-zinc-300">
+                    <option :value="null" />
+                    <option v-for="mes in meses" :key="mes.id" :value="mes.id">{{ mes.nombre }}</option>
+                  </select>
+                </div>
               </div>
-            </div>
-          </template>
-        </Dropside>
+            </template>
+          </Dropside>
         </div>
         <!-- End Well Components Catalog -->
       </div>

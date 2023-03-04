@@ -171,7 +171,7 @@ watch(
             <progress max="100" />
           </div>
           <div class="ml-4 flex-shrink-0">
-            <button class="font-medium text-gray-600 hover:text-gray-500" @click="removeFile(index)">Remover archivo</button>
+            <button class="font-medium text-gray-600 hover:text-gray-500" @click.prevent="removeFile(index)">Remover archivo</button>
           </div>
         </li>
       </ul>

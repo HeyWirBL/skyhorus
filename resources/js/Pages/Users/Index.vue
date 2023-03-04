@@ -47,7 +47,7 @@ const createUserForm = useForm({
   rol: '',
 })
 
-/* Form for editing a user */ 
+/* Form for editing a user */
 const editUserForm = useForm({
   _method: 'put',
   id: '',

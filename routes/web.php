@@ -238,23 +238,6 @@ Route::middleware('auth')->group(function () {
         ->name('componente-pozos.destroyAll')
         ->middleware('can:delete,App\Models\ComponentePozo');
 
-    /* Route::post('/componente-pozos/import', function (Request $request) {
-            $file = $request->file('file');
-        
-            // Parse the Excel file and extract the data
-            // Here, we're using the PHPExcel library to do this
-            $reader = IOFactory::createReaderForFile($file);
-            $reader->setReadDataOnly(true);
-            $excel = $reader->load($file);
-            $worksheet = $excel->getActiveSheet();
-            $rows = $worksheet->toArray();
-        
-            // Insert the data into the database
-            DB::table('componente-pozos')->insert($rows);
-        
-            return response()->json(['success' => true]);
-        }); */
-
     Route::get('componente-pozos/export/{componentePozo}', [ComponentePozoController::class, 'export'])
         ->name('componente-pozos.export');
     

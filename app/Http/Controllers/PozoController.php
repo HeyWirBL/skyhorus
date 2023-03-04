@@ -115,7 +115,7 @@ class PozoController extends Controller
             ->withQueryString()
             ->through(fn ($docPozo) => [
                 'id' => $docPozo->id, 
-                'documento' => $docPozo->documento, 
+                'documento' => json_decode($docPozo->documento), 
                 'fecha_hora' => $docPozo->fecha_hora, 
                 'deleted_at' => $docPozo->deleted_at,
             ]);

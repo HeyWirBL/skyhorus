@@ -501,5 +501,4 @@ watch(
     <!-- Paginator -->
     <Pagination class="mt-4" :links="componentePozos.links" :total="componentePozos.total" />
   </div>
-  
 </template>

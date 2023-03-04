@@ -302,7 +302,7 @@ watch(
             <option value="">Por favor seleccione</option>
             <option v-for="pozo in pozos" :key="pozo.id" :value="pozo.id">{{ pozo.nombre_pozo }}</option>
           </SelectInput>
-          <TextInput v-model="uploadDocForm.fecha_hora" :error="editUploadedDocForm.errors.fecha_hora" class="pb-8 pr-6 w-full" type="date" label="Fecha" />
+          <TextInput v-model="uploadDocForm.fecha_hora" :error="uploadDocForm.errors.fecha_hora" class="pb-8 pr-6 w-full" type="date" label="Fecha" />
         </div>
         <!-- Modal footer -->
         <div class="flex items-center justify-end p-4 space-x-2 border-t border-gray-200">
