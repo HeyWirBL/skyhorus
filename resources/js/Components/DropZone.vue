@@ -153,7 +153,7 @@ watch(
 <template>
   <div class="relative" @dragenter.prevent @dragover.prevent @drop="handleDropFiles">
     <label v-if="label" class="form-label">{{ label }}</label>
-    <div class="h-full w-full overflow-auto flex flex-col">
+    <div class="h-full w-full overflow-auto flex flex-col" :class="{ error: errors.length }">
       <div class="border-2 border-dashed border-gray-400 py-12 flex flex-col justify-center items-center">
         <p class="mb-3 font-semibold flex flex-wrap justify-center">Arrastre y suelte los archivos aquí o</p>
         <input ref="fileInput" type="file" :accept="accept" class="hidden" multiple @change="addFiles" />

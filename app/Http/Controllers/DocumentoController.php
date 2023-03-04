@@ -10,18 +10,16 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
-use League\CommonMark\Node\Block\Document;
 
 class DocumentoController extends Controller
 {
     /**
      * Display a listing of documents.
      */
-    public function index(Request $request, Documento $documento, Ano $ano, MesDetalle $mes): Response
+    public function index(Request $request, Documento $documento, Directorio $directorio, Ano $ano, MesDetalle $mes): Response
     {
         $filters = $request->only('search', 'year',' month', 'trashed');
         $documentos = $documento->with('directorio', 'ano', 'mesDetalle')
@@ -32,36 +30,20 @@ class DocumentoController extends Controller
             ->through(fn ($doc) => [
                 'id' => $doc->id,
                 'documento' => json_decode($doc->documento),
+                'directorio_id' => $doc->directorio_id,
+                'ano_id' => $doc->ano_id,
+                'mes_detalle_id' => $doc->mes_detalle_id,
                 'deleted_at' => $doc->deleted_at,
                 'directorio' => optional($doc->directorio)->only('nombre_dir', 'deleted_at'),
                 'ano' => optional($doc->ano)->only('ano', 'deleted_at'),
                 'mes' => optional($doc->mesDetalle)->only('nombre'),
             ]);
 
+        $directorios = $directorio->orderByDesc('id')->get()->map->only('id', 'nombre_dir');
         $anos = $ano->latest()->get()->map->only('id', 'ano');
         $meses = $mes->latest()->get()->map->only('id', 'nombre');
 
-        return Inertia::render('Documentos/Index', compact('filters', 'documentos', 'anos', 'meses'));
-    }
-
-    /**
-     * Show the form for creating a new document.
-     */
-    public function create(Directorio $directorio, Ano $ano, MesDetalle $mes): Response
-    {
-        return Inertia::render('Documentos/Create', [
-            'directorios' => $directorio->query()
-                ->orderBy('id', 'desc')
-                ->get()
-                ->map
-                ->only('id', 'nombre_dir'),
-            'anos' => $ano->get()
-                ->map
-                ->only('id', 'ano'),
-            'meses' => $mes->get()
-                ->map
-                ->only('id', 'nombre')
-        ]);
+        return Inertia::render('Documentos/Index', compact('filters', 'documentos', 'directorios', 'anos', 'meses'));
     }
 
     /**
@@ -110,7 +92,6 @@ class DocumentoController extends Controller
             return Redirect::back()->with('error', 'Error al subir el archivo: ' . $e->getMessage());
         }
     }
-
     
     /**
      * Update document's information in database.
@@ -174,7 +155,12 @@ class DocumentoController extends Controller
     public function download($id)
     {
         try {
-            $documento = Documento::findOrFail($id);
+            $documento = Documento::withTrashed()->findOrFail($id);
+
+            if ($documento->trashed()) {
+                return back()->with('error', 'Error al descargar el archivo: el archivo ha sido eliminado.');
+            }
+
             $documentoData = json_decode($documento->documento, true);
 
             // Extract the file path and name from the documentoData array

@@ -1,24 +1,30 @@
 <script setup>
 import { computed, inject, ref, watch } from 'vue'
-import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3'
+import { Head, router, useForm, usePage } from '@inertiajs/vue3'
 import debounce from 'lodash/debounce'
 import mapValues from 'lodash/mapValues'
 import pickBy from 'lodash/pickBy'
+import DropZone from '@/Components/DropZone.vue'
 import Icon from '@/Components/Icon.vue'
+import LoadingButton from '@/Components/LoadingButton.vue'
 import Modal from '@/Components/Modal.vue'
 import SearchFilter from '@/Components/SearchFilter.vue'
+import SelectInput from '@/Components/SelectInput.vue'
 import Pagination from '@/Components/Pagination.vue'
 
 const props = defineProps({
   filters: Object,
   documentos: Object,
+  directorios: Array,
   anos: Array,
   meses: Array,
 })
 
 const swal = inject('$swal')
 
-const createNewDocumento = ref(false)
+const uploadNewDoc = ref(false)
+const editUploadedDoc = ref(false)
+
 const selected = ref([])
 const selectAllDocs = ref(false)
 
@@ -30,6 +36,22 @@ const form = ref({
 })
 
 const docForm = useForm({})
+
+const uploadDocForm = useForm({
+  documento: [],
+  directorio_id: '',
+  ano_id: '',
+  mes_detalle_id: '',
+})
+
+const editUploadedDocForm = useForm({
+  _method: 'put',
+  id: '',
+  documento: [],
+  directorio_id: '',
+  ano_id: '',
+  mes_detalle_id: '',
+})
 
 const isTrashed = computed(() => usePage().url.includes('trashed=only'))
 
@@ -96,6 +118,51 @@ const filesize = (size, precision = 2) => {
     const val = (size / Math.pow(1024, i)).toFixed(precision)
     return `${val} ${units[i]}`
   }
+}
+
+const openModalUploadForm = () => (uploadNewDoc.value = true)
+
+const openModalEditUploadedForm = (documento) => {
+  // Set form field values
+  editUploadedDocForm.id = documento.id  
+  editUploadedDocForm.documento = [documento.documento] 
+  editUploadedDocForm.directorio_id = documento.directorio_id
+  editUploadedDocForm.ano_id = documento.ano_id
+  editUploadedDocForm.mes_detalle_id = documento.mes_detalle_id
+
+  editUploadedDoc.value = true
+}
+
+const closeModalUploadForm = () => {
+  uploadNewDoc.value = false
+}
+
+const closeModalEditUploadedForm = () => {
+  editUploadedDoc.value = false
+  editUploadedDocForm.reset()
+}
+
+const store = () => {
+  uploadDocForm.post('/documentos', {
+    preserveScroll: true,
+    onSuccess: () => {
+      closeModalUploadForm()
+      uploadDocForm.reset()
+    },
+  })
+}
+
+const update = () => {
+  editUploadedDocForm.post(`/documentos/${editUploadedDocForm.id}`, {
+    preserveScroll: true,
+    onSuccess: () => (editUploadedDoc.value = false),
+    onError: (error) => console.error(error),
+    onFinish: () => {
+      if (!editUploadedDocForm.hasErrors) {
+        editUploadedDocForm.reset()
+      }
+    },
+  })
 }
 
 const removeSelectedItems = () => {
@@ -209,7 +276,7 @@ watch(
       </SearchFilter>
     </div>
     <div class="flex items-center mb-6">
-      <button class="btn-yellow mr-2" type="button">
+      <button class="btn-yellow mr-2" type="button" @click="openModalUploadForm">
         <span>Subir</span>
         <span class="hidden md:inline">&nbsp;Documentos</span>
       </button>
@@ -223,28 +290,82 @@ watch(
       </button>
     </div>
 
-    <!-- Create Documento Form Modal -->
-    <Modal :show="createNewDocumento">
+    <!-- Upload Documento Form Modal -->
+    <Modal :show="uploadNewDoc">
       <!-- Modal content -->
       <div class="relative">
         <!-- Modal header -->
         <div class="flex items-start justify-between p-4 border-b rounded-t">
-          <h2 class="text-xl font-semibold">Crear Año</h2>
-          <button class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" type="button" @click="closeModalCreateForm">
+          <h2 class="text-xl font-semibold">Subir Documentos</h2>
+          <button class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" type="button" @click="closeModalUploadForm">
             <Icon class="w-4 h-4" name="close" aria-hidden="true" />
             <span class="sr-only">Cerrar modal</span>
           </button>
         </div>
       </div>
-      <!-- Modal body -->
       <form @submit.prevent="store">
-        <div class="flex flex-wrap -mb-8 -mr-6 p-8">
-          <TextInput v-model="createAnoForm.ano" :error="createAnoForm.errors.ano" class="pb-8 pr-6 w-full" label="Año" />
+        <div class="relative flex flex-wrap p-4">
+          <div class="w-full pb-4">
+            <!-- DropZone Component -->
+            <DropZone v-model="uploadDocForm.documento" :errors="uploadDocForm.errors.documento" label="Documento:" />
+          </div>
+          <SelectInput v-model="uploadDocForm.directorio_id" :error="uploadDocForm.errors.directorio_id" class="pb-4 pr-6 w-full" label="Carpeta:">
+            <option value="">Por favor seleccione</option>
+            <option v-for="dir in directorios" :key="dir.id" :value="dir.id">{{ dir.nombre_dir }}</option>
+          </SelectInput>
+          <SelectInput v-model="uploadDocForm.ano_id" :error="uploadDocForm.errors.ano_id" class="pb-4 pr-6 w-full lg:w-1/2" label="Año:">
+            <option value="">Por favor seleccione</option>
+            <option v-for="ano in anos" :key="ano.id" :value="ano.id">{{ ano.ano }}</option>
+          </SelectInput>
+          <SelectInput v-model="uploadDocForm.mes_detalle_id" :error="uploadDocForm.errors.mes_detalle_id" class="pb-4 pr-6 w-full lg:w-1/2" label="Mes:">
+            <option value="">Por favor seleccione</option>
+            <option v-for="mes in meses" :key="mes.id" :value="mes.id">{{ mes.nombre }}</option>
+          </SelectInput>
         </div>
         <!-- Modal footer -->
-        <div class="flex items-center justify-end p-6 space-x-2 border-t border-gray-200">
-          <LoadingButton :loading="createAnoForm.processing" class="btn-yellow mr-2" type="submit">Guardar</LoadingButton>
-          <button class="btn-secondary" @click="closeModalCreateForm">Cancelar</button>
+        <div class="flex items-center justify-end p-4 space-x-2 border-t border-gray-200">
+          <LoadingButton :loading="uploadDocForm.processing" class="btn-yellow mr-2" type="submit">Guardar</LoadingButton>
+          <button class="btn-secondary" @click="closeModalUploadForm">Cancelar</button>
+        </div>
+      </form>
+    </Modal>
+
+    <!-- Edit an Uploaded Documento Form Modal -->
+    <Modal :show="editUploadedDoc">
+      <!-- Modal content -->
+      <div class="relative">
+        <!-- Modal header -->
+        <div class="flex items-start justify-between p-4 border-b rounded-t">
+          <h2 class="text-xl font-semibold">Editar Documentos [{{ editUploadedDocForm.id }}]</h2>
+          <button class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" type="button" @click="closeModalEditUploadedForm">
+            <Icon class="w-4 h-4" name="close" aria-hidden="true" />
+            <span class="sr-only">Cerrar modal</span>
+          </button>
+        </div>
+      </div>
+      <form @submit.prevent="update">
+        <div class="relative flex flex-wrap p-4">
+          <div class="w-full pb-4">
+            <!-- DropZone Component -->
+            <DropZone v-model="editUploadedDocForm.documento" :errors="editUploadedDocForm.errors.documento" label="Documento:" />
+          </div>
+          <SelectInput v-model="editUploadedDocForm.directorio_id" :error="editUploadedDocForm.errors.directorio_id" class="pb-4 pr-6 w-full" label="Carpeta:">
+            <option value="">Por favor seleccione</option>
+            <option v-for="dir in directorios" :key="dir.id" :value="dir.id">{{ dir.nombre_dir }}</option>
+          </SelectInput>
+          <SelectInput v-model="editUploadedDocForm.ano_id" :error="editUploadedDocForm.errors.ano_id" class="pb-4 pr-6 w-full lg:w-1/2" label="Año">
+            <option value="">Por favor seleccione</option>
+            <option v-for="ano in anos" :key="ano.id" :value="ano.id">{{ ano.ano }}</option>
+          </SelectInput>
+          <SelectInput v-model="editUploadedDocForm.mes_detalle_id" :error="editUploadedDocForm.errors.mes_detalle_id" class="pb-4 pr-6 w-full lg:w-1/2" label="Mes">
+            <option value="">Por favor seleccione</option>
+            <option v-for="mes in meses" :key="mes.id" :value="mes.id">{{ mes.nombre }}</option>
+          </SelectInput>
+        </div>
+        <!-- Modal footer -->
+        <div class="flex items-center justify-end p-4 space-x-2 border-t border-gray-200">
+          <LoadingButton :loading="editUploadedDocForm.processing" class="btn-yellow mr-2" type="submit">Guardar</LoadingButton>
+          <button class="btn-secondary" @click="closeModalEditUploadedForm">Cancelar</button>
         </div>
       </form>
     </Modal>
@@ -269,10 +390,10 @@ watch(
         <tbody>
           <tr v-for="documento in documentos.data" :key="documento.id" class="bg-white border-b">
             <td class="px-6 py-4 whitespace-nowrap border-solid border border-gray-200">
-              <span class="inline-block whitespace-nowrap">
-                <Link class="flex items-center" :href="`/documentos/${documento.id}/editar`" tabindex="-1">
+              <span class="inline-block whitespace-nowrap" title="Editar documento">
+                <button class="flex items-center" tabindex="-1" type="button" @click="openModalEditUploadedForm(documento)">
                   <Icon class="flex-shrink-0 w-4 h-4 fill-yellow-400" name="pencil" />
-                </Link>
+                </button>
               </span>
             </td>
             <td class="w-4 p-4 border-solid border border-gray-200">
@@ -283,7 +404,7 @@ watch(
             </td>
             <td class="px-6 py-4 border-solid border border-gray-200">
               <div class="flex items-center leading-snug">
-                <a class="text-yellow-400 hover:underline focus:text-yellow-500" :href="`/documentos/${documento.documento.name}/descargar`">
+                <a class="text-yellow-400 hover:underline focus:text-yellow-500" :href="`/documentos/${documento.id}/descargar`">
                   {{ documento.documento.usrName }}
                 </a>
                 <span class="text-xs ml-2"> {{ filesize(documento.documento.size) }} </span>
