@@ -113,8 +113,8 @@ class DocumentoController extends Controller
 
    public function download($document)
     {
-        if(Storage::disk('public')->exists($document)){
-           return Storage::disk('public')->download($document);
+        if(Storage::disk('public')->exists('files/'.$document)){
+           return Storage::disk('public')->download('files/'.$document);
            //return response('error');           
         }else{
             return response('¡404! No se pudo encontrar este recurso. Si ves este mensaje, por favor contacta con un administrador. <br/> Powered by: Nerd Rage!', 404);

@@ -45,32 +45,35 @@ function importExcel(){
     </div>
     <div class="w-full bg-white rounded-md shadow overflow-hidden">
       <form @submit.prevent="importExcel">
-        <div class="flex flex-wrap -mb-8 -mr-6 p-8">
+        <div class="flex flex-col flex-wrap mb-4 -mr-6 p-8">
           <!-- <FileUpload class="pb-8 pr-6 w-full lg:w-1/2" type="file" label="Elegir archivo" accept=".xlsx, .xls, .csv"  @input="file = $event.target.files"/>  -->
           <input type="file" accept=".xlsx, .xls, .csv" @input="file = $event.target.files">
-          <div class="pb-8 pr-6 w-full lg:w-1/2">
+          <!-- <div class="pb-8 pr-6 w-full lg:w-1/2">
             <label>Copiar y pegar texto</label>
             <TextareaInput />
+          </div> -->
+          <div class="flex flex-wrap py-4 mt-4 w-full mb-4">
+            <div class="flex flex-col pr-6">
+              <label class="form-label">ID del pozo (buscar por nombre)</label>
+              <input list="datalist" type="text" v-model="form.pozoId" placeholder="Buscar un pozo">
+              <datalist id="datalist">
+                <option v-for="pozo in pozos" :key="pozo.id" :value="pozo.id">{{ pozo.nombre_pozo }}</option>
+              </datalist>
+            </div>
+            <div class="flex flex-col pr-6">
+              <label class="form-label">Fecha de recepción</label>
+              <input type="date" v-model="form.fechaRecep">
+            </div>
+            <div class="flex flex-col pr-6">
+              <label class="form-label">Fecha de análisis</label>
+              <input type="date" v-model="form.fechaAnalisis">
+            </div>
+            <div class="flex flex-col pr-6">
+              <label class="form-label">Fecha de muestreo</label>
+              <input type="date" v-model="form.fechaMuest">
+            </div>
           </div>
-          <div class="flex flex-col pb-8 pr-6">
-            <label class="form-label">ID del pozo (buscar por nombre)</label>
-            <input list="datalist" type="text" v-model="form.pozoId" placeholder="Buscar un pozo">
-            <datalist id="datalist">
-              <option v-for="pozo in pozos" :key="pozo.id" :value="pozo.id">{{ pozo.nombre_pozo }}</option>
-            </datalist>
-          </div>
-          <div class="flex flex-col pb-8 pr-6">
-            <label class="form-label">Fecha de recepción</label>
-            <input type="date" v-model="form.fechaRecep">
-          </div>
-          <div class="flex flex-col pb-8 pr-6">
-            <label class="form-label">Fecha de análisis</label>
-            <input type="date" v-model="form.fechaAnalisis">
-          </div>
-          <div class="flex flex-col pb-8 pr-6">
-            <label class="form-label">Fecha de muestreo</label>
-            <input type="date" v-model="form.fechaMuest">
-          </div>
+          <p>Descarga el formato para importar componentes <Link class="text-yellow-400" href="/componente-pozos/formato">aquí.</Link></p> 
         </div>
         <div class="flex items-center mb-6 ml-8">
           <button class="btn-yellow" type="submit">Importar</button>
