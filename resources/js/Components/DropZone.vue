@@ -168,7 +168,7 @@ watch(
           <div class="flex w-0 flex-1 items-center">
             <a class="w-0 flex-1 text-yellow-400 hover:underline truncate" href="#" :title="file.name">{{ file.name }}</a>
             <span class="mr-4">{{ filesize(file.size) }}</span>
-            <progress max="100" />
+            <progress :value="file.progress" max="100" />
           </div>
           <div class="ml-4 flex-shrink-0">
             <button class="font-medium text-gray-600 hover:text-gray-500" @click.prevent="removeFile(index)">Remover archivo</button>
