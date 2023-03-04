@@ -93,9 +93,12 @@ class DirectorioController extends Controller
                 ->through(fn ($documento) => [
                     'id' => $documento->id,
                     'documento' => json_decode($documento->documento),
+                    'directorio_id' => $documento->directorio_id,
+                    'ano_id' => $documento->ano_id,
+                    'mes_detalle_id' => $documento->mes_detalle_id,
                     'deleted_at' => $documento->deleted_at,
-                    'ano' => $documento->ano ? $documento->ano->only('ano') : null,
-                    'mes' => $documento->mesDetalle ? $documento->mesDetalle->only('nombre') : null,
+                    'ano' => optional($documento->ano)->only('ano', 'deleted_at'),
+                    'mes' => optional($documento->mesDetalle)->only('nombre', 'deleted_at'),
                 ]),  
         ];
 
