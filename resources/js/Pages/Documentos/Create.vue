@@ -16,15 +16,15 @@ const form = useForm({
   ano_id: '',
   mes_id: '',
   files: [],
-}); 
+})
 
 function store() {
   for (let i = 0; i < files.value.length; i++) {
-    form.files[i] = files.value[i];
+    form.files[i] = files.value[i]
   }
   form.post('/documentos', {
     forceFormData: true,
-  });
+  })
 }
 </script>
 
@@ -44,8 +44,8 @@ function store() {
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
       <form @submit.prevent="store">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
-            <input class="pb-8 pr-6 w-full" type="file" @:input="files = $event.target.files" multiple>
-          <SelectInput class="pb-8 pr-6 w-full" label="Carpeta" v-model="form.directorio_id">
+          <input class="pb-8 pr-6 w-full" type="file" multiple @input="files = $event.target.files" />
+          <SelectInput v-model="form.directorio_id" class="pb-8 pr-6 w-full" label="Carpeta">
             <option :value="null" />
             <option v-for="directorio in directorios" :key="directorio.id" :value="directorio.id">{{ directorio.nombre_dir }}</option>
           </SelectInput>

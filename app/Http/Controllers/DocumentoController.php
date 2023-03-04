@@ -10,9 +10,11 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
+use League\CommonMark\Node\Block\Document;
 
 class DocumentoController extends Controller
 {
@@ -67,52 +69,47 @@ class DocumentoController extends Controller
      * 
      * @throws \Illuminate\Validation\ValidationException
      */
-    /* public function store(Request $request, Documento $documento): RedirectResponse
+    public function store(Request $request, Documento $documento): RedirectResponse
     {
-        $validated = $request->validate([
-            'documento' => 'required',
-            'directorio_id' => ['required', Rule::exists('directorios', 'id')],
-            'ano_id' => ['required', Rule::exists('anos', 'id')],
-            'mes_id' => ['required', Rule::exists('meses', 'id')],
-        ]);
-        
-        $documento->create($validated);
+        try {            
+            $request->validate([
+                'documento.*' => ['required', 'max:8000'], // MAX 8 MB per file
+                'directorio_id' => ['required', Rule::exists('directorios', 'id')],
+                'ano_id' => ['required', Rule::exists('anos', 'id')],
+                'mes_detalle_id' => ['required', Rule::exists('mes_detalles', 'id')],
+            ]);
 
-        return redirect(route('documentos'));
-    }  */
+            $files = $request->file('documento');
 
-    public function store(Request $request): RedirectResponse 
-    {
-        $validated = $request->validate([
-            'files' => 'required',
-            'directorio_id' => ['required', Rule::exists('directorios', 'id')],
-            'ano_id' => ['required', Rule::exists('anos', 'id')],
-            'mes_id' => ['required', Rule::exists('mes_detalles', 'id')],
-        ]);
-        if ($validated) {
-            foreach($request->file('files') as $file){
-                $filename = $file->getClientOriginalName();
-                $fileRoute = time().$filename;
-                $filesize = $file->getSize();
-                $filetype = $file->getClientOriginalExtension();
-                Storage::disk('public')->putFileAs('', $file, $fileRoute);
-                $document = new Documento();
-                $document->documento = '{"name": "'.$fileRoute.'", "size": "'.$filesize.'", "type": "'.$filetype.'", "usrName": "'.$filename.'" }';
-                $document->directorio_id = $request->directorio_id;
-                $document->ano_id = $request->ano_id;
-                $document->mes_detalle_id = $request->mes_id;
-                $document->save();
-            }
-        } 
-        return redirect(route('documentos'));
+            foreach ($files as $file) {
+                $filename = time() . '_' . $file->getClientOriginalName();
+                // store the file in the "files" directory inside the "storage/app/public" disk
+                $path = Storage::disk('public')->putFileAs('files', $file, $filename);
+                $documento = $documento->create([
+                    'directorio_id' => $request->input('directorio_id'),
+                    'ano_id' => $request->input('ano_id'),
+                    'mes_detalle_id' => $request->input('mes_detalle_id'),
+                    'documento' => json_encode([
+                        'name' => asset('storage/' . $path), // generate a public URL for the file
+                        'usrName' => $filename,
+                        'size' => $file->getSize(),
+                        'type' => $file->getMimeType(),
+                    ]),
+                ]);
+            }            
+            return Redirect::back()->with('success', 'Subido correctamente.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return Redirect::back()->withErrors($e->errors())->withInput();
+        } catch (\Exception $e) {
+            return Redirect::back()->with('error', 'Error al subir el archivo: ' . $e->getMessage());
+        }
     }
 
    public function download($document)
     {
         if(Storage::disk('public')->exists($document)){
            return Storage::disk('public')->download($document);
-           //return response('error');
-           
+           //return response('error');           
         }else{
             return response('¡404! No se pudo encontrar este recurso. Si ves este mensaje, por favor contacta con un administrador. <br/> Powered by: Nerd Rage!', 404);
         }

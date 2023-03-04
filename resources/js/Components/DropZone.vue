@@ -1,61 +1,180 @@
 <script setup>
-import { ref, onMounted, defineEmits } from 'vue'
-import Dropzone from 'dropzone'
+import { ref, watch } from 'vue'
 
-const dropRef = ref(null)
-
-const customPreview = `
-    <div class="dz-preview dz-processing dz-image image-preview dz-error dz-complete">
-        <div class="dz-image">
-            <img data-dz-thumbnail>
-        </div>
-        <div class="dz-details">
-            <div class="dz-size"><span data-dz-size></span></div>
-            <div class="dz-filename"><span data-dz-name></span></div>
-        </div>
-        <div class="dz-progress">
-            <span class="dz-upload" data-dz-uploadprogress></span>
-        </div>
-        <div class="dz-error-message"><span data-dz-errormessage></span></div>
-        <div class="dz-success-mark">
-            <svg width="54px" height="54px" viewBox="0 0 54 54" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"> <title>Check</title> <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"> <path d="M23.5,31.8431458 L17.5852419,25.9283877 C16.0248253,24.3679711 13.4910294,24.366835 11.9289322,25.9289322 C10.3700136,27.4878508 10.3665912,30.0234455 11.9283877,31.5852419 L20.4147581,40.0716123 C20.5133999,40.1702541 20.6159315,40.2626649 20.7218615,40.3488435 C22.2835669,41.8725651 24.794234,41.8626202 26.3461564,40.3106978 L43.3106978,23.3461564 C44.8771021,21.7797521 44.8758057,19.2483887 43.3137085,17.6862915 C41.7547899,16.1273729 39.2176035,16.1255422 37.6538436,17.6893022 L23.5,31.8431458 Z M27,53 C41.3594035,53 53,41.3594035 53,27 C53,12.6405965 41.3594035,1 27,1 C12.6405965,1 1,12.6405965 1,27 C1,41.3594035 12.6405965,53 27,53 Z" stroke-opacity="0.198794158" stroke="#747474" fill-opacity="0.816519475" fill="#FFFFFF"></path> </g> </svg>
-        </div>
-        <div class="dz-error-mark">
-            <svg width="54px" height="54px" viewBox="0 0 54 54" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"> <title>Error</title> <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"> <g stroke="#747474" stroke-opacity="0.198794158" fill="#FFFFFF" fill-opacity="0.816519475"> <path d="M32.6568542,29 L38.3106978,23.3461564 C39.8771021,21.7797521 39.8758057,19.2483887 38.3137085,17.6862915 C36.7547899,16.1273729 34.2176035,16.1255422 32.6538436,17.6893022 L27,23.3431458 L21.3461564,17.6893022 C19.7823965,16.1255422 17.2452101,16.1273729 15.6862915,17.6862915 C14.1241943,19.2483887 14.1228979,21.7797521 15.6893022,23.3461564 L21.3431458,29 L15.6893022,34.6538436 C14.1228979,36.2202479 14.1241943,38.7516113 15.6862915,40.3137085 C17.2452101,41.8726271 19.7823965,41.8744578 21.3461564,40.3106978 L27,34.6568542 L32.6538436,40.3106978 C34.2176035,41.8744578 36.7547899,41.8726271 38.3137085,40.3137085 C39.8758057,38.7516113 39.8771021,36.2202479 38.3106978,34.6538436 L32.6568542,29 Z M27,53 C41.3594035,53 53,41.3594035 53,27 C53,12.6405965 41.3594035,1 27,1 C12.6405965,1 1,12.6405965 1,27 C1,41.3594035 12.6405965,53 27,53 Z"></path> </g> </g> </svg>
-        </div>
-    </div>
-`
-const emit = defineEmits(['files'])
-
-onMounted(() => {
-  if (dropRef.value !== null) {
-    var myDropzone = new Dropzone(dropRef.value, {
-      previewTemplate: customPreview,
-      url: '/documentos',
-      method: 'POST',
-      addedfiles: (files) => {
-        emit('files', files);
-      },
-    })
-
-    if (dropRef.value.querySelector('.dz-default')) {
-      dropRef.value.querySelector('.dz-default').innerHTML = `
-            <div class="flex justify-center">
-                <svg aria-hidden="true" class="w-10 h-10 mb-3 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-            </div>
-            <p class="mb-3 font-semibold text-gray-900 flex flex-wrap justify-center">
-                <span>Arrastre y suelte sus archivos</span>    
-                <span>&nbsp;en cualquier lugar o</span>
-            </p>            
-            <button class="btn-yellow mt-2" type="button">Explorar Archivos</button>
-        `
-    }
-  }
+const props = defineProps({
+  modelValue: {
+    type: Array,
+    default: () => [],
+  },
+  label: String,
+  accept: String,
+  errors: {
+    type: Array,
+    default: () => [],
+  },
 })
+
+const emit = defineEmits(['update:modelValue'])
+
+const fileInput = ref(null)
+const files = ref(props.modelValue)
+const errorMessage = ref('')
+
+/**
+ * Converts a file size in bytes to the nearest unit of measurement (B, kB, MB, GB, etc.).
+ * @param {number} size - The file size in bytes.
+ * @param {number} [precision=2] - The number of decimal places to include in the output. Default is 2.
+ * @returns {string} The formatted file size with the appropriate unit of measurement.
+ */
+const filesize = (size, precision = 2) => {
+  const units = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB', 'BB']
+  if (size < 0) {
+    return 'Tipo de archivo inválido'
+  } else if (size === 0) {
+    return `0 ${units[0]}`
+  } else if (size < 1) {
+    return `${(size * 1024).toFixed(precision)} ${units[1]}`
+  } else if (size >= Math.pow(1024, units.length - 1)) {
+    return `${(size / Math.pow(1024, units.length - 1)).toFixed(precision)} ${units[units.length - 1]}`
+  } else {
+    const i = Math.floor(Math.log(size) / Math.log(1024))
+    const val = (size / Math.pow(1024, i)).toFixed(precision)
+    return `${val} ${units[i]}`
+  }
+}
+
+const browseFiles = () => {
+  fileInput.value.click()
+}
+
+const addFiles = (e, maxFiles = 10) => {
+  try {
+    e.preventDefault()
+
+    const selectedFiles = e.dataTransfer ? [...e.dataTransfer.files] : [...e.target.files]
+
+    if (selectedFiles.length === 0) {
+      errorMessage.value = 'Por favor use la función de arrastrar y soltar para subir archivos.'
+      return
+    }
+
+    if (!Array.isArray(files.value)) {
+      throw new Error('El valor de los archivos no son de tipo array.')
+    }
+
+    const fileAlreadyAdded = checkForDuplicateFiles(selectedFiles, files.value)
+    if (fileAlreadyAdded.length > 0) {
+      const fileNames = fileAlreadyAdded.map((file) => file.name).join(',')
+      errorMessage.value = `Los siguientes archivos ya se habían subido: ${fileNames}`
+      return
+    }
+
+    if (checkFilesLimit(selectedFiles, files.value, maxFiles)) {
+      errorMessage.value = 'Sólo se pueden subir 10 archivos a la vez.'
+      return
+    }
+
+    if (typeof emit !== 'function') {
+      throw new Error('La función Emit no está definida')
+    }
+
+    files.value = [...files.value, ...selectedFiles]
+    emit('update:modelValue', files.value)
+  } catch (err) {
+    console.error(err)
+    errorMessage.value = 'Ha ocurrido un error al subir los archivos.'
+  }
+}
+
+const removeFile = (index) => {
+  const newFiles = files.value.filter((file, i) => i !== index)
+  files.value = newFiles
+  if (files.value.length === 0) {
+    errorMessage.value = ''
+  }
+  emit('update:modelValue', newFiles)
+}
+
+const checkForDuplicateFiles = (newFiles, existingFiles) => {
+  return newFiles.filter((file) => existingFiles.some((f) => f.name === file.name))
+}
+
+const checkFilesLimit = (newFiles, existingFiles, limit) => {
+  return existingFiles.length + newFiles.length > limit
+}
+
+const handleDropFiles = (e, maxFiles = 10) => {
+  try {
+    e.preventDefault()
+    e.stopPropagation()
+
+    const droppedFiles = Array.from(e.dataTransfer ? e.dataTransfer.files : e.target.files)
+
+    if (!Array.isArray(files.value)) {
+      throw new Error('El valor de los archivos no son de tipo array.')
+    }
+
+    const fileAlreadyAdded = checkForDuplicateFiles(droppedFiles, files.value)
+    if (fileAlreadyAdded.length > 0) {
+      const fileNames = fileAlreadyAdded.map((file) => file.name).join(',')
+      errorMessage.value = `Los siguientes archivos ya se habían subido: ${fileNames}`
+      return
+    }
+
+    if (checkFilesLimit(droppedFiles, files.value, maxFiles)) {
+      errorMessage.value = 'Sólo se pueden subir 10 archivos a la vez.'
+      return
+    }
+
+    const newFiles = [...files.value, ...droppedFiles]
+
+    if (typeof emit !== 'function') {
+      throw new Error('La función Emit no está definida')
+    }
+
+    files.value = [...newFiles]
+    emit('update:modelValue', files.value)
+  } catch (err) {
+    console.error(err)
+    errorMessage.value = 'Ha ocurrido un error al subir los archivos.'
+  }
+}
+
+watch(
+  () => props.modelValue,
+  (value) => {
+    if (!value) {
+      fileInput.value = ''
+    }
+  },
+)
 </script>
 
 <template>
-  <div>
-    <div ref="dropRef" class="dropzone border-dashed border-2 border-gray-400" />
+  <div class="relative" @dragenter.prevent @dragover.prevent @drop="handleDropFiles">
+    <label v-if="label" class="form-label">{{ label }}</label>
+    <div class="h-full w-full overflow-auto flex flex-col">
+      <div class="border-2 border-dashed border-gray-400 py-12 flex flex-col justify-center items-center">
+        <p class="mb-3 font-semibold flex flex-wrap justify-center">Arrastre y suelte los archivos aquí o</p>
+        <input ref="fileInput" type="file" :accept="accept" class="hidden" multiple @change="addFiles" />
+        <button type="button" class="btn-yellow" @click="browseFiles">Seleccione archivos</button>
+      </div>
+    </div>
+    <div v-if="errors.length" class="form-error">{{ errors }}</div>
+    <div v-if="errorMessage" class="form-error">{{ errorMessage }}</div>
+    <div v-if="files.length !== 0">
+      <ul role="list" class="mt-2 divide-y divide-gray-400 rounded border border-gray-400">
+        <li v-for="(file, index) in files" :key="index" class="flex items-center justify-between py-3 pl-3 pr-4 text-sm">
+          <div class="flex w-0 flex-1 items-center">
+            <a class="w-0 flex-1 text-yellow-400 hover:underline truncate" href="#" :title="file.name">{{ file.name }}</a>
+            <span class="mr-4">{{ filesize(file.size) }}</span>
+            <progress max="100" />
+          </div>
+          <div class="ml-4 flex-shrink-0">
+            <button class="font-medium text-gray-600 hover:text-gray-500" @click="removeFile(index)">Remover archivo</button>
+          </div>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>

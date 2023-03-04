@@ -4,9 +4,13 @@ import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3'
 import debounce from 'lodash/debounce'
 import mapValues from 'lodash/mapValues'
 import pickBy from 'lodash/pickBy'
+import DropZone from '@/Components/DropZone.vue'
 import Icon from '@/Components/Icon.vue'
-import SearchFilter from '@/Components/SearchFilter.vue'
+import LoadingButton from '@/Components/LoadingButton.vue'
+import Modal from '@/Components/Modal.vue'
 import Pagination from '@/Components/Pagination.vue'
+import SearchFilter from '@/Components/SearchFilter.vue'
+import SelectInput from '@/Components/SelectInput.vue'
 import TrashedMessage from '@/Shared/TrashedMessage.vue'
 
 const props = defineProps({
@@ -19,7 +23,8 @@ const props = defineProps({
 
 const swal = inject('$swal')
 
-//const createNewDocumento = ref(false)
+const uploadNewDoc = ref(false)
+
 const selected = ref([])
 const selectAllDocs = ref(false)
 
@@ -32,36 +37,15 @@ const form = ref({
 
 const docForm = useForm({})
 
-const dirForm = useForm({
-  nombre_dir: props.directorioData.nombre_dir,
-  fecha_dir: props.directorioData.fecha_dir,
+const uploadDocForm = useForm({
+  documento: [],
+  directorio_id: props.directorioData.id,
+  ano_id: '',
+  mes_detalle_id: '',
 })
 
 const documentos = computed(() => props.directorioData.documentos)
 const isTrashed = computed(() => usePage().url.includes('trashed=only'))
-
-const convertDocument = computed(() => documentos.value.data)
-
-const documentoData = computed(() => convertDocument.value.map((d) => d.documento))
-
-const displayDocumento = computed(() => {
-  const usrNames = []
-  const size = []
-  if (Array.isArray(documentoData.value)) {
-    documentoData.value.forEach((innerArray) => {
-      if (Array.isArray(innerArray)) {
-        innerArray.forEach((doc) => {
-          //console.log(doc.usrName)
-          usrNames.push(doc.usrName)
-          size.push(doc.size)
-        })
-      }
-    })
-  }
-  return usrNames
-})
-
-//const documentosData = convertDocument.value.map((d) => d.id)
 
 /**
  * Helper Function that that checks whether the `selectAllRef` flag is set
@@ -97,17 +81,52 @@ const changeToggleAll = (items, selectedItems, selectAllRef) => {
 const toggleAllDocs = () => {
   toggleAll(documentos.value.data, selected, selectAllDocs)
 }
+
 const changeToggleAllDocs = () => {
   changeToggleAll(documentos.value.data, selected, selectAllDocs)
+}
+
+/**
+ * Converts a file size in bytes to the nearest unit of measurement (B, kB, MB, GB, etc.).
+ * @param {number} size - The file size in bytes.
+ * @param {number} [precision=2] - The number of decimal places to include in the output. Default is 2.
+ * @returns {string} The formatted file size with the appropriate unit of measurement.
+ */
+const filesize = (size, precision = 2) => {
+  const units = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB', 'BB']
+  if (size < 0) {
+    return 'Tipo de archivo inválido'
+  } else if (size === 0) {
+    return `0 ${units[0]}`
+  } else if (size < 1) {
+    return `${(size * 1024).toFixed(precision)} ${units[1]}`
+  } else if (size >= Math.pow(1024, units.length - 1)) {
+    return `${(size / Math.pow(1024, units.length - 1)).toFixed(precision)} ${units[units.length - 1]}`
+  } else {
+    const i = Math.floor(Math.log(size) / Math.log(1024))
+    const val = (size / Math.pow(1024, i)).toFixed(precision)
+    return `${val} ${units[i]}`
+  }
+}
+
+const openModalUploadForm = () => (uploadNewDoc.value = true)
+
+const closeModalUploadForm = () => {
+  uploadNewDoc.value = false
 }
 
 const reset = () => {
   form.value = mapValues(form.value, () => null)
 }
 
-const filesize = (size) => {
-  let i = Math.floor(Math.log(size) / Math.log(1024))
-  return (size / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'][i]
+const store = () => {
+  uploadDocForm.post('/documentos', {
+    preserveScroll: true,
+    onSuccess: () => {
+      closeModalUploadForm()
+      uploadDocForm.reset()
+    },
+  })
 }
 
 const removeSelectedItems = () => {
@@ -186,6 +205,22 @@ const restoreSelectedItems = () => {
   }
 }
 
+const restore = () => {
+  swal({
+    title: '¿Estás seguro de querer restablecer este pozo?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#CEA915',
+    cancelButtonColor: '#BDBDBD',
+    confirmButtonText: 'Confirmar',
+    cancelButtonText: 'Cancelar',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      docForm.put(`/directorios/${props.directorioData.id}/restore`)
+    }
+  })
+}
+
 watch(
   () => form.value,
   debounce(function () {
@@ -199,10 +234,11 @@ watch(
 
 <template>
   <div>
-    <Head :title="dirForm.nombre_dir" />
+    <Head title="Carpeta" />
+
     <h1 class="mb-8 text-3xl font-bold">
       <Link class="text-yellow-400 hover:text-yellow-600" href="/directorios">Carpetas</Link>
-      <span class="text-yellow-400 font-medium">&nbsp;/</span> {{ dirForm.nombre_dir }} ({{ documentos.total }})
+      <span class="text-yellow-400 font-medium">&nbsp;/</span> {{ directorioData.nombre_dir }} ({{ documentos.total }})
     </h1>
 
     <TrashedMessage v-if="directorioData.deleted_at && can.restoreDirectorio" class="mb-6" @restore="restore">Esta carpeta ha sido eliminada.</TrashedMessage>
@@ -228,7 +264,7 @@ watch(
     </div>
 
     <div class="flex items-center mb-6">
-      <button class="btn-yellow mr-2" type="button">
+      <button class="btn-yellow mr-2" type="button" @click="openModalUploadForm">
         <span>Subir</span>
         <span class="hidden md:inline">&nbsp;Documentos</span>
       </button>
@@ -242,6 +278,48 @@ watch(
       </button>
     </div>
 
+    <Modal :show="uploadNewDoc">
+      <!-- Modal content -->
+      <div class="relative">
+        <!-- Modal header -->
+        <div class="flex items-start justify-between p-4 border-b rounded-t">
+          <h2 class="text-xl font-semibold">Subir Documentos</h2>
+          <button class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" type="button" @click="closeModalUploadForm">
+            <Icon class="w-4 h-4" name="close" aria-hidden="true" />
+            <span class="sr-only">Cerrar modal</span>
+          </button>
+        </div>
+      </div>
+      <form @submit.prevent="store">
+        <div class="relative flex flex-wrap p-4">
+          <div class="w-full pb-4">
+            <!-- DropZone Component -->
+            <DropZone v-model="uploadDocForm.documento" :errors="uploadDocForm.errors.documento" label="Documento:" />
+          </div>
+          <div class="pb-4 pr-6 w-full">
+            <label class="form-label" for="text-input-dir">Carpeta:</label>
+            <div>
+              <span class="block text-yellow-500">{{ directorioData.nombre_dir }}</span>
+            </div>
+            <input id="text-input-dir" type="hidden" :value="directorioData.id" />
+          </div>
+          <SelectInput v-model="uploadDocForm.ano_id" :error="uploadDocForm.errors.ano_id" class="pb-4 pr-6 w-full lg:w-1/2" label="Año">
+            <option value="">Por favor seleccione</option>
+            <option v-for="ano in anos" :key="ano.id" :value="ano.id">{{ ano.ano }}</option>
+          </SelectInput>
+          <SelectInput v-model="uploadDocForm.mes_detalle_id" :error="uploadDocForm.errors.mes_detalle_id" class="pb-4 pr-6 w-full lg:w-1/2" label="Mes">
+            <option value="">Por favor seleccione</option>
+            <option v-for="mes in meses" :key="mes.id" :value="mes.id">{{ mes.nombre }}</option>
+          </SelectInput>
+        </div>
+        <!-- Modal footer -->
+        <div class="flex items-center justify-end p-4 space-x-2 border-t border-gray-200">
+          <LoadingButton :loading="uploadDocForm.processing" class="btn-yellow mr-2" type="submit">Guardar</LoadingButton>
+          <button class="btn-secondary" @click="closeModalUploadForm">Cancelar</button>
+        </div>
+      </form>
+    </Modal>
+
     <div class="bg-white rounded-md shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
         <thead class="text-sm text-left font-bold uppercase bg-white border-b-2">
@@ -249,8 +327,8 @@ watch(
             <th v-if="documentos.data.length !== 0" scope="col" class="p-4 w-4 border-solid border border-gray-200" />
             <th v-if="documentos.data.length !== 0" scope="col" class="p-4 border-solid border border-gray-200">
               <div class="flex items-center">
-                <input id="checkbox-all-documentos" v-model="selectAllDocs" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="toggleAllDocs" />
-                <label for="checkbox-all-documentos" class="sr-only">checkbox</label>
+                <input id="checkbox-all-docs" v-model="selectAllDocs" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="toggleAllDocs" />
+                <label for="checkbox-all-docs" class="sr-only">checkbox</label>
               </div>
             </th>
             <th scope="col" class="px-6 py-3 border-solid border border-gray-200">Documento</th>
@@ -270,15 +348,11 @@ watch(
             </td>
             <td class="w-4 p-4 border-solid border border-gray-200">
               <div class="flex items-center">
-                <input :id="`checkbox-documento-${documento.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="documento.id" @change="changeToggleAllDocs" />
-                <label :for="`checkbox-documento-${documento.id}`" class="sr-only">checkbox</label>
+                <input :id="`checkbox-doc-${documento.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="documento.id" @change="changeToggleAllDocs" />
+                <label :for="`checkbox-doc-${documento.id}`" class="sr-only">checkbox</label>
               </div>
             </td>
             <td class="px-6 py-4 border-solid border border-gray-200">
-              <div v-for="(usrName, size, index) in displayDocumento" :key="index">
-                <p>Name: {{ usrName }}</p>
-                <p>Size: {{ filesize(size) }}</p>
-              </div>
               <div class="flex items-center leading-snug">
                 <a class="text-yellow-400 hover:underline focus:text-yellow-500" :href="`/documentos/${documento.documento.name}/descargar`">
                   {{ documento.documento.usrName }}

@@ -61,7 +61,7 @@ class DocPozoController extends Controller
         $validated = $request->validate([
             'files' => 'required',
             'pozo' => ['required', Rule::exists('pozos', 'id')],
-            'fecha' => 'required',
+            'fecha' => ['required', 'date'],
         ]);
         if($validated){
             foreach($request->file('files') as $file){
@@ -69,7 +69,7 @@ class DocPozoController extends Controller
                 $fileRoute = time().$filename;
                 $filesize = $file->getSize();
                 $filetype = $file->getClientOriginalExtension();
-                Storage::disk('public')->putFileAs('', $file, $fileRoute);
+                Storage::disk('public')->putFileAs('files', $file, $fileRoute);
                 $doc = new DocPozo();
                 $doc->documento = '{"name": "'.$fileRoute.'", "size": "'.$filesize.'", "type": "'.$filetype.'", "usrName": "'.$filename.'" }';
                 $doc->pozo_id = $request->pozo;
@@ -78,6 +78,22 @@ class DocPozoController extends Controller
             }
         }
         return redirect(route('doc-pozos'));
+    }
+
+    public function storeFile($file)
+    {
+        $filename = $file->getClientOriginalName();
+        $fileRoute = time() . '_' . $filename;
+        $filesize = $file->getSize();
+        $filetype = $file->getClientOriginalExtension();
+        Storage::disk('public')->putFileAs('files', $file, $fileRoute);
+
+        return [
+            'name' => $fileRoute,
+            'size' => $filesize,
+            'type' => $filetype,
+            'usrName' => $filename,
+        ];
     }
     
     public function download($document)

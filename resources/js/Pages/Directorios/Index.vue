@@ -1,5 +1,5 @@
 <script setup>
-import { computed, inject, ref, watch } from 'vue'
+import { computed, inject, nextTick, ref, watch } from 'vue'
 import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3'
 import debounce from 'lodash/debounce'
 import mapValues from 'lodash/mapValues'
@@ -24,6 +24,8 @@ const editDir = ref(false)
 
 const selected = ref([])
 const selectAllDir = ref(false)
+const createInputRef = ref(null)
+const editInputRef = ref(null)
 
 const form = ref({
   search: props.filters.search,
@@ -91,6 +93,8 @@ const reset = () => {
 
 const openModalCreateForm = () => {
   createNewDir.value = true
+
+  nextTick(() => createInputRef.value.focus())
 }
 
 const openModalEditForm = (dir) => {
@@ -98,7 +102,10 @@ const openModalEditForm = (dir) => {
   editDirForm.id = dir.id
   editDirForm.nombre_dir = dir.nombre_dir
   editDirForm.fecha_dir = dir.fecha_dir
+
   editDir.value = true
+
+  nextTick(() => editInputRef.value.focus())
 }
 
 const closeModalCreateForm = () => {
@@ -261,7 +268,7 @@ watch(
       <!-- Modal body -->
       <form @submit.prevent="store">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
-          <TextInput v-model="createDirForm.nombre_dir" :error="createDirForm.errors.nombre_dir" class="pb-8 pr-6 w-full lg:w-1/2" label="Nombre de carpeta" />
+          <TextInput ref="createInputRef" v-model="createDirForm.nombre_dir" :error="createDirForm.errors.nombre_dir" class="pb-8 pr-6 w-full lg:w-1/2" label="Nombre de carpeta" />
           <TextInput v-model="createDirForm.fecha_dir" :error="createDirForm.errors.fecha_dir" class="pb-8 pr-6 w-full lg:w-1/2" type="date" label="Fecha de creación" />
         </div>
         <!-- Modal footer -->
@@ -288,7 +295,7 @@ watch(
       <!-- Modal body -->
       <form @submit.prevent="update">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
-          <TextInput v-model="editDirForm.nombre_dir" :error="editDirForm.errors.nombre_dir" class="pb-8 pr-6 w-full lg:w-1/2" label="Nombre de carpeta" />
+          <TextInput ref="editInputRef" v-model="editDirForm.nombre_dir" :error="editDirForm.errors.nombre_dir" class="pb-8 pr-6 w-full lg:w-1/2" label="Nombre de carpeta" />
           <TextInput v-model="editDirForm.fecha_dir" :error="editDirForm.errors.fecha_dir" class="pb-8 pr-6 w-full lg:w-1/2" type="date" label="Fecha de creación" />
         </div>
         <!-- Modal footer -->

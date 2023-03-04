@@ -9,7 +9,6 @@
         <link rel="icon" type="image/png" href="/favicon.png">
         <!-- Fonts -->
         <link rel="stylesheet" href="https://fonts.bunny.net/css2?family=Nunito:wght@400;600;700&display=swap">
-        <link href="https://unpkg.com/dropzone@6.0.0-beta.1/dist/dropzone.css" rel="stylesheet" type="text/css" />
 
         @vite('resources/js/app.js') 
         @inertiaHead
