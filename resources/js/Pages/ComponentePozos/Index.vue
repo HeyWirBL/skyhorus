@@ -16,7 +16,6 @@ import TextareaInput from '@/Components/TextareaInput.vue'
 const props = defineProps({
   can: Object,
   filters: Object,
-  datefilter: Object,
   componentePozos: Object,
   pozos: Array,
 })
@@ -32,11 +31,6 @@ const editInputRef = ref(null)
 const form = ref({
   search: props.filters.search,
   trashed: props.filters.trashed,
-})
-
-const df = ref({
-  month: props.datefilter,
-  year: props.datefilter,
 })
 
 const componentePozoForm = useForm({})
@@ -310,13 +304,6 @@ watch(
     deep: true,
   },
 )
-
-watch(df.value, () => {
-  router.get('/componente-pozos', df.value, {
-    preserveState: true,
-    preserveScroll: true,
-  })
-})
 </script>
 
 <template>
@@ -514,4 +501,5 @@ watch(df.value, () => {
     <!-- Paginator -->
     <Pagination class="mt-4" :links="componentePozos.links" :total="componentePozos.total" />
   </div>
+  
 </template>

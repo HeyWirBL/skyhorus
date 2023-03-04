@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exports\ComponentePozosExport;
 use App\Imports\ComponentePozosImport;
+use App\Imports\ComponentePozosImportCollection;
 use App\Models\ComponentePozo;
 use App\Models\ComponentePozoView;
 use App\Models\Pozo;
@@ -458,7 +459,7 @@ class ComponentePozoController extends Controller
             $fechaMuest = $request->fechaMuest;
 
             if(!empty($file) && $validated){
-            Excel::import(new ComponentePozosImport($pozoId, $fechaRecep, $fechaAnalisis, $fechaMuest), $file );
+            Excel::import(new ComponentePozosImportCollection($pozoId, $fechaRecep, $fechaAnalisis, $fechaMuest), $file );
             }
 
         }

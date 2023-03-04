@@ -248,7 +248,7 @@ watch(
             </td>
             <td class="px-6 py-4 border-solid border border-gray-200">
               <div class="flex items-center">
-                <span>{{ docPozo.documento }}</span>
+                <span><a :href="`/doc-pozos/${docPozo.documento.name}/descargar`">{{ docPozo.documento.usrName }}</a></span>
                 <span v-if="docPozo.deleted_at" title="Este documento de pozo ha sido eliminado.">
                   <Icon class="flex-shrink-0 ml-2 w-3 h-3 fill-yellow-400" name="trash" />
                 </span>

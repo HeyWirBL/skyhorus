@@ -245,7 +245,7 @@ Route::middleware('auth')->group(function () {
         ->name('componente-pozos.destroyAll')
         ->middleware('can:delete,App\Models\ComponentePozo');
 
-    Route::post('/componente-pozos/import', function (Request $request) {
+    /* Route::post('/componente-pozos/import', function (Request $request) {
             $file = $request->file('file');
         
             // Parse the Excel file and extract the data
@@ -260,7 +260,7 @@ Route::middleware('auth')->group(function () {
             DB::table('componente-pozos')->insert($rows);
         
             return response()->json(['success' => true]);
-        });
+        }); */
 
     Route::get('componente-pozos/export/{componentePozo}', [ComponentePozoController::class, 'export'])
         ->name('componente-pozos.export');

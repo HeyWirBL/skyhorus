@@ -33,7 +33,7 @@ class DocPozoController extends Controller
             ->withQueryString()
             ->through(fn ($dp) => [
                 'id' => $dp->id,
-                'documento' => $dp->documento,
+                'documento' => json_decode($dp->documento),
                 'fecha_hora' => $dp->fecha_hora,
                 'deleted_at' => $dp->deleted_at,
                 'pozo' => optional($dp->pozo)->only('nombre_pozo', 'deleted_at'),
