@@ -478,10 +478,10 @@ class ComponentePozoController extends Controller
     public function downloadFormat()
     {   
         $format = 'Componentes de pozo.xlsx';
-        
+
         if(Storage::disk('public')->exists('formats/'.$format)){
-            return Storage::disk('public')->download('formats/'.$format);
-            //return response('error');           
+            //return Storage::disk('public')->download('formats/'.$format);
+            return response('error');           
          }else{
             return response('¡404! No se pudo encontrar este recurso. Si ves este mensaje, por favor contacta con un administrador. <br/> Powered by: Nerd Rage!', 404);
          }
