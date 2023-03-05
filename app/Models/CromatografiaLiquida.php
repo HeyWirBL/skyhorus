@@ -40,6 +40,10 @@ class CromatografiaLiquida extends Model
                         $query->where('nombre_pozo', 'like', '%'.$search.'%');
                     });
             });
+        })->when($filters['year'] ?? null, function ($query, $year) {
+            $query->whereYear('fecha_hora', $year);
+        })->when($filters['month'] ?? null, function ($query, $month) {
+            $query->whereMonth('fecha_hora', $month);
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {
             $trashed === 'only' ? $query->onlyTrashed() : '';
         });

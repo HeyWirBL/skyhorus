@@ -4,6 +4,8 @@ import { Head, router, useForm, usePage } from '@inertiajs/vue3'
 import debounce from 'lodash/debounce'
 import mapValues from 'lodash/mapValues'
 import pickBy from 'lodash/pickBy'
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
 import Icon from '@/Components/Icon.vue'
 import SearchFilter from '@/Components/SearchFilter.vue'
 import Pagination from '@/Components/Pagination.vue'
@@ -12,6 +14,8 @@ import DropZone from '@/Components/DropZone.vue'
 import LoadingButton from '@/Components/LoadingButton.vue'
 import SelectInput from '@/Components/SelectInput.vue'
 import TextInput from '@/Components/TextInput.vue'
+
+dayjs.extend(relativeTime)
 
 const props = defineProps({
   can: Object,
@@ -31,6 +35,8 @@ const selectAllCromGas = ref(false)
 const form = ref({
   search: props.filters.search,
   trashed: props.filters.trashed,
+  year: null,
+  month: null,
 })
 
 const cromatografiaGasForm = useForm({})
@@ -258,6 +264,26 @@ watch(
           <option :value="null" />
           <option value="only">Solo Eliminado</option>
         </select>
+        <div class="mt-4">
+          <label class="block text-gray-700">Año:</label>
+          <input v-model="form.year" class="form-input mt-4" type="number" placeholder="YYYY" />
+        </div>
+        <label class="block mt-4 text-gray-700">Mes:</label>
+        <select v-model="form.month" class="form-select mt-1 w-full">
+          <option :value="null" />
+          <option value="1">Enero</option>          
+          <option value="2">Febrero</option>          
+          <option value="3">Marzo</option>          
+          <option value="4">Abril</option>          
+          <option value="5">Mayo</option>          
+          <option value="6">Junio</option>          
+          <option value="7">Julio</option>          
+          <option value="8">Agosto</option>          
+          <option value="9">Septiembre</option>          
+          <option value="10">Octubre</option>          
+          <option value="11">Noviembre</option>          
+          <option value="12">Diciembre</option>          
+        </select>
       </SearchFilter>
     </div>
     <div class="flex items-center mb-6">
@@ -413,7 +439,7 @@ watch(
               </div>
             </td>
             <td class="px-6 py-4 border-solid border border-gray-200">
-              <span class="block">{{ cromatografiaGas.fecha_hora }}</span>
+              <span class="block">{{ dayjs(cromatografiaGas.fecha_hora).format('DD/MM/YYYY') }}</span>
             </td>
           </tr>
           <tr v-if="cromatografiaGases.data.length === 0">

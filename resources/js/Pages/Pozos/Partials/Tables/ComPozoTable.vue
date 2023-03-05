@@ -1,6 +1,6 @@
 <script setup>
 import { computed, inject, nextTick, ref } from 'vue'
-import { Link, useForm } from '@inertiajs/vue3'
+import { useForm } from '@inertiajs/vue3'
 import { Line } from 'vue-chartjs'
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js'
 import chartjsPluginDatalabels from 'chartjs-plugin-datalabels'
@@ -751,14 +751,9 @@ const removeSelectedItems = () => {
             <tr class="bg-white">
               <td class="p-4 whitespace-nowrap border-solid border border-gray-200">
                 <span v-if="can.editComponentePozo" class="inline-block whitespace-nowrap" title="Editar componentes de pozo">
-                  <button class="flex items-center mr-2" tabindex="-1" type="button" @click="openModalEditComPozoForm(compozo)">
+                  <button class="flex items-center" tabindex="-1" type="button" @click="openModalEditComPozoForm(compozo)">
                     <Icon class="flex-shrink-0 w-4 h-4 fill-yellow-400" name="pencil" />
                   </button>
-                </span>
-                <span class="inline-block whitespace-nowrap" title="Ver componentes de pozo">
-                  <Link class="flex items-center" :href="`/componente-pozos/${compozo.id}`" tabindex="-1">
-                    <Icon class="flex-shrink-0 w-4 h-4 fill-yellow-400" name="eye" />
-                  </Link>
                 </span>
               </td>
               <td class="w-4 p-4 border-solid border border-gray-200">

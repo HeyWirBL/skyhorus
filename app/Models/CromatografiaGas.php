@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Validator;
 
 class CromatografiaGas extends Model
 {
@@ -40,6 +41,10 @@ class CromatografiaGas extends Model
                         $query->where('nombre_pozo', 'like', '%'.$search.'%');
                     });
             });
+        })->when($filters['year'] ?? null, function ($query, $year) {
+            $query->whereYear('fecha_hora', $year);
+        })->when($filters['month'] ?? null, function ($query, $month) {
+            $query->whereMonth('fecha_hora', $month);
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {
             $trashed === 'only' ? $query->onlyTrashed() : '';
         });

@@ -268,7 +268,6 @@ watch(
         <select v-model="form.trashed" class="form-select mt-1 w-full">
           <option :value="null" />
           <option value="only">Solo Eliminado</option>
-          usuarios
         </select>
       </SearchFilter>
     </div>

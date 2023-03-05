@@ -26,7 +26,18 @@ class CromatografiaLiquidaController extends Controller
             'restoreCromatografiaLiquida' => Auth::user()->can('restore', CromatografiaLiquida::class),
             'deleteCromatografiaLiquida' => Auth::user()->can('delete', CromatografiaLiquida::class),
         ];
+
         $filters = $request->only('search', 'trashed');
+
+        // Filter for year and month
+        if ($request->has('year') || $request->has('month')) {
+            $year = $request->input('year');
+            $month = $request->input('month');
+
+            $filters['year'] = $year;
+            $filters['month'] = $month;
+        }
+
         $cromatografiaLiquidas = $cromatografiaLiquida->filter($filters)
             ->orderByDesc('id')
             ->paginate(10)

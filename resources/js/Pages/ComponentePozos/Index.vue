@@ -891,10 +891,10 @@ watch(
                 <span class="block">{{ componentePozo.dioxido_carbono }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">43</span>
+                <span class="block">{{ componentePozo.pe_dioxido_carbono }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">54</span>
+                <span class="block">{{ componentePozo.mo_dioxido_carbono }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
                 <span class="block">{{ componentePozo.den_dioxido_carbono }}</span>
@@ -911,10 +911,10 @@ watch(
                 <span class="block">{{ componentePozo.acido_sulfidrico }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">43</span>
+                <span class="block">{{ componentePozo.pe_acido_sulfidrico }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">54</span>
+                <span class="block">{{ componentePozo.mo_acido_sulfidrico }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
                 <span class="block">{{ componentePozo.den_acido_sulfidrico }}</span>
@@ -931,10 +931,10 @@ watch(
                 <span class="block">{{ componentePozo.nitrogeno }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">43</span>
+                <span class="block">{{ componentePozo.pe_nitrogeno }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">54</span>
+                <span class="block">{{ componentePozo.mo_nitrogeno }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
                 <span class="block">{{ componentePozo.den_nitrogeno }}</span>
@@ -951,10 +951,10 @@ watch(
                 <span class="block">{{ componentePozo.metano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">43</span>
+                <span class="block">{{ componentePozo.pe_metano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">54</span>
+                <span class="block">{{ componentePozo.mo_metano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
                 <span class="block">{{ componentePozo.den_metano }}</span>
@@ -971,10 +971,10 @@ watch(
                 <span class="block">{{ componentePozo.etano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">43</span>
+                <span class="block">{{ componentePozo.pe_etano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">54</span>
+                <span class="block">{{ componentePozo.mo_etano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
                 <span class="block">{{ componentePozo.den_etano }}</span>
@@ -991,10 +991,10 @@ watch(
                 <span class="block">{{ componentePozo.propano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">43</span>
+                <span class="block">{{ componentePozo.pe_propano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">54</span>
+                <span class="block">{{ componentePozo.mo_propano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
                 <span class="block">{{ componentePozo.den_propano }}</span>
@@ -1011,10 +1011,10 @@ watch(
                 <span class="block">{{ componentePozo.iso_butano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">43</span>
+                <span class="block">{{ componentePozo.pe_iso_butano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">54</span>
+                <span class="block">{{ componentePozo.mo_iso_butano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
                 <span class="block">{{ componentePozo.den_iso_butano }}</span>
@@ -1031,10 +1031,10 @@ watch(
                 <span class="block">{{ componentePozo.n_butano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">43</span>
+                <span class="block">{{ componentePozo.pe_n_butano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">54</span>
+                <span class="block">{{ componentePozo.mo_n_butano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
                 <span class="block">{{ componentePozo.den_n_butano }}</span>
@@ -1051,10 +1051,10 @@ watch(
                 <span class="block">{{ componentePozo.iso_pentano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">43</span>
+                <span class="block">{{ componentePozo.pe_iso_pentano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">54</span>
+                <span class="block">{{ componentePozo.mo_iso_pentano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
                 <span class="block">{{ componentePozo.den_iso_pentano }}</span>
@@ -1071,10 +1071,10 @@ watch(
                 <span class="block">{{ componentePozo.n_pentano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">43</span>
+                <span class="block">{{ componentePozo.pe_n_pentano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">54</span>
+                <span class="block">{{ componentePozo.mo_n_pentano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
                 <span class="block">{{ componentePozo.den_n_pentano }}</span>
@@ -1091,10 +1091,10 @@ watch(
                 <span class="block">{{ componentePozo.n_exano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">43</span>
+                <span class="block">{{ componentePozo.pe_n_exano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">54</span>
+                <span class="block">{{ componentePozo.mo_n_exano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
                 <span class="block">{{ componentePozo.den_n_exano }}</span>
