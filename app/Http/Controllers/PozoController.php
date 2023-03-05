@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\ComponentePozo;
+use App\Models\CromatografiaGas;
+use App\Models\CromatografiaLiquida;
 use App\Models\Pozo;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
@@ -85,7 +87,7 @@ class PozoController extends Controller
     /**
      * Display the information for specific well.
      */
-    public function show(Request $request, Pozo $pozo): Response
+    public function show(Pozo $pozo): Response
     {        
         $user = Auth::user();              
         $can = [
@@ -96,11 +98,19 @@ class PozoController extends Controller
             // Doc Pozo Policy
             'createDocPozo' => $user->can('create', DocPozo::class),
             'editDocPozo' => $user->can('update', DocPozo::class),
+            'deleteDocPozo' => $user->can('delete', DocPozo::class),
             // Componente Pozo Policy
             'createComponentePozo' => $user->can('create', ComponentePozo::class),
             'editComponentePozo' => $user->can('update', ComponentePozo::class),
             'deleteComponentePozo' => $user->can('delete', ComponentePozo::class),
-            'restoreComponentePozo' => $user->can('restore', ComponentePozo::class),
+            // Cromatografia Gas Policy
+            'createCromatografiaGas' => $user->can('create', CromatografiaGas::class),
+            'editCromatografiaGas' => $user->can('update', CromatografiaGas::class),
+            'deleteCromatografiaGas' => $user->can('delete', CromatografiaGas::class),
+            // Cromatografia Liquida Polciy
+            'createCromatografiaLiquida' => $user->can('create', CromatografiaLiquida::class),
+            'editCromatografiaLiquida' => $user->can('update', CromatografiaLiquida::class),
+            'deleteCromatografiaLiquida' => $user->can('delete', CromatografiaLiquida::class),
         ];        
 
         $pozoData = optional($pozo)->only(

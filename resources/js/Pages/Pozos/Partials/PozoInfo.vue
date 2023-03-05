@@ -74,13 +74,13 @@ const restore = () => {
     <!-- Pozo Gas Documents -->
     <div v-show="activeTab === 'cromatografiagas'" id="cromatografiagas" class="mt-12">
       <!-- CromGasTable Component -->
-      <CromGasTable :pozo="pozo" />
+      <CromGasTable :can="can" :pozo="pozo" />
     </div>
 
     <!-- Pozo Liquid Documents -->
     <div v-show="activeTab === 'cromatografialiquida'" id="cromatografialiquida" class="mt-12">
       <!-- CromLiquidaTable Component -->
-      <CromLiquidaTable :pozo="pozo" />
+      <CromLiquidaTable :can="can" :pozo="pozo" />
     </div>
   </div>
 </template>

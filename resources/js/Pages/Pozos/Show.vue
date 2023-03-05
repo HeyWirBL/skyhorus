@@ -64,7 +64,7 @@ const update = () => {
         <Link class="text-yellow-400 hover:text-yellow-600" href="/pozos">Pozos</Link>
         <span class="text-yellow-400 font-medium">&nbsp;/</span> {{ pozo.nombre_pozo }}
       </h1>
-      <button class="btn-yellow ml-auto" type="button" @click="openModalEditForm">Editar Pozo</button>
+      <button v-if="can.editPozo" class="btn-yellow ml-auto" type="button" @click="openModalEditForm">Editar Pozo</button>
     </div>
 
     <!-- Edit Pozo Form Modal -->

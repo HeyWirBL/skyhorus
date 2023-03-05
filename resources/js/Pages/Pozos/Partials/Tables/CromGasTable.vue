@@ -188,11 +188,11 @@ const removeSelectedItems = () => {
   <div>
     <h2 class="mb-8 text-2xl font-bold">Cromatografía de Gas</h2>
     <div class="flex items-center mb-6">
-      <button class="btn-yellow mr-2" type="button" @click="openModalUploadForm">
+      <button v-if="can.createCromatografiaGas" class="btn-yellow mr-2" type="button" @click="openModalUploadForm">
         <span>Subir</span>
         <span class="hidden md:inline">&nbsp;Documentos</span>
       </button>
-      <button v-if="cromatografiaGases.data.length !== 0" class="btn-secondary" type="button" :disabled="!selectAllCromGas && !selected.length" @click="removeSelectedItems">
+      <button v-if="can.deleteCromatografiaGas && cromatografiaGases.data.length !== 0" class="btn-secondary" type="button" :disabled="!selectAllCromGas && !selected.length" @click="removeSelectedItems">
         <span>Borrar</span>
         <span class="hidden md:inline">&nbsp;Elementos Seleccionados</span>
       </button>
@@ -282,8 +282,8 @@ const removeSelectedItems = () => {
       <table class="w-full whitespace-nowrap">
         <thead class="text-sm text-left font-bold uppercase bg-white border-b-2">
           <tr>
-            <th v-if="cromatografiaGases.data.length !== 0" scope="col" class="p-4 w-4 border-solid border border-gray-200" />
-            <th v-if="cromatografiaGases.data.length !== 0" scope="col" class="p-4 border-solid border border-gray-200">
+            <th v-if="can.editCromatografiaGas && cromatografiaGases.data.length !== 0" scope="col" class="p-4 w-4 border-solid border border-gray-200" />
+            <th v-if="can.deleteCromatografiaGas && cromatografiaGases.data.length !== 0" scope="col" class="p-4 border-solid border border-gray-200">
               <div class="flex items-center">
                 <input id="checkbox-all-cromgas" v-model="selectAllCromGas" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="toggleAllCromGas" />
                 <label for="checkbox-all-cromgas" class="sr-only">checkbox</label>
@@ -296,14 +296,14 @@ const removeSelectedItems = () => {
         </thead>
         <tbody>
           <tr v-for="cromatografiaGas in cromatografiaGases.data" :key="cromatografiaGas.id" class="bg-white border-b">
-            <td class="px-6 py-4 whitespace-nowrap border-solid border border-gray-200">
+            <td v-if="can.editCromatografiaGas" class="px-6 py-4 whitespace-nowrap border-solid border border-gray-200">
               <span class="inline-block whitespace-nowrap" title="Editar documento">
                 <button class="flex items-center" tabindex="-1" type="button" @click="openModalEditUploadedForm(cromatografiaGas)">
                   <Icon class="flex-shrink-0 w-4 h-4 fill-yellow-400" name="pencil" />
                 </button>
               </span>
             </td>
-            <td class="w-4 p-4 border-solid border border-gray-200">
+            <td v-if="can.deleteCromatografiaGas" class="w-4 p-4 border-solid border border-gray-200">
               <div class="flex items-center">
                 <input :id="`checkbox-cromgas-${cromatografiaGas.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="cromatografiaGas.id" @change="changeToggleAllCromGas" />
                 <label :for="`checkbox-cromgas-${cromatografiaGas.id}`" class="sr-only">checkbox</label>

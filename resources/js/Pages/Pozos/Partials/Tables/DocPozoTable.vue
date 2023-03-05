@@ -191,7 +191,7 @@ const removeSelectedItems = () => {
         <span>Subir</span>
         <span class="hidden md:inline">&nbsp;Documentos</span>
       </button>
-      <button v-if="docPozos.data.length !== 0" class="btn-secondary" type="button" :disabled="!selectAllDocPozos && !selected.length" @click="removeSelectedItems">
+      <button v-if="can.deleteDocPozo && docPozos.data.length !== 0" class="btn-secondary" type="button" :disabled="!selectAllDocPozos && !selected.length" @click="removeSelectedItems">
         <span>Borrar</span>
         <span class="hidden md:inline">&nbsp;Elementos Seleccionados</span>
       </button>
@@ -302,7 +302,7 @@ const removeSelectedItems = () => {
                 </button>
               </span>
             </td>
-            <td v-if="can.editDocPozo" class="w-4 p-4 border-solid border border-gray-200">
+            <td v-if="can.deleteDocPozo" class="w-4 p-4 border-solid border border-gray-200">
               <div class="flex items-center">
                 <input :id="`checkbox-docpozo-${docPozo.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="docPozo.id" @change="changeToggleAllDocPozos" />
                 <label :for="`checkbox-docpozo-${docPozo.id}`" class="sr-only">checkbox</label>

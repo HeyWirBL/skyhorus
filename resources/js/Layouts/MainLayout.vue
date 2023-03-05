@@ -42,6 +42,7 @@ import FlashMessages from '../Shared/FlashMessages.vue'
               <div class="mt-2 py-2 text-sm bg-white rounded shadow-xl">
                 <Link class="block px-6 py-2 hover:text-white hover:bg-yellow-500" href="/perfil">Perfil del Usuario</Link>
                 <Link class="block px-6 py-2 hover:text-white hover:bg-yellow-500" href="/menu">Ver Menú</Link>
+                <Link class="block px-6 py-2 hover:text-white hover:bg-yellow-500" href="/informacion">Información del Sistema</Link>
                 <Link class="block px-6 py-2 w-full text-left hover:text-white hover:bg-yellow-500" href="/logout" method="post" as="button">Desconectarse</Link>
               </div>
             </template>

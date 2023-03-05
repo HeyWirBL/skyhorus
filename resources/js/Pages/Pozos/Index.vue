@@ -361,8 +361,8 @@ watch(
       <table class="w-full whitespace-nowrap">
         <thead class="text-sm text-left font-bold uppercase bg-white border-b-2">
           <tr>
-            <th v-if="can.deletePozo && pozos.data.length !== 0" scope="col" class="p-4 w-4 border-solid border border-gray-200" />
-            <th v-if="pozos.data.length !== 0 && can.deletePozo" scope="col" class="p-4 border-solid border border-gray-200">
+            <th v-if="pozos.data.length !== 0" scope="col" class="p-4 w-4 border-solid border border-gray-200" />
+            <th v-if="can.deletePozo && pozos.data.length !== 0" scope="col" class="p-4 border-solid border border-gray-200">
               <div class="flex items-center">
                 <input id="checkbox-all-pozos" v-model="selectAllPozos" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="toggleAllPozos" />
                 <label for="checkbox-all-pozos" class="sr-only">checkbox</label>
