@@ -444,7 +444,7 @@ watch(
               </div>
             </div>
           </div>
-          <SelectInput v-model="importComPozoForm.pozoId" :error="importComPozoForm.errors.pozoId" class="pb-8 pr-6 w-full" label="Pozo/Instalación">
+          <SelectInput v-model="importComPozoForm.pozoId" :error="importComPozoForm.errors.pozoId" class="pb-4 pr-6 w-full" label="Pozo/Instalación">
             <option value="">Por favor seleccione</option>
             <option v-for="pozo in pozos" :key="pozo.id" :value="pozo.id">{{ pozo.nombre_pozo }}</option>
           </SelectInput>

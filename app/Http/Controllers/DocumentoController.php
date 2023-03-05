@@ -48,14 +48,12 @@ class DocumentoController extends Controller
 
     /**
      * Store a newly created document in database.
-     * 
-     * @throws \Illuminate\Validation\ValidationException
      */
     public function store(Request $request, Documento $documento): RedirectResponse
     {
         try {            
             $request->validate([
-                'documento.*' => ['required', 'max:8000'], // MAX 8 MB per file
+                'documento.*' => ['required', 'max:8050'], // MAX 8 MB per file
                 'directorio_id' => ['required', Rule::exists('directorios', 'id')],
                 'ano_id' => ['required', Rule::exists('anos', 'id')],
                 'mes_detalle_id' => ['required', Rule::exists('mes_detalles', 'id')],
@@ -86,12 +84,15 @@ class DocumentoController extends Controller
             } else {
                 return Redirect::back()->with('error', 'No se han subido archivos en el formulario.');
             }
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return Redirect::back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
-            return Redirect::back()->with('error', 'Error al subir el archivo: ' . $e->getMessage());
+            if ($e instanceof \Illuminate\Validation\ValidationException) {
+                return Redirect::back()->withErrors($e->errors())->withInput();
+            } else {
+                return Redirect::back()->with('error', 'Error al subir el archivo: ' . $e->getMessage());
+            }
         }
     }
+
     
     /**
      * Update document's information in database.
@@ -160,7 +161,7 @@ class DocumentoController extends Controller
             if ($documento->trashed()) {
                 return back()->with('error', 'Error al descargar el archivo: el archivo ha sido eliminado.');
             }
-
+            
             $documentoData = json_decode($documento->documento, true);
 
             // Extract the file path and name from the documentoData array
@@ -182,6 +183,49 @@ class DocumentoController extends Controller
             ];
 
             return response()->download($fullPath, $fileName, $headers);
+                       
+            return back()->with('error', 'Error al descargar el archivo: el archivo no existe.');       
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error al descargar el archivo: ' . $e->getMessage());
+        }
+    }
+
+    public function downloadMultiple($id, $index)
+    {
+        try {
+            $documento = Documento::withTrashed()->findOrFail($id);
+
+            if ($documento->trashed()) {
+                return back()->with('error', 'Error al descargar el archivo: el archivo no existe.');
+            }
+
+            $documentoData = json_decode($documento->documento, true);
+
+            // Extract the file path
+            if (is_array($documentoData)) {
+                foreach ($documentoData as $fileIndex => $file) {
+                    if ($index == $fileIndex) {
+                        $filePath = $file['name'];
+                        $fileName = $file['usrName'];
+    
+                        //$fullPath = public_path($filePath);
+                        $fullPath = Storage::get($filePath);
+
+                        if (!file_exists($fullPath)) {
+                            return back()->with('error', 'Error al descargar el archivo: el archivo no existe.');
+                        }   
+    
+                        // Set the response headers
+                        $headers = [
+                            'Content-Type' => $file['type'],
+                            'Content-Disposition' => 'attachment; filename="'.$fileName.'"',
+                        ];
+    
+                        return response()->download($fullPath, $fileName, $headers);
+                    }                             
+                }
+            }  
+            return back()->with('error', 'Error al descargar el archivo: el archivo no existe.');
         } catch (\Exception $e) {
             return back()->with('error', 'Error al descargar el archivo: ' . $e->getMessage());
         }

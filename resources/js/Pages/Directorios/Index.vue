@@ -267,7 +267,7 @@ watch(
       </div>
       <!-- Modal body -->
       <form @submit.prevent="store">
-        <div class="flex flex-wrap -mb-8 -mr-6 p-8">
+        <div class="flex flex-wrap -mb-4 p-4">
           <TextInput ref="createInputRef" v-model="createDirForm.nombre_dir" :error="createDirForm.errors.nombre_dir" class="pb-8 pr-6 w-full lg:w-1/2" label="Nombre de carpeta" />
           <TextInput v-model="createDirForm.fecha_dir" :error="createDirForm.errors.fecha_dir" class="pb-8 pr-6 w-full lg:w-1/2" type="date" label="Fecha de creación" />
         </div>
@@ -294,7 +294,7 @@ watch(
       </div>
       <!-- Modal body -->
       <form @submit.prevent="update">
-        <div class="flex flex-wrap -mb-8 -mr-6 p-8">
+        <div class="flex flex-wrap -mb-4 p-4">
           <TextInput ref="editInputRef" v-model="editDirForm.nombre_dir" :error="editDirForm.errors.nombre_dir" class="pb-8 pr-6 w-full lg:w-1/2" label="Nombre de carpeta" />
           <TextInput v-model="editDirForm.fecha_dir" :error="editDirForm.errors.fecha_dir" class="pb-8 pr-6 w-full lg:w-1/2" type="date" label="Fecha de creación" />
         </div>

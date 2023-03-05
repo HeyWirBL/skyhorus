@@ -86,6 +86,10 @@ Route::middleware('auth')->group(function () {
         ->name('users.restoreAll')
         ->middleware('can:restore,App\Models\User');
 
+    Route::delete('users/{user}', [UserController::class, 'destroy'])
+        ->name('users.destroy')
+        ->middleware('can:delete,App\Models\User');
+
     Route::delete('users', [UserController::class, 'destroyAll'])
         ->name('users.destroyAll')
         ->middleware('can:delete,App\Models\User');
@@ -194,6 +198,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('documentos/{id}/descargar', [DocumentoController::class, 'download'])
         ->name('documento.download');
+
+    Route::get('documentos/{id}/descargar/{index}', [DocumentoController::class, 'downloadMultiple'])
+        ->name('documento.downloadMultiple');
 
     Route::post('documentos', [DocumentoController::class, 'store'])
         ->name('documentos.store');

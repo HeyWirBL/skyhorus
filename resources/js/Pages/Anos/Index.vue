@@ -1,5 +1,5 @@
 <script setup>
-import { computed, inject, ref, watch } from 'vue'
+import { computed, inject, nextTick, ref, watch } from 'vue'
 import { Head, router, useForm, usePage } from '@inertiajs/vue3'
 import debounce from 'lodash/debounce'
 import mapValues from 'lodash/mapValues'
@@ -24,6 +24,8 @@ const editAno = ref(false)
 
 const selected = ref([])
 const selectAllAno = ref(false)
+const firstInput = ref(null)
+const editInput = ref(null)
 
 const form = ref({
   search: props.filters.search,
@@ -90,6 +92,8 @@ const reset = () => {
 
 const openModalCreateAno = () => {
   createNewAno.value = true
+
+  nextTick(() => firstInput.value.focus())
 }
 
 const openModalEditAno = (ano) => {
@@ -98,6 +102,7 @@ const openModalEditAno = (ano) => {
   editAnoForm.ano = ano.ano
 
   editAno.value = true
+  nextTick(() => editInput.value.focus())
 }
 
 const closeModalCreateForm = () => {
@@ -259,8 +264,8 @@ watch(
       </div>
       <!-- Modal body -->
       <form @submit.prevent="store">
-        <div class="flex flex-wrap -mb-8 -mr-6 p-8">
-          <TextInput v-model="createAnoForm.ano" :error="createAnoForm.errors.ano" class="pb-8 pr-6 w-full" label="Año" />
+        <div class="flex flex-wrap -mb-4 p-4">
+          <TextInput ref="firstInput" v-model="createAnoForm.ano" :error="createAnoForm.errors.ano" class="pb-8 w-full" label="Año" />
         </div>
         <!-- Modal footer -->
         <div class="flex items-center justify-end p-4 space-x-2 border-t border-gray-200">
@@ -285,8 +290,8 @@ watch(
       </div>
       <!-- Modal body -->
       <form @submit.prevent="update">
-        <div class="flex flex-wrap -mb-8 -mr-6 p-8">
-          <TextInput v-model="editAnoForm.ano" :error="editAnoForm.errors.ano" class="pb-8 pr-6 w-full" label="Año" />
+        <div class="flex flex-wrap -mb-4 p-4">
+          <TextInput ref="editInput" v-model="editAnoForm.ano" :error="editAnoForm.errors.ano" class="pb-8 w-full" label="Año" />
         </div>
         <!-- Modal footer -->
         <div class="flex items-center justify-end p-4 space-x-2 border-t border-gray-200">

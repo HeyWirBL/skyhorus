@@ -1,5 +1,5 @@
 <script setup>
-import { computed, inject, ref, watch } from 'vue'
+import { computed, inject, nextTick, ref, watch } from 'vue'
 import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3'
 import debounce from 'lodash/debounce'
 import mapValues from 'lodash/mapValues'
@@ -22,6 +22,8 @@ const swal = inject('$swal')
 
 const createNewUser = ref(false)
 const editUser = ref(false)
+const firstInput = ref(null)
+const editInput = ref(null)
 
 const selected = ref([])
 const selectAllUsers = ref(false)
@@ -108,6 +110,8 @@ const reset = () => {
 
 const openModalCreateForm = () => {
   createNewUser.value = true
+
+  nextTick(() => firstInput.value.focus())
 }
 
 const openModalEditForm = (user) => {
@@ -123,6 +127,7 @@ const openModalEditForm = (user) => {
   editUserForm.rol = user.rol
 
   editUser.value = true
+  nextTick(() => editInput.value.focus())
 }
 
 const closeModalCreateForm = () => {
@@ -299,14 +304,14 @@ watch(
       <!-- Modal body -->
       <form @submit.prevent="store">
         <!-- Inputs -->
-        <div class="flex flex-wrap -mb-8 -mr-6 p-8">
-          <TextInput v-model="createUserForm.nombre" :error="createUserForm.errors.nombre" class="pb-8 pr-6 w-full lg:w-1/2" label="Nombre" />
-          <TextInput v-model="createUserForm.apellidos" :error="createUserForm.errors.apellidos" class="pb-8 pr-6 w-full lg:w-1/2" label="Apellidos" />
-          <TextInput v-model="createUserForm.usuario" :error="createUserForm.errors.usuario" class="pb-8 pr-6 w-full lg:w-1/2" label="Usuario" />
-          <TextInput v-model="createUserForm.email" :error="createUserForm.errors.email" class="pb-8 pr-6 w-full lg:w-1/2" label="Correo electrónico" />
-          <TextInput v-model="createUserForm.password" :error="createUserForm.errors.password" class="pb-8 pr-6 w-full lg:w-1/2" type="password" autocomplete="new-password" label="Contraseña" />
-          <TextInput v-model="createUserForm.telefono" :error="createUserForm.errors.telefono" class="pb-8 pr-6 w-full lg:w-1/2" label="Teléfono" />
-          <TextInput v-model="createUserForm.direccion" :error="createUserForm.errors.telefono" class="pb-8 pr-6 w-full lg:w-1/2" label="Dirección" />
+        <div class="flex flex-wrap -mb-8 -mr-6 p-4">
+          <TextInput ref="firstInput" v-model="createUserForm.nombre" :error="createUserForm.errors.nombre" class="pb-4 pr-6 w-full lg:w-1/2" label="Nombre" />
+          <TextInput v-model="createUserForm.apellidos" :error="createUserForm.errors.apellidos" class="pb-4 pr-6 w-full lg:w-1/2" label="Apellidos" />
+          <TextInput v-model="createUserForm.usuario" :error="createUserForm.errors.usuario" class="pb-4 pr-6 w-full lg:w-1/2" label="Usuario" />
+          <TextInput v-model="createUserForm.email" :error="createUserForm.errors.email" class="pb-4 pr-6 w-full lg:w-1/2" label="Correo electrónico" />
+          <TextInput v-model="createUserForm.password" :error="createUserForm.errors.password" class="pb-4 pr-6 w-full lg:w-1/2" type="password" autocomplete="new-password" label="Contraseña" />
+          <TextInput v-model="createUserForm.telefono" :error="createUserForm.errors.telefono" class="pb-4 pr-6 w-full lg:w-1/2" label="Teléfono" />
+          <TextInput v-model="createUserForm.direccion" :error="createUserForm.errors.telefono" class="pb-4 pr-6 w-full lg:w-1/2" label="Dirección" />
           <SelectInput v-model="createUserForm.rol" :error="createUserForm.errors.rol" class="pb-8 pr-6 w-full lg:w-1/2" label="Rol">
             <option value="">Por favor seleccione</option>
             <option value="Administrador">Administrador</option>
@@ -339,14 +344,14 @@ watch(
       </div>
       <!-- Modal body -->
       <form @submit.prevent="update">
-        <div class="flex flex-wrap -mb-8 -mr-6 p-8">
-          <TextInput v-model="editUserForm.nombre" :error="editUserForm.errors.nombre" class="pb-8 pr-6 w-full lg:w-1/2" label="Nombre" />
-          <TextInput v-model="editUserForm.apellidos" :error="editUserForm.errors.apellidos" class="pb-8 pr-6 w-full lg:w-1/2" label="Apellidos" />
-          <TextInput v-model="editUserForm.usuario" :error="editUserForm.errors.usuario" class="pb-8 pr-6 w-full lg:w-1/2" label="Usuario" />
-          <TextInput v-model="editUserForm.email" :error="editUserForm.errors.email" class="pb-8 pr-6 w-full lg:w-1/2" label="Correo electrónico" />
-          <TextInput v-model="editUserForm.password" :error="editUserForm.errors.password" class="pb-8 pr-6 w-full lg:w-1/2" type="password" autocomplete="new-password" label="Contraseña" />
-          <TextInput v-model="editUserForm.telefono" :error="editUserForm.errors.telefono" class="pb-8 pr-6 w-full lg:w-1/2" label="Teléfono" />
-          <TextInput v-model="editUserForm.direccion" :error="editUserForm.errors.telefono" class="pb-8 pr-6 w-full lg:w-1/2" label="Dirección" />
+        <div class="flex flex-wrap -mb-8 -mr-6 p-4">
+          <TextInput ref="editInput" v-model="editUserForm.nombre" :error="editUserForm.errors.nombre" class="pb-4 pr-6 w-full lg:w-1/2" label="Nombre" />
+          <TextInput v-model="editUserForm.apellidos" :error="editUserForm.errors.apellidos" class="pb-4 pr-6 w-full lg:w-1/2" label="Apellidos" />
+          <TextInput v-model="editUserForm.usuario" :error="editUserForm.errors.usuario" class="pb-4 pr-6 w-full lg:w-1/2" label="Usuario" />
+          <TextInput v-model="editUserForm.email" :error="editUserForm.errors.email" class="pb-4 pr-6 w-full lg:w-1/2" label="Correo electrónico" />
+          <TextInput v-model="editUserForm.password" :error="editUserForm.errors.password" class="pb-4 pr-6 w-full lg:w-1/2" type="password" autocomplete="new-password" label="Contraseña" />
+          <TextInput v-model="editUserForm.telefono" :error="editUserForm.errors.telefono" class="pb-4 pr-6 w-full lg:w-1/2" label="Teléfono" />
+          <TextInput v-model="editUserForm.direccion" :error="editUserForm.errors.telefono" class="pb-4 pr-6 w-full lg:w-1/2" label="Dirección" />
           <SelectInput v-model="editUserForm.rol" :error="editUserForm.errors.rol" class="pb-8 pr-6 w-full lg:w-1/2" label="Rol">
             <option value="">Por favor seleccione</option>
             <option value="Administrador">Administrador</option>
