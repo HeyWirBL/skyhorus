@@ -261,15 +261,15 @@ watch(
       </SearchFilter>
     </div>
     <div class="flex items-center mb-6">
-      <button class="btn-yellow mr-2" type="button" @click="openModalUploadForm">
+      <button v-if="can.createCromatografiaLiquida" class="btn-yellow mr-2" type="button" @click="openModalUploadForm">
         <span>Subir</span>
         <span class="hidden md:inline">&nbsp;Documentos</span>
       </button>
-      <button v-if="cromatografiaLiquidas.data.length !== 0 && !isTrashed" class="btn-secondary" type="button" :disabled="!selectAllCromLiq && !selected.length" @click="removeSelectedItems">
+      <button v-if="can.deleteCromatografiaLiquida && cromatografiaLiquidas.data.length !== 0 && !isTrashed" class="btn-secondary" type="button" :disabled="!selectAllCromLiq && !selected.length" @click="removeSelectedItems">
         <span>Borrar</span>
         <span class="hidden md:inline">&nbsp;Elementos Seleccionados</span>
       </button>
-      <button v-if="cromatografiaLiquidas.data.length !== 0 && can.restoreCromatografiaLiquida && isTrashed" class="btn-secondary" type="button" :disabled="!selectAllCromLiq && !selected.length" @click="restoreSelectedItems">
+      <button v-if="can.restoreCromatografiaLiquida && cromatografiaLiquidas.data.length !== 0 && isTrashed" class="btn-secondary" type="button" :disabled="!selectAllCromLiq && !selected.length" @click="restoreSelectedItems">
         <span>Restablecer</span>
         <span class="hidden md:inline">&nbsp;Elementos Seleccionados</span>
       </button>
@@ -353,8 +353,8 @@ watch(
       <table class="w-full whitespace-nowrap">
         <thead class="text-sm text-left font-bold uppercase bg-white border-b-2">
           <tr>
-            <th v-if="cromatografiaLiquidas.data.length !== 0" scope="col" class="p-4 w-4 border-solid border border-gray-200" />
-            <th v-if="cromatografiaLiquidas.data.length !== 0" scope="col" class="p-4 border-solid border border-gray-200">
+            <th v-if="can.editCromatografiaLiquida && cromatografiaLiquidas.data.length !== 0" scope="col" class="p-4 w-4 border-solid border border-gray-200" />
+            <th v-if="can.deleteCromatografiaLiquida && cromatografiaLiquidas.data.length !== 0" scope="col" class="p-4 border-solid border border-gray-200">
               <div class="flex items-center">
                 <input id="checkbox-all-cromliquidas" v-model="selectAllCromLiq" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="toggleAllCromLiq" />
                 <label for="checkbox-all-cromliquidas" class="sr-only">checkbox</label>
@@ -367,14 +367,14 @@ watch(
         </thead>
         <tbody>
           <tr v-for="cromatografiaLiquida in cromatografiaLiquidas.data" :key="cromatografiaLiquida.id" class="bg-white border-b">
-            <td class="px-6 py-4 whitespace-nowrap border-solid border border-gray-200">
+            <td v-if="can.editCromatografiaLiquida" class="px-6 py-4 whitespace-nowrap border-solid border border-gray-200">
               <span class="inline-block whitespace-nowrap" title="Editar documento">
                 <button class="flex items-center" tabindex="-1" type="button" @click="openModalEditUploadedForm(cromatografiaLiquida)">
                   <Icon class="flex-shrink-0 w-4 h-4 fill-yellow-400" name="pencil" />
                 </button>
               </span>
             </td>
-            <td class="w-4 p-4 border-solid border border-gray-200">
+            <td v-if="can.deleteCromatografiaLiquida" class="w-4 p-4 border-solid border border-gray-200">
               <div class="flex items-center">
                 <input :id="`checkbox-cromliquida-${cromatografiaLiquida.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="cromatografiaLiquida.id" @change="changeToggleAllCromLiq" />
                 <label :for="`checkbox-cromliquida-${cromatografiaLiquida.id}`" class="sr-only">checkbox</label>

@@ -22,7 +22,7 @@ class CromatografiaGasController extends Controller
     {
         $can = [
             'createCromatografiaGas' => Auth::user()->can('create', CromatografiaGas::class),
-            'updateCromatografiaGas' => Auth::user()->can('update', CromatografiaGas::class),
+            'editCromatografiaGas' => Auth::user()->can('update', CromatografiaGas::class),
             'restoreCromatografiaGas' => Auth::user()->can('restore', CromatografiaGas::class),
             'deleteCromatografiaGas' => Auth::user()->can('delete', CromatografiaGas::class),
         ];

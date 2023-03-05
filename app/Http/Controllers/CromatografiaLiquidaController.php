@@ -22,7 +22,7 @@ class CromatografiaLiquidaController extends Controller
     {
         $can = [
             'createCromatografiaLiquida' => Auth::user()->can('create', CromatografiaLiquida::class),
-            'updateCromatografiaLiquida' => Auth::user()->can('update', CromatografiaLiquida::class),
+            'editCromatografiaLiquida' => Auth::user()->can('update', CromatografiaLiquida::class),
             'restoreCromatografiaLiquida' => Auth::user()->can('restore', CromatografiaLiquida::class),
             'deleteCromatografiaLiquida' => Auth::user()->can('delete', CromatografiaLiquida::class),
         ];
