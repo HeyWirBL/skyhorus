@@ -127,9 +127,14 @@ const openModalUploadForm = () => (uploadNewDoc.value = true)
 const openModalEditUploadedForm = (cromatografiaGas) => {
   // Set form field values
   editUploadedDocForm.id = cromatografiaGas.id
-  editUploadedDocForm.documento = [cromatografiaGas.documento]
   editUploadedDocForm.pozo_id = cromatografiaGas.pozo_id
   editUploadedDocForm.fecha_hora = cromatografiaGas.fecha_hora
+
+  if (Array.isArray(cromatografiaGas.documento)) {
+    editUploadedDocForm.documento = cromatografiaGas.documento
+  } else {
+    editUploadedDocForm.documento = [cromatografiaGas.documento]
+  }
 
   editUploadedDoc.value = true
 }

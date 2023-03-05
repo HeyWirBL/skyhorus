@@ -127,9 +127,14 @@ const openModalUploadForm = () => (uploadNewDoc.value = true)
 const openModalEditUploadedForm = (cromatografiaLiquida) => {
   // Set form field values
   editUploadedDocForm.id = cromatografiaLiquida.id
-  editUploadedDocForm.documento = [cromatografiaLiquida.documento]
   editUploadedDocForm.pozo_id = cromatografiaLiquida.pozo_id
   editUploadedDocForm.fecha_hora = cromatografiaLiquida.fecha_hora
+
+  if (Array.isArray(cromatografiaLiquida.documento)) {
+    editUploadedDocForm.documento = cromatografiaLiquida.documento
+  } else {
+    editUploadedDocForm.documento = [cromatografiaLiquida.documento]
+  }
 
   editUploadedDoc.value = true
 }

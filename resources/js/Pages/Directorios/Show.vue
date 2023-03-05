@@ -124,10 +124,15 @@ const openModalUploadForm = () => (uploadNewDoc.value = true)
 const openModalEditUploadedForm = (documento) => {
   // Set form field values
   editUploadedDocForm.id = documento.id
-  editUploadedDocForm.documento = [documento.documento]
   editUploadedDocForm.directorio_id = documento.directorio_id
   editUploadedDocForm.ano_id = documento.ano_id
   editUploadedDocForm.mes_detalle_id = documento.mes_detalle_id
+
+  if (Array.isArray(documento.documento)) {
+    editUploadedDocForm.documento = documento.documento
+  } else {
+    editUploadedDocForm.documento = [documento.documento]
+  }
 
   editUploadedDoc.value = true
 }
