@@ -59,10 +59,9 @@ class CromatografiaGasPolicy
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\CromatografiaGas  $cromatografiaGas
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, CromatografiaGas $cromatografiaGas)
+    public function delete(User $user)
     {
         return $user->rol === 'Administrador';
     }

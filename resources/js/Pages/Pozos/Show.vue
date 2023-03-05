@@ -46,7 +46,7 @@ const closeModalEditForm = () => {
 const update = () => {
   editPozoForm.post(`/pozos/${props.pozo.id}`, {
     preserveScroll: true,
-    onSuccess: () => editPozo.value = false,
+    onSuccess: () => (editPozo.value = false),
     onFinish: () => {
       if (!editPozoForm.hasErrors) {
         editPozoForm.reset()

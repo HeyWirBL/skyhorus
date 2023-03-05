@@ -18,8 +18,14 @@ class CromatografiaLiquidaController extends Controller
     /**
      * Display a list of well chromatographies.
      */
-    public function index(Request $request, CromatografiaLiquida $cromatografiaLiquida): Response
+    public function index(Request $request, CromatografiaLiquida $cromatografiaLiquida, Pozo $pozo): Response
     {
+        $can = [
+            'createCromatografiaLiquida' => Auth::user()->can('create', CromatografiaLiquida::class),
+            'updateCromatografiaLiquida' => Auth::user()->can('update', CromatografiaLiquida::class),
+            'restoreCromatografiaLiquida' => Auth::user()->can('restore', CromatografiaLiquida::class),
+            'deleteCromatografiaLiquida' => Auth::user()->can('delete', CromatografiaLiquida::class),
+        ];
         $filters = $request->only('search', 'trashed');
         $cromatografiaLiquidas = $cromatografiaLiquida->filter($filters)
             ->orderByDesc('id')
@@ -28,68 +34,154 @@ class CromatografiaLiquidaController extends Controller
             ->through(fn ($cl) => [
                 'id' => $cl->id,
                 'documento' => json_decode($cl->documento),
+                'pozo_id' => $cl->pozo_id,
                 'fecha_hora' => $cl->fecha_hora,
                 'deleted_at' => $cl->deleted_at,
                 'pozo' => optional($cl->pozo)->only('nombre_pozo', 'deleted_at'),
             ]);
-        return Inertia::render('CromatografiaLiquidas/Index', [
-            'can' => [
-                'restoreCromatografiaLiquida' => Auth::user()->can('restore', CromatografiaLiquida::class),
-            ],
-            'filters' => $filters,
-            'cromatografiaLiquidas' => $cromatografiaLiquidas,
-        ]);
+
+        $pozos = $pozo->orderByDesc('id')->get()->map->only('id', 'nombre_pozo');
+
+        return Inertia::render('CromatografiaLiquidas/Index', compact('can', 'filters', 'cromatografiaLiquidas', 'pozos'));
     }
 
-     /**
-     * Show the form for uploading a new well chromatographies.
+    /**
+     * Store a newly created document in database.
+     * 
+     * @throws \Illuminate\Validation\ValidationException
      */
-    public function create(Pozo $pozo): Response
+    public function store(Request $request, CromatografiaLiquida $cromatografiaLiquida): RedirectResponse
     {
-        return Inertia::render('CromatografiaLiquidas/Create', [
-            'pozos' => $pozo->query()
-                ->orderBy('id', 'desc')
-                ->get()
-                ->map
-                ->only('id', 'nombre_pozo'),
-        ]);
-    }
+        try {            
+            $request->validate([
+                'documento.*' => ['required', 'max:8048', 'mimes:pdf'], // MAX 8 MB per file
+                'pozo_id' => ['required', Rule::exists('pozos', 'id')],
+                'fecha_hora' => ['required', 'date'],
+            ]);
 
-    /* store multiple documents */
+            $hasFiles = $request->hasFile('documento');
 
-    public function store(Request $request){
-        $validated = $request->validate([
-            'files' => 'required',
-            'fecha' => 'required',
-            'pozo' => ['required', Rule::exists('pozos', 'id')],
-        ]);
-        if($validated){
-            foreach($request->file('files') as $file){
-                $filename = $file->getClientOriginalName();
-                $fileRoute = time().$filename;
-                $filesize = $file->getSize();
-                $filetype = $file->getClientOriginalExtension();
-                Storage::disk('public')->putFileAs('', $file, $fileRoute);
-                $doc = new CromatografiaLiquida();
-                $doc->documento = '{"name": "'.$fileRoute.'", "size": "'.$filesize.'", "type": "'.$filetype.'", "usrName": "'.$filename.'" }';
-                $doc->pozo_id = $request->pozo;
-                $doc->fecha_hora = $request->fecha;
-                $doc->save();
+            if ($hasFiles) {
+                $files = $request->file('documento');
+
+                foreach ($files as $file) {
+                    $filename = time() . '_' . $file->getClientOriginalName();
+                    // store the file in the "files" directory inside the "storage/app/public" disk
+                    $path = Storage::disk('public')->putFileAs('files', $file, $filename);
+                    $cromatografiaLiquida = $cromatografiaLiquida->create([
+                        'pozo_id' => $request->input('pozo_id'),
+                        'fecha_hora' => $request->input('fecha_hora'),
+                        'documento' => json_encode([
+                            'name' => 'storage/' . $path, // generate a public URL for the file
+                            'usrName' => $filename,
+                            'size' => $file->getSize(),
+                            'type' => $file->getMimeType(),
+                        ]),
+                    ]);
+                }         
+                return Redirect::back()->with('success', 'Subido correctamente.');
+            } else {
+                return Redirect::back()->with('error', 'No se han subido archivos en el formulario.');
             }
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return Redirect::back()->withErrors($e->errors())->withInput();
+        } catch (\Exception $e) {
+            return Redirect::back()->with('error', 'Error al subir el archivo: ' . $e->getMessage());
         }
-        return redirect(route('cromatografia-liquidas'));
     }
 
-    public function download($document)
+   
+     /**
+     * Update document's information in database.
+     * 
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function update(Request $request, CromatografiaLiquida $cromatografiaLiquida): RedirectResponse
     {
-        if(Storage::disk('public')->exists($document)){
-           return Storage::disk('public')->download($document);
-           //return response('error');
-           
-        }else{
-            return response('¡404! No se pudo encontrar este recurso. Si ves este mensaje, por favor contacta con un administrador. <br/> Powered by: Nerd Rage!', 404);
+        try {            
+            $request->validate([                
+                'pozo_id' => ['required', Rule::exists('pozos', 'id')],
+                'fecha_hora' => ['required', 'date'],
+            ]);
+
+            $hasFiles = $request->hasFile('documento');
+
+            if ($hasFiles) {
+                $request->validate([
+                    'documento.*' => ['required', 'max:8048', 'mimes:pdf'], // MAX 8 MB per file
+                ]);
+
+                $files = $request->file('documento');
+
+                foreach ($files as $file) {
+                    $filename = time() . '_' . $file->getClientOriginalName();
+                    // store the file in the "files" directory inside the "storage/app/public" disk
+                    $path = Storage::disk('public')->putFileAs('files', $file, $filename);
+                    $cromatografiaLiquida->update([                        
+                        'documento' => json_encode([
+                            'name' => 'storage/' . $path, // generate a public URL for the file
+                            'usrName' => $filename,
+                            'size' => $file->getSize(),
+                            'type' => $file->getMimeType(),
+                        ]),
+                    ]);
+                }                                
+            }
+
+            $cromatografiaLiquida->update([
+                'pozo_id' => $request->input('pozo_id'),
+                'fecha_hora' => $request->input('fecha_hora'),
+            ]);
+        
+            if (!$hasFiles && !$cromatografiaLiquida->documento) {
+                return Redirect::back()->with('error', 'Debe subir al menos un archivo.');
+            }
+            
+            return Redirect::back()->with('success', 'Actualizado correctamente.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return Redirect::back()->withErrors($e->errors())->withInput();
+        } catch (\Exception $e) {
+            return Redirect::back()->with('error', 'Error al subir el archivo: ' . $e->getMessage());
         }
-    } 
+    }
+
+    /**
+     * Download an specific documento store in disk.
+     */
+    public function download($id)
+    {
+        try {
+            $documento = CromatografiaLiquida::withTrashed()->findOrFail($id);
+
+            if ($documento->trashed()) {
+                return back()->with('error', 'Error al descargar el archivo: el archivo ha sido eliminado.');
+            }
+
+            $documentoData = json_decode($documento->documento, true);
+
+            // Extract the file path and name from the documentoData array
+            $filePath = $documentoData['name'];
+            $fileName = $documentoData['usrName'];         
+
+            // Get the full path of the file in the storage/app/public folder
+            $fullPath = public_path($filePath);
+
+            // Check if the file exists
+            if (!file_exists($fullPath)) {
+                return back()->with('error', 'Error al descargar el archivo: el archivo no existe.');
+            }   
+
+            // Set the response headers
+            $headers = [
+                'Content-Type' => $documentoData['type'],
+                'Content-Disposition' => 'attachment; filename="'.$fileName.'"',
+            ];
+
+            return response()->download($fullPath, $fileName, $headers);
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error al descargar el archivo: ' . $e->getMessage());
+        }
+    }
 
     /**
      * Delete temporary an specific well cromatography.

@@ -1,8 +1,12 @@
 <script setup>
 import { computed, inject, ref } from 'vue'
-import { Link, useForm } from '@inertiajs/vue3'
+import { useForm } from '@inertiajs/vue3'
 import Icon from '@/Components/Icon.vue'
 import Pagination from '@/Components/Pagination.vue'
+import Modal from '@/Components/Modal.vue'
+import DropZone from '@/Components/DropZone.vue'
+import LoadingButton from '@/Components/LoadingButton.vue'
+import TextInput from '@/Components/TextInput.vue'
 
 const props = defineProps({
   can: Object,
@@ -11,10 +15,27 @@ const props = defineProps({
 
 const swal = inject('$swal')
 
+const uploadNewDoc = ref(false)
+const editUploadedDoc = ref(false)
+
 const selected = ref([])
 const selectAllDocPozos = ref(false)
 
 const docPozoForm = useForm({})
+
+const uploadDocForm = useForm({
+  documento: [],
+  pozo_id: props.pozo.id,
+  fecha_hora: '',
+})
+
+const editUploadedDocForm = useForm({
+  _method: 'put',
+  id: '',
+  documento: [],
+  pozo_id: '',
+  fecha_hora: '',
+})
 
 const docPozos = computed(() => props.pozo.docPozos)
 
@@ -79,6 +100,50 @@ const filesize = (size, precision = 2) => {
   }
 }
 
+const openModalUploadForm = () => (uploadNewDoc.value = true)
+
+const openModalEditUploadedForm = (docPozo) => {
+  // Set form field values
+  editUploadedDocForm.id = docPozo.id
+  editUploadedDocForm.documento = [docPozo.documento]
+  editUploadedDocForm.pozo_id = props.pozo.id
+  editUploadedDocForm.fecha_hora = docPozo.fecha_hora
+
+  editUploadedDoc.value = true
+}
+
+const closeModalUploadForm = () => {
+  uploadNewDoc.value = false
+}
+
+const closeModalEditUploadedForm = () => {
+  editUploadedDoc.value = false
+  editUploadedDocForm.reset()
+}
+
+const store = () => {
+  uploadDocForm.post('/doc-pozos', {
+    preserveScroll: true,
+    onSuccess: () => {
+      closeModalUploadForm()
+      uploadDocForm.reset()
+    },
+  })
+}
+
+const update = () => {
+  editUploadedDocForm.post(`/doc-pozos/${editUploadedDocForm.id}`, {
+    preserveScroll: true,
+    onSuccess: () => (editUploadedDoc.value = false),
+    onError: (error) => console.error(error),
+    onFinish: () => {
+      if (!editUploadedDocForm.hasErrors) {
+        editUploadedDocForm.reset()
+      }
+    },
+  })
+}
+
 const removeSelectedItems = () => {
   if (selected.value.length === 1) {
     swal({
@@ -122,7 +187,7 @@ const removeSelectedItems = () => {
   <div>
     <h2 class="mb-8 text-2xl font-bold">Documentos de Pozo</h2>
     <div class="flex items-center mb-6">
-      <button v-if="can.createDocPozo" class="btn-yellow mr-2" type="button">
+      <button v-if="can.createDocPozo" class="btn-yellow mr-2" type="button" @click="openModalUploadForm">
         <span>Subir</span>
         <span class="hidden md:inline">&nbsp;Documentos</span>
       </button>
@@ -131,6 +196,87 @@ const removeSelectedItems = () => {
         <span class="hidden md:inline">&nbsp;Elementos Seleccionados</span>
       </button>
     </div>
+
+    <!-- Upload Documento Form Modal -->
+    <Modal :show="uploadNewDoc">
+      <!-- Modal content -->
+      <div class="relative">
+        <!-- Modal header -->
+        <div class="flex items-start justify-between p-4 border-b rounded-t">
+          <h2 class="text-xl font-semibold">Subir Documentos</h2>
+          <button class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" type="button" @click="closeModalUploadForm">
+            <Icon class="w-4 h-4" name="close" aria-hidden="true" />
+            <span class="sr-only">Cerrar modal</span>
+          </button>
+        </div>
+      </div>
+      <form @submit.prevent="store">
+        <div class="relative flex flex-wrap p-4">
+          <div class="w-full pb-4">
+            <!-- DropZone Component -->
+            <DropZone v-model="uploadDocForm.documento" :errors="uploadDocForm.errors.documento" accept="application/pdf" label="Documento:" />
+            <p class="mt-2 text-sm">
+              <span class="font-semibold">Nota:</span>
+              Solo subir archivos .pdf*
+            </p>
+          </div>
+          <div class="pb-4 pr-6 w-full">
+            <label class="form-label" for="text-input-pozo">Pozo/Instalación:</label>
+            <div class="pt-2">
+              <span class="block text-yellow-500">{{ pozo.nombre_pozo }}</span>
+            </div>
+            <input id="text-input-pozo" type="hidden" :value="pozo.id" />
+          </div>
+          <TextInput v-model="uploadDocForm.fecha_hora" :error="uploadDocForm.errors.fecha_hora" class="pb-8 pr-6 w-full" type="date" label="Fecha" />
+        </div>
+        <!-- Modal footer -->
+        <div class="flex items-center justify-end p-4 space-x-2 border-t border-gray-200">
+          <LoadingButton :loading="uploadDocForm.processing" class="btn-yellow mr-2" type="submit">Guardar</LoadingButton>
+          <button class="btn-secondary" @click="closeModalUploadForm">Cancelar</button>
+        </div>
+      </form>
+    </Modal>
+
+    <!-- Edit an Upload Documento Form Modal -->
+    <Modal :show="editUploadedDoc">
+      <!-- Modal content -->
+      <div class="relative">
+        <!-- Modal header -->
+        <div class="flex items-start justify-between p-4 border-b rounded-t">
+          <h2 class="text-xl font-semibold">Editar Documentos [{{ editUploadedDocForm.id }}]</h2>
+          <button class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" type="button" @click="closeModalEditUploadedForm">
+            <Icon class="w-4 h-4" name="close" aria-hidden="true" />
+            <span class="sr-only">Cerrar modal</span>
+          </button>
+        </div>
+      </div>
+      <form @submit.prevent="update">
+        <div class="relative flex flex-wrap p-4">
+          <div class="w-full pb-4">
+            <!-- DropZone Component -->
+            <DropZone v-model="editUploadedDocForm.documento" :errors="editUploadedDocForm.errors.documento" accept="application/pdf" label="Documento:" />
+            <p class="mt-2 text-sm">
+              <span class="font-semibold">Nota:</span>
+              Solo subir archivos .pdf*
+            </p>
+          </div>
+          <div class="pb-4 pr-6 w-full">
+            <label class="form-label" for="text-input-pozo">Pozo/Instalación:</label>
+            <div class="pt-2">
+              <span class="block text-yellow-500">{{ pozo.nombre_pozo }}</span>
+            </div>
+            <input id="text-input-pozo" type="hidden" :value="pozo.id" />
+          </div>
+          <TextInput v-model="editUploadedDocForm.fecha_hora" :error="editUploadedDocForm.errors.fecha_hora" class="pb-8 pr-6 w-full" type="date" label="Fecha" />
+        </div>
+        <!-- Modal footer -->
+        <div class="flex items-center justify-end p-4 space-x-2 border-t border-gray-200">
+          <LoadingButton :loading="editUploadedDocForm.processing" class="btn-yellow mr-2" type="submit">Guardar</LoadingButton>
+          <button class="btn-secondary" @click="closeModalEditUploadedForm">Cancelar</button>
+        </div>
+      </form>
+    </Modal>
+
     <div class="bg-white rounded shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
         <thead class="text-sm text-left font-bold uppercase bg-white border-b-2">
@@ -150,13 +296,13 @@ const removeSelectedItems = () => {
         <tbody>
           <tr v-for="docPozo in docPozos.data" :key="docPozo.id" class="bg-white border-b">
             <td v-if="can.editDocPozo" class="px-6 py-4 whitespace-nowrap border-solid border border-gray-200">
-              <span class="inline-block whitespace-nowrap">
-                <Link class="flex items-center" :href="`/doc-pozos/${docPozo.id}/editar`" tabindex="-1">
+              <span class="inline-block whitespace-nowrap" title="Editar documento">
+                <button class="flex items-center" tabindex="-1" type="button" @click="openModalEditUploadedForm(docPozo)">
                   <Icon class="flex-shrink-0 w-4 h-4 fill-yellow-400" name="pencil" />
-                </Link>
+                </button>
               </span>
             </td>
-            <td v-if="can.editDocPozo && !isTrashed" class="w-4 p-4 border-solid border border-gray-200">
+            <td v-if="can.editDocPozo" class="w-4 p-4 border-solid border border-gray-200">
               <div class="flex items-center">
                 <input :id="`checkbox-docpozo-${docPozo.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="docPozo.id" @change="changeToggleAllDocPozos" />
                 <label :for="`checkbox-docpozo-${docPozo.id}`" class="sr-only">checkbox</label>
@@ -171,9 +317,12 @@ const removeSelectedItems = () => {
               </div>
             </td>
             <td class="px-6 py-4 border-solid border border-gray-200">
-              <div class="flex items-center">
-                <span>{{ docPozo.documento }}</span>
-                <span v-if="docPozo.deleted_at" title="Este documento de pozo ha sido eliminado.">
+              <div class="flex items-center leading-snug">
+                <a class="text-yellow-400 hover:underline focus:text-yellow-500" :href="`/doc-pozos/${docPozo.id}/descargar`">
+                  {{ docPozo.documento.usrName }}
+                </a>
+                <span class="text-xs ml-2"> {{ filesize(docPozo.documento.size) }} </span>
+                <span v-if="docPozo.deleted_at" title="Este documento ha sido eliminado.">
                   <Icon class="flex-shrink-0 ml-2 w-3 h-3 fill-yellow-400" name="trash" />
                 </span>
               </div>

@@ -1,6 +1,6 @@
 <script setup>
 import { computed, inject, ref, watch } from 'vue'
-import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3'
+import { Head, router, useForm, usePage } from '@inertiajs/vue3'
 import debounce from 'lodash/debounce'
 import mapValues from 'lodash/mapValues'
 import pickBy from 'lodash/pickBy'

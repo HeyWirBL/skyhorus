@@ -59,10 +59,9 @@ class CromatografiaLiquidaPolicy
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\CromatografiaLiquida  $cromatografiaLiquida
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, CromatografiaLiquida $cromatografiaLiquida)
+    public function delete(User $user)
     {
         return $user->rol === 'Administrador';
     }

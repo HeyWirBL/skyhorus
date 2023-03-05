@@ -153,7 +153,7 @@ watch(
 <template>
   <div class="relative" @dragenter.prevent @dragover.prevent @drop="handleDropFiles">
     <label v-if="label" class="form-label">{{ label }}</label>
-    <div class="h-full w-full overflow-auto flex flex-col">
+    <div class="h-full w-full overflow-auto flex flex-col" :class="{ error: errors.length }">
       <div class="border-2 border-dashed border-gray-400 py-12 flex flex-col justify-center items-center">
         <p class="mb-3 font-semibold flex flex-wrap justify-center">Arrastre y suelte los archivos aquí o</p>
         <input ref="fileInput" type="file" :accept="accept" class="hidden" multiple @change="addFiles" />
@@ -168,10 +168,10 @@ watch(
           <div class="flex w-0 flex-1 items-center">
             <a class="w-0 flex-1 text-yellow-400 hover:underline truncate" href="#" :title="file.name">{{ file.name }}</a>
             <span class="mr-4">{{ filesize(file.size) }}</span>
-            <progress max="100" />
+            <progress :value="file.progress" max="100" />
           </div>
           <div class="ml-4 flex-shrink-0">
-            <button class="font-medium text-gray-600 hover:text-gray-500" @click="removeFile(index)">Remover archivo</button>
+            <button class="font-medium text-gray-600 hover:text-gray-500" @click.prevent="removeFile(index)">Remover archivo</button>
           </div>
         </li>
       </ul>

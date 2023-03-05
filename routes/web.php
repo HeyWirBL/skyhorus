@@ -14,7 +14,6 @@ use App\Http\Controllers\PozoController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
-use PhpOffice\PhpSpreadsheet\IOFactory;
 
 /*
 |--------------------------------------------------------------------------
@@ -128,12 +127,6 @@ Route::middleware('auth')->group(function () {
     Route::get('documentos', [DocumentoController::class, 'index'])
         ->name('documentos');
 
-    Route::get('documentos/crear', [DocumentoController::class, 'create'])
-        ->name('documentos.create');
-
-    Route::get('documentos/{documento}/editar', [DocumentoController::class, 'edit'])
-        ->name('documentos.edit');
-
     Route::post('documentos', [DocumentoController::class, 'store'])
         ->name('documentos.store');
 
@@ -189,14 +182,14 @@ Route::middleware('auth')->group(function () {
     Route::get('doc-pozos', [DocPozoController::class, 'index'])
         ->name('doc-pozos');
 
-    Route::get('doc-pozos/crear', [DocPozoController::class, 'create'])
-        ->name('doc-pozos.create');
+    Route::get('doc-pozos/{id}/descargar', [DocPozoController::class, 'download'])
+        ->name('doc-pozos.download');
 
     Route::post('doc-pozos', [DocPozoController::class, 'store'])
         ->name('doc-pozos.store');
-    
-    Route::get('doc-pozos/{id}/descargar', [DocPozoController::class, 'download'])
-        ->name('doc-pozos.download');
+
+    Route::put('doc-pozos/{docPozo}', [DocPozoController::class, 'update'])
+        ->name('doc-pozos.update')->middleware('can:update,App\Models\DocPozo');
 
     Route::put('doc-pozos/{docPozo}/restore', [DocPozoController::class, 'restore'])
         ->name('doc-pozos.restore')->middleware('can:restore,App\Models\DocPozo');
@@ -245,46 +238,37 @@ Route::middleware('auth')->group(function () {
         ->name('componente-pozos.destroyAll')
         ->middleware('can:delete,App\Models\ComponentePozo');
 
-    /* Route::post('/componente-pozos/import', function (Request $request) {
-            $file = $request->file('file');
-        
-            // Parse the Excel file and extract the data
-            // Here, we're using the PHPExcel library to do this
-            $reader = IOFactory::createReaderForFile($file);
-            $reader->setReadDataOnly(true);
-            $excel = $reader->load($file);
-            $worksheet = $excel->getActiveSheet();
-            $rows = $worksheet->toArray();
-        
-            // Insert the data into the database
-            DB::table('componente-pozos')->insert($rows);
-        
-            return response()->json(['success' => true]);
-        }); */
-
     Route::get('componente-pozos/export/{componentePozo}', [ComponentePozoController::class, 'export'])
         ->name('componente-pozos.export');
     
     Route::post('componente-pozos/import', [ComponentePozoController::class, 'import'])
         ->name('componente-pozos.import');
     
-    Route::get('componente-pozos/formato', [ComponentePozoController::class, 'downloadFormat'])
-        ->name('componente-pozos.downloadFormat');
+    Route::get('/formato', function () {
+        $path = Storage::disk('public')->path('formats/componentes_de_pozo.xlsx');
+        return Response::download($path);
+    });
 
     /* Cromatografías: Gas */
     //Route::resource('cromatografiagas', CromatografiaGasController::class)->only(['index']);
 
     Route::get('cromatografia-gases', [CromatografiaGasController::class, 'index'])
-        ->name('cromatografia-gases');
+        ->name('cromatografia-gases');        
 
-    Route::get('cromatografia-gases/crear', [CromatografiaGasController::class, 'create'])
-        ->name('cromatografia-gases.create');    
+    Route::get('cromatografia-gases/{id}/descargar', [CromatografiaGasController::class, 'download'])
+        ->name('cromatografia-gases.download');
     
     Route::post('cromatografia-gases', [CromatografiaGasController::class, 'store'])
-        ->name('cromatografia-gases.store');
+        ->name('cromatografia-gases.store')
+        ->middleware('can:create,App\Models\CromatografiaGas');
 
-    Route::get('cromatografia-gases/{documento}/descargar', [CromatografiaGasController::class, 'download'])
-        ->name('cromatografia-gases.download');
+    Route::post('cromatografia-gases', [CromatografiaGasController::class, 'store'])
+        ->name('cromatografia-gases.store')
+        ->middleware('can:create,App\Models\CromatografiaGas');    
+
+    Route::put('cromatografia-gases/{cromatografiaGas}', [CromatografiaGasController::class, 'update'])
+        ->name('cromatografia-gases.update')
+        ->middleware('can:update,App\Models\CromatografiaGas');
 
     Route::put('cromatografia-gases/{cromatografiaGas}/restore', [CromatografiaGasController::class, 'restore'])
         ->name('cromatografia-gases.restore')
@@ -295,10 +279,12 @@ Route::middleware('auth')->group(function () {
         ->middleware('can:restore,App\Models\CromatografiaGas');
 
     Route::delete('cromatografia-gases/{cromatografiaGas}', [CromatografiaGasController::class, 'destroy'])
-        ->name('cromatografia-gases.destroy');
+        ->name('cromatografia-gases.destroy')
+        ->middleware('can:delete,App\Models\CromatografiaGas');
     
     Route::delete('cromatografia-gases', [CromatografiaGasController::class, 'destroyAll'])
-        ->name('cromatografia-gases.destroyAll');
+        ->name('cromatografia-gases.destroyAll')
+        ->middleware('can:delete,App\Models\CromatografiaGas');
 
     /* Cromatografías: Liquída */
     //Route::resource('cromatografialiquida', CromatografiaLiquidaController::class)->only(['index']);
@@ -306,8 +292,8 @@ Route::middleware('auth')->group(function () {
     Route::get('cromatografia-liquidas', [CromatografiaLiquidaController::class, 'index'])
         ->name('cromatografia-liquidas');
 
-    Route::get('cromatografia-liquidas/crear', [CromatografiaLiquidaController::class, 'create'])
-        ->name('cromatografia-liquidas.create');
+    Route::put('cromatografia-liquidas/{cromatografiaLiquida}', [CromatografiaLiquidaController::class, 'update'])
+        ->name('cromatografia-liquidas.update');
 
     Route::put('cromatografia-liquidas/{cromatografiaLiquida}/restore', [CromatografiaLiquidaController::class, 'restore'])
         ->name('cromatografia-liquidas.restore')
