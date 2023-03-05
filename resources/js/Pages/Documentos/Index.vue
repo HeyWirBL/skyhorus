@@ -309,15 +309,15 @@ watch(
             <!-- DropZone Component -->
             <DropZone v-model="uploadDocForm.documento" :errors="uploadDocForm.errors.documento" label="Documento:" />
           </div>
-          <SelectInput v-model="uploadDocForm.directorio_id" :error="uploadDocForm.errors.directorio_id" class="pb-4 pr-6 w-full" label="Carpeta:">
+          <SelectInput v-model="uploadDocForm.directorio_id" :error="uploadDocForm.errors.directorio_id" class="pb-4 w-full" label="Carpeta:">
             <option value="">Por favor seleccione</option>
             <option v-for="dir in directorios" :key="dir.id" :value="dir.id">{{ dir.nombre_dir }}</option>
           </SelectInput>
-          <SelectInput v-model="uploadDocForm.ano_id" :error="uploadDocForm.errors.ano_id" class="pb-4 pr-6 w-full lg:w-1/2" label="Año:">
+          <SelectInput v-model="uploadDocForm.ano_id" :error="uploadDocForm.errors.ano_id" class="pb-4 pr-3 w-full lg:w-1/2" label="Año:">
             <option value="">Por favor seleccione</option>
             <option v-for="ano in anos" :key="ano.id" :value="ano.id">{{ ano.ano }}</option>
           </SelectInput>
-          <SelectInput v-model="uploadDocForm.mes_detalle_id" :error="uploadDocForm.errors.mes_detalle_id" class="pb-4 pr-6 w-full lg:w-1/2" label="Mes:">
+          <SelectInput v-model="uploadDocForm.mes_detalle_id" :error="uploadDocForm.errors.mes_detalle_id" class="pb-4 pl-3 w-full lg:w-1/2" label="Mes:">
             <option value="">Por favor seleccione</option>
             <option v-for="mes in meses" :key="mes.id" :value="mes.id">{{ mes.nombre }}</option>
           </SelectInput>
@@ -349,15 +349,15 @@ watch(
             <!-- DropZone Component -->
             <DropZone v-model="editUploadedDocForm.documento" :errors="editUploadedDocForm.errors.documento" label="Documento:" />
           </div>
-          <SelectInput v-model="editUploadedDocForm.directorio_id" :error="editUploadedDocForm.errors.directorio_id" class="pb-4 pr-6 w-full" label="Carpeta:">
+          <SelectInput v-model="editUploadedDocForm.directorio_id" :error="editUploadedDocForm.errors.directorio_id" class="pb-4 w-full" label="Carpeta:">
             <option value="">Por favor seleccione</option>
             <option v-for="dir in directorios" :key="dir.id" :value="dir.id">{{ dir.nombre_dir }}</option>
           </SelectInput>
-          <SelectInput v-model="editUploadedDocForm.ano_id" :error="editUploadedDocForm.errors.ano_id" class="pb-4 pr-6 w-full lg:w-1/2" label="Año">
+          <SelectInput v-model="editUploadedDocForm.ano_id" :error="editUploadedDocForm.errors.ano_id" class="pb-4 pr-3 w-full lg:w-1/2" label="Año">
             <option value="">Por favor seleccione</option>
             <option v-for="ano in anos" :key="ano.id" :value="ano.id">{{ ano.ano }}</option>
           </SelectInput>
-          <SelectInput v-model="editUploadedDocForm.mes_detalle_id" :error="editUploadedDocForm.errors.mes_detalle_id" class="pb-4 pr-6 w-full lg:w-1/2" label="Mes">
+          <SelectInput v-model="editUploadedDocForm.mes_detalle_id" :error="editUploadedDocForm.errors.mes_detalle_id" class="pb-4 pl-3 w-full lg:w-1/2" label="Mes">
             <option value="">Por favor seleccione</option>
             <option v-for="mes in meses" :key="mes.id" :value="mes.id">{{ mes.nombre }}</option>
           </SelectInput>
@@ -402,15 +402,29 @@ watch(
                 <label :for="`checkbox-documento-${documento.id}`" class="sr-only">checkbox</label>
               </div>
             </td>
+
             <td class="px-6 py-4 border-solid border border-gray-200">
-              <div class="flex items-center leading-snug">
-                <a class="text-yellow-400 hover:underline focus:text-yellow-500" :href="`/documentos/${documento.id}/descargar`">
-                  {{ documento.documento.usrName }}
-                </a>
-                <span class="text-xs ml-2"> {{ filesize(documento.documento.size) }} </span>
-                <span v-if="documento.deleted_at" title="Esta documento ha sido eliminado.">
-                  <Icon class="flex-shrink-0 ml-2 w-3 h-3 fill-yellow-400" name="trash" />
-                </span>
+              <div v-if="Array.isArray(documento.documento)">
+                <div v-for="(file, index) in documento.documento" :key="index" class="flex items-center leading-snug">
+                  <a class="text-yellow-400 hover:underline focus:text-yellow-500" :href="`/documentos/${documento.id}/descargar/${index}`">
+                    {{ file.usrName }}
+                  </a>
+                  <span class="text-xs ml-2"> {{ filesize(file.size) }} </span>
+                  <span v-if="documento.deleted_at" title="Esta documento ha sido eliminado.">
+                    <Icon class="flex-shrink-0 ml-2 w-3 h-3 fill-yellow-400" name="trash" />
+                  </span>
+                </div>
+              </div>
+              <div v-else>
+                <div class="flex items-center leading-snug">
+                  <a class="text-yellow-400 hover:underline focus:text-yellow-500" :href="`/documentos/${documento.id}/descargar`">
+                    {{ documento.documento.usrName }}
+                  </a>
+                  <span class="text-xs ml-2"> {{ filesize(documento.documento.size) }} </span>
+                  <span v-if="documento.deleted_at" title="Esta documento ha sido eliminado.">
+                    <Icon class="flex-shrink-0 ml-2 w-3 h-3 fill-yellow-400" name="trash" />
+                  </span>
+                </div>
               </div>
             </td>
             <td class="px-6 py-4 border-solid border border-gray-200">

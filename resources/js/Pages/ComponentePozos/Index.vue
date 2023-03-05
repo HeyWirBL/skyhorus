@@ -1,9 +1,12 @@
 <script setup>
 import { computed, inject, nextTick, ref, watch } from 'vue'
-import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3'
+import { Head, router, useForm, usePage } from '@inertiajs/vue3'
 import debounce from 'lodash/debounce'
 import mapValues from 'lodash/mapValues'
 import pickBy from 'lodash/pickBy'
+import { Line } from 'vue-chartjs'
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js'
+import chartjsPluginDatalabels from 'chartjs-plugin-datalabels'
 import Icon from '@/Components/Icon.vue'
 import Modal from '@/Components/Modal.vue'
 import SearchFilter from '@/Components/SearchFilter.vue'
@@ -12,6 +15,8 @@ import LoadingButton from '@/Components/LoadingButton.vue'
 import SelectInput from '@/Components/SelectInput.vue'
 import TextInput from '@/Components/TextInput.vue'
 import TextareaInput from '@/Components/TextareaInput.vue'
+
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, chartjsPluginDatalabels)
 
 const props = defineProps({
   can: Object,
@@ -30,11 +35,62 @@ const selectAllComPozos = ref(false)
 const editInputRef = ref(null)
 const fileInput = ref(null)
 const fileUpload = ref([])
+const selectedCompozo = ref({})
+
+const showMessageMetLab = ref(false)
+const showMessageObs = ref(false)
+const showChart = ref(false)
 
 const form = ref({
   search: props.filters.search,
   trashed: props.filters.trashed,
 })
+
+const chartOptions = {
+  plugins: {
+    datalabels: {
+      align: 'end',
+      anchor: 'end',
+      color: '#555555',
+      font: {
+        size: 14,
+        weight: 'bold',
+      },
+      formatter: (value, context) => {
+        return context.chart.data.labels[context.dataIndex].label
+      },
+    },
+  },
+  responsive: true,
+  scales: {
+    x: {
+      display: true,
+      title: {
+        display: true,
+        text: 'Componentes',
+        color: '#555555',
+        font: {
+          size: 15,
+          weight: 'bold',
+          lineHeight: 1.2,
+        },
+      },
+    },
+    y: {
+      display: true,
+      title: {
+        display: true,
+        text: 'Total Mo',
+        color: '#555555',
+        font: {
+          size: 15,
+          weight: 'bold',
+          lineHeight: 1.2,
+        },
+      },
+    },
+  },
+}
 
 const componentePozoForm = useForm({})
 
@@ -104,6 +160,12 @@ const editComPozoForm = useForm({
   fecha_muestreo: '',
 })
 
+const componentes = computed(() => props.componentePozos)
+
+const selectedComponentePozo = computed(() => {
+  return componentes.value.data.find((componentePozo) => componentePozo.id === selectedCompozo.value)
+})
+
 const isTrashed = computed(() => usePage().url.includes('trashed=only'))
 
 /**
@@ -128,6 +190,34 @@ const filesize = (size, precision = 2) => {
     return `${val} ${units[i]}`
   }
 }
+
+/**
+ * Computed Property: Formats the data received from the props in a format
+ * that can be used by the chart. This includes mapping the `quimicosData`
+ * array to generate the chart labels and data.
+ */
+const chartDataFormatted = computed(() => {
+  if (selectedComponentePozo.value) {
+    const quimicosData = selectedComponentePozo.value.quimicosData
+    return {
+      labels: quimicosData.map((q) => q.Quimico),
+      datasets: [
+        {
+          label: 'Total Mo',
+          data: quimicosData.map((q) => q.Total_mo),
+          backgroundColor: 'rgba(100, 181, 246, 1)',
+          borderColor: 'rgba(105, 183, 246, 1)',
+          borderWidth: 2,
+          pointStyle: 'circle',
+          pointRadius: 6,
+          pointHoverRadius: 12,
+        },
+      ],
+    }
+  } else {
+    return {}
+  }
+})
 
 /**
  * Helper Function that that checks whether the `selectAllRef` flag is set
@@ -183,6 +273,16 @@ const browseFiles = () => {
 const removeFile = () => {
   fileUpload.value = []
   fileInput.value = null
+}
+
+const truncateMessageMetLab = (messageMetLab, maxLength = 40) => {
+  const metLab = messageMetLab ?? ''
+  return metLab.length > maxLength ? metLab.substring(0, maxLength) : metLab || 'No tiene especificado un método de laboratorio.'
+}
+
+const truncateMessageObs = (messageObs, maxLength = 40) => {
+  const observaciones = messageObs ?? ''
+  return observaciones.length > maxLength ? observaciones.substring(0, maxLength) : observaciones || 'Aún no hay observaciones.'
 }
 
 const openModalImportForm = () => {
@@ -250,6 +350,21 @@ const openModalEditForm = (componentePozo) => {
   nextTick(() => editInputRef.value.focus())
 }
 
+const openModalMessageMetLab = (id) => {
+  selectedCompozo.value = componentes.value.data.find((componentePozo) => componentePozo.id === id)
+  showMessageMetLab.value = true
+}
+
+const openModalMessageObs = (id) => {
+  selectedCompozo.value = componentes.value.data.find((componentePozo) => componentePozo.id === id)
+  showMessageObs.value = true
+}
+
+const openModalChart = (id) => {
+  selectedCompozo.value = id
+  showChart.value = true
+}
+
 const closeModalEditComPozoForm = () => {
   editComPozo.value = false
   editComPozoForm.reset()
@@ -257,6 +372,18 @@ const closeModalEditComPozoForm = () => {
 
 const closeModalImportForm = () => {
   importComPozo.value = false
+}
+
+const closeModalMessageMetLab = () => {
+  showMessageMetLab.value = false
+}
+
+const closeModalMessageObs = () => {
+  showMessageObs.value = false
+}
+
+const closeModalChart = () => {
+  showChart.value = false
 }
 
 const importExcel = () => {
@@ -553,73 +680,470 @@ watch(
       <!-- Modal footer -->
     </Modal>
 
-    <div class="bg-white rounded-md shadow overflow-x-auto">
-      <table class="w-full whitespace-nowrap">
-        <thead class="text-sm text-left font-bold uppercase bg-white border-b-2">
-          <tr>
-            <th v-if="can.editComponentePozo && componentePozos.data.length !== 0" scope="col" class="p-4 w-4 border-solid border border-gray-200" />
-            <th v-if="can.deleteComponentePozo && componentePozos.data.length !== 0" scope="col" class="p-4">
-              <div class="flex items-center">
+    <Modal :show="showMessageMetLab" @close="closeModalMessageMetLab">
+      <div class="relative">
+        <!-- Modal Header -->
+        <div class="flex items-start justify-between p-4 border-b rounded-t">
+          <h2 class="text-xl font-semibold">Método de laboratorio</h2>
+
+          <button class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" type="button" @click="closeModalMessageMetLab">
+            <Icon class="w-4 h-4" name="close" aria-hidden="true" />
+            <span class="sr-only">Cerrar modal</span>
+          </button>
+        </div>
+        <!-- Modal Body -->
+        <div class="p-6 space-y-6" style="height: 150px">
+          <p class="text-base text-gray-600">{{ selectedCompozo.met_laboratorio }}</p>
+        </div>
+        <div class="flex items-center justify-end p-4 space-x-2 border-t border-gray-200 rounded-b">
+          <button class="btn-secondary" type="button" @click="closeModalMessageMetLab">Cerrar</button>
+        </div>
+      </div>
+    </Modal>
+
+    <Modal :show="showMessageObs" @close="closeModalMessageObs">
+      <div class="relative">
+        <!-- Modal Header -->
+        <div class="flex items-start justify-between p-4 border-b rounded-t">
+          <h2 class="text-xl font-semibold">Observaciones</h2>
+
+          <button class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" type="button" @click="closeModalMessageObs">
+            <Icon class="w-4 h-4" name="close" aria-hidden="true" />
+            <span class="sr-only">Cerrar modal</span>
+          </button>
+        </div>
+        <!-- Modal Body -->
+        <div class="p-6 space-y-6" style="height: 150px">
+          <p class="text-base text-gray-600">{{ selectedCompozo.observaciones }}</p>
+        </div>
+        <div class="flex items-center justify-end p-4 space-x-2 border-t border-gray-200 rounded-b">
+          <button class="btn-secondary" type="button" @click="closeModalMessageObs">Cerrar</button>
+        </div>
+      </div>
+    </Modal>
+
+    <Modal :show="showChart" style="max-width: 1000px" @close="closeModalChart">
+      <div class="relative">
+        <!-- Modal Header -->
+        <div class="flex items-start justify-between p-4 border-b rounded-t">
+          <h2 class="text-xl font-semibold">Gráfica de Líneas - % MOL</h2>
+
+          <button class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" type="button" @click="closeModalChart">
+            <Icon class="w-4 h-4" name="close" aria-hidden="true" />
+            <span class="sr-only">Cerrar modal</span>
+          </button>
+        </div>
+        <!-- Modal Body -->
+        <div class="p-6 space-y-6">
+          <Line id="my-chart-id" :options="chartOptions" :data="chartDataFormatted" />
+        </div>
+        <div class="flex items-center justify-end p-4 space-x-2 border-t border-gray-200 rounded-b">
+          <button class="btn-secondary" type="button" @click="closeModalChart">Cerrar</button>
+        </div>
+      </div>
+    </Modal>
+
+    <div class="bg-white shadow rounded-md overflow-x-auto">
+      <table class="w-full whitespace-nowrap text-sm">
+        <thead class="bg-white border-b-2">
+          <tr v-if="componentePozos.data.length !== 0">
+            <th scope="col" class="p-4 w-4 border-solid border border-gray-200" />
+            <th scope="col" class="p-4 border-solid border border-gray-200">
+              <div v-if="can.editComponentePozo" class="flex items-center">
                 <input id="checkbox-all-compozos" v-model="selectAllComPozos" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" @click="toggleAllComPozos" />
                 <label for="checkbox-all-compozos" class="sr-only">checkbox</label>
               </div>
             </th>
-            <th scope="col" class="px-6 py-3 border-solid border border-gray-200">No.</th>
-            <th scope="col" class="px-6 py-3 border-solid border border-gray-200">Pozo/Instalación</th>
-            <th scope="col" class="px-6 py-3 border-solid border border-gray-200">Nombre del Componente</th>
-            <th scope="col" class="px-6 py-3 border-solid border border-gray-200">Equipo Utilizado</th>
-            <th scope="col" class="px-6 py-3 border-solid border border-gray-200">Fecha de Muestreo</th>
+            <th scope="col" class="p-1 border-solid border border-gray-200" />
+            <th scope="col" class="p-1 border-solid border border-gray-200" />
+            <th scope="col" class="p-1 border-solid border border-gray-200" />
+            <th scope="col" class="p-1 border-solid border border-gray-200" />
+            <th scope="col" class="p-1 border-solid border border-gray-200" />
+            <th scope="col" class="p-1 border-solid border border-gray-200" />
           </tr>
         </thead>
         <tbody>
-          <tr v-for="componentePozo in componentePozos.data" :key="componentePozo.id" class="bg-white border-b">
-            <td class="px-6 py-4 whitespace-nowrap border-solid border border-gray-200">
-              <span v-if="can.editComponentePozo" class="inline-block whitespace-nowrap" title="Editar componentes de pozo">
-                <button class="flex items-center mr-2" tabindex="-1" type="button" @click="openModalEditForm(componentePozo)">
-                  <Icon class="flex-shrink-0 w-4 h-4 fill-yellow-400" name="pencil" />
-                </button>
-              </span>
-              <span class="inline-block whitespace-nowrap" title="Ver componentes de pozo">
-                <Link class="flex items-center" :href="`/componente-pozos/${componentePozo.id}`" tabindex="-1">
-                  <Icon class="flex-shrink-0 w-4 h-4 fill-yellow-400" name="eye" />
-                </Link>
-              </span>
-            </td>
-            <td v-if="can.deleteComponentePozo" class="w-4 p-4 border-solid border border-gray-200">
-              <div class="flex items-center">
-                <input :id="`checkbox-compozo-${componentePozo.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="componentePozo.id" @change="changeToggleAllComPozos" />
-                <label :for="`checkbox-compozo-${componentePozo.id}`" class="sr-only">checkbox</label>
-              </div>
-            </td>
-            <td class="px-6 py-4 border-solid border border-gray-200">
-              <span class="block">{{ componentePozo.id }}</span>
-            </td>
-            <td class="px-6 py-4 border-solid border border-gray-200">
-              <div class="flex items-center">
-                <span> {{ componentePozo.pozo.nombre_pozo }}</span>
-                <span v-if="componentePozo.pozo.deleted_at" title="Este pozo ha sido eliminado.">
-                  <Icon class="flex-shrink-0 ml-2 w-3 h-3 fill-yellow-400" name="trash" />
+          <template v-for="(componentePozo, rowIndex) in componentePozos.data" :key="componentePozo.id">
+            <tr v-if="rowIndex !== 0" class="bg-gray-200">
+              <td class="px-6 py-3 whitespace-nowrap border-solid border border-gray-300" />
+              <td class="px-6 py-3 whitespace-nowrap border-solid border border-gray-300" />
+              <td class="px-6 py-3 whitespace-nowrap border-solid border border-gray-300" />
+              <td class="px-6 py-3 whitespace-nowrap border-solid border border-gray-300" />
+              <td class="px-6 py-3 whitespace-nowrap border-solid border border-gray-300" />
+              <td class="px-6 py-3 whitespace-nowrap border-solid border border-gray-300" />
+              <td class="px-6 py-3 whitespace-nowrap border-solid border border-gray-300" />
+              <td class="px-6 py-3 whitespace-nowrap border-solid border border-gray-300" />
+            </tr>
+            <tr class="bg-gray-50">
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block bg-gray-400 text-white font-normal">{{ componentePozo.pozo.nombre_pozo }}</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200" colspan="3">
+                <span class="block bg-gray-400 text-white font-normal">Datos de análisis en laboratorio</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200" colspan="2">
+                <span class="block bg-gray-400 text-white font-normal">Nombre del grupo</span>
+              </td>
+            </tr>
+            <tr class="bg-white">
+              <td class="p-4 whitespace-nowrap border-solid border border-gray-200">
+                <span v-if="can.editComponentePozo" class="inline-block whitespace-nowrap" title="Editar componentes de pozo">
+                  <button class="flex items-center" tabindex="-1" type="button" @click="openModalEditForm(componentePozo)">
+                    <Icon class="flex-shrink-0 w-4 h-4 fill-yellow-400" name="pencil" />
+                  </button>
                 </span>
-              </div>
-            </td>
-            <td class="px-6 py-4 border-solid border border-gray-200">
-              <div class="flex items-center">
-                <span>{{ componentePozo.nombre_componente }}</span>
-                <span v-if="componentePozo.deleted_at" title="Este componente de pozo ha sido eliminado.">
-                  <Icon class="flex-shrink-0 ml-2 w-3 h-3 fill-yellow-400" name="trash" />
+              </td>
+              <td class="w-4 p-4 border-solid border border-gray-200">
+                <div v-if="can.deleteComponentePozo" class="flex items-center">
+                  <input :id="`checkbox-compozo-${componentePozo.id}`" v-model="selected" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" :value="componentePozo.id" @change="changeToggleAllComPozos" />
+                  <label :for="`checkbox-compozo-${componentePozo.id}`" class="sr-only">checkbox</label>
+                </div>
+              </td>
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block bg-yellow-400 text-white">Fecha de recepción</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block bg-yellow-400 text-white">Fecha de análisis</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block bg-yellow-400 text-white">Número de determinación</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200" colspan="2">
+                <span class="block">{{ componentePozo.nombre_componente }}</span>
+              </td>
+            </tr>
+            <tr class="bg-gray-50">
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">{{ componentePozo.fecha_recep }}</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">{{ componentePozo.fecha_analisis }}</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">{{ componentePozo.no_determinacion }}</span>
+              </td>
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+            </tr>
+            <tr class="bg-gray-50">
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">{{ componentePozo.equipo_utilizado }}</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200" colspan="2">
+                <span class="block">
+                  {{ truncateMessageMetLab(componentePozo.met_laboratorio) }}
+                  <a v-show="componentePozo.met_laboratorio?.length > 40" class="text-yellow-400 hover:underline" href="#" @click.prevent="openModalMessageMetLab(componentePozo.id)">Ver Más...</a>
                 </span>
-              </div>
-            </td>
-            <td class="px-6 py-4 border-solid border border-gray-200">
-              <span class="block">{{ componentePozo.equipo_utilizado }}</span>
-            </td>
-            <td class="px-6 py-4">
-              <span class="block">{{ componentePozo.fecha_muestreo }}</span>
-            </td>
-          </tr>
-          <tr v-if="componentePozos.data.length === 0">
-            <td class="px-6 py-4" colspan="5">No se encontraron componentes de pozos {{ form.trashed === 'only' ? 'eliminados' : 'registrados' }}.</td>
-          </tr>
+              </td>
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+            </tr>
+            <tr class="bg-white">
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block bg-yellow-400 text-white">Observaciones</span>
+              </td>
+              <td class="p-1 text-left leading-6 border-solid border border-gray-200" colspan="2">
+                <span class="block">{{ truncateMessageObs(componentePozo.observaciones) }} <a v-show="componentePozo.observaciones?.length > 40" class="text-yellow-400 hover:underline" href="#" @click.prevent="openModalMessageObs(componentePozo.id)">Ver Más...</a></span>
+              </td>
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+            </tr>
+            <tr class="bg-gray-50">
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block bg-gray-400 text-white font-normal">Información</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block bg-gray-400 text-white font-normal">PM</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block bg-gray-400 text-white font-normal">% Peso</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block bg-gray-400 text-white font-normal">% MOL</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block bg-gray-400 text-white font-normal">Densidad</span>
+              </td>
+            </tr>
+            <tr class="bg-white">
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">Dióxido de carbono</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">{{ componentePozo.dioxido_carbono }}</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">43</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">54</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">{{ componentePozo.den_dioxido_carbono }}</span>
+              </td>
+            </tr>
+            <tr class="bg-gray-50">
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">Ácido sulfhídrico</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">{{ componentePozo.acido_sulfidrico }}</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">43</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">54</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">{{ componentePozo.den_acido_sulfidrico }}</span>
+              </td>
+            </tr>
+            <tr class="bg-white">
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">Nitrógeno</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">{{ componentePozo.nitrogeno }}</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">43</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">54</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">{{ componentePozo.den_nitrogeno }}</span>
+              </td>
+            </tr>
+            <tr class="bg-gray-50">
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">Metano</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">{{ componentePozo.metano }}</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">43</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">54</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">{{ componentePozo.den_metano }}</span>
+              </td>
+            </tr>
+            <tr class="bg-white">
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">Etano</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">{{ componentePozo.etano }}</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">43</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">54</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">{{ componentePozo.den_etano }}</span>
+              </td>
+            </tr>
+            <tr class="bg-gray-50">
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">Propano</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">{{ componentePozo.propano }}</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">43</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">54</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">{{ componentePozo.den_propano }}</span>
+              </td>
+            </tr>
+            <tr class="bg-white">
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">Iso-Butano</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">{{ componentePozo.iso_butano }}</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">43</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">54</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">{{ componentePozo.den_iso_butano }}</span>
+              </td>
+            </tr>
+            <tr class="bg-gray-50">
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">n-Butano</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">{{ componentePozo.n_butano }}</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">43</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">54</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">{{ componentePozo.den_n_butano }}</span>
+              </td>
+            </tr>
+            <tr class="bg-white">
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">Iso-Pentano</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">{{ componentePozo.iso_pentano }}</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">43</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">54</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">{{ componentePozo.den_iso_pentano }}</span>
+              </td>
+            </tr>
+            <tr class="bg-gray-50">
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">n-Petano</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">{{ componentePozo.n_pentano }}</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">43</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">54</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">{{ componentePozo.den_n_pentano }}</span>
+              </td>
+            </tr>
+            <tr class="bg-white">
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">**n-Exano</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">{{ componentePozo.n_exano }}</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">43</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">54</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">{{ componentePozo.den_n_exano }}</span>
+              </td>
+            </tr>
+            <tr class="bg-gray-50">
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block bg-gray-400 text-white font-normal">Total</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block bg-yellow-400 text-white font-bold">540.86</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block bg-yellow-400 text-white font-bold">100.00</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block bg-yellow-400 text-white font-bold">100</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block bg-yellow-400 text-white font-bold">0</span>
+              </td>
+            </tr>
+            <tr class="bg-white">
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="border text-left p-1" colspan="5">
+                <ul role="list" class="divide-y divide-gray-400 rounded-md border border-gray-400">
+                  <li class="flex items-center justify-between py-3 pl-3 pr-4">
+                    <div class="flex w-0 flex-1 items-center">
+                      <Icon class="h-4 w-4 flex-shrink-0 text-gray-500" name="line-chart" aria-hidden="true" />
+                      <span class="ml-2 w-0 flex-1 truncate">Gráfica de líneas % MOL ({{ componentePozo.quimicosData.length }})</span>
+                    </div>
+                    <div class="ml-4 flex-shrink-0">
+                      <a href="#" class="font-medium text-yellow-600 hover:underline" @click.prevent="openModalChart(componentePozo.id)">Visualizar</a>
+                    </div>
+                  </li>
+                </ul>
+              </td>
+            </tr>
+          </template>
+          <template v-if="componentePozos.data.length === 0">
+            <tr class="bg-white">
+              <td class="px-6 py-4 text-base text-left leading-6 border border-gray-200" colspan="5">No se encontraron componentes de pozos {{ form.trashed === 'only' ? 'eliminados' : 'registrados' }}.</td>
+            </tr>
+          </template>
         </tbody>
       </table>
     </div>

@@ -166,7 +166,10 @@ watch(
       <ul role="list" class="mt-2 divide-y divide-gray-400 rounded border border-gray-400">
         <li v-for="(file, index) in files" :key="index" class="flex items-center justify-between py-3 pl-3 pr-4 text-sm">
           <div class="flex w-0 flex-1 items-center">
-            <a class="w-0 flex-1 text-yellow-400 hover:underline truncate" href="#" :title="file.name">{{ file.name }}</a>
+            <span v-if="file.usrName" class="w-0 flex-1 text-yellow-400 truncate" :title="file.usrName">{{ file.usrName }}</span>
+            <span v-else class="w-0 flex-1 text-yellow-400 truncate" :title="file.name">
+              {{ file.name }}
+            </span>
             <span class="mr-4">{{ filesize(file.size) }}</span>
             <progress :value="file.progress" max="100" />
           </div>

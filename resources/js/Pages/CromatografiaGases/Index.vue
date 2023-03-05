@@ -381,14 +381,27 @@ watch(
               </div>
             </td>
             <td class="px-6 py-4 border-solid border border-gray-200">
-              <div class="flex items-center leading-snug">
-                <a class="text-yellow-400 hover:underline focus:text-yellow-500" :href="`/cromatografia-gases/${cromatografiaGas.id}/descargar`">
-                  {{ cromatografiaGas.documento.usrName }}
-                </a>
-                <span class="text-xs ml-2"> {{ filesize(cromatografiaGas.documento.size) }} </span>
-                <span v-if="cromatografiaGas.deleted_at" title="Este documento ha sido eliminado.">
-                  <Icon class="flex-shrink-0 ml-2 w-3 h-3 fill-yellow-400" name="trash" />
-                </span>
+              <div v-if="Array.isArray(cromatografiaGas.documento)">
+                <div v-for="(file, index) in cromatografiaGas.documento" :key="index" class="flex items-center leading-snug">
+                  <a class="text-yellow-400 hover:underline focus:text-yellow-500" :href="`/cromatografia-gases/${cromatografiaGas.id}/descargar/${index}`">
+                    {{ file.usrName }}
+                  </a>
+                  <span class="text-xs ml-2"> {{ filesize(file.size) }} </span>
+                  <span v-if="cromatografiaGas.deleted_at" title="Esta documento ha sido eliminado.">
+                    <Icon class="flex-shrink-0 ml-2 w-3 h-3 fill-yellow-400" name="trash" />
+                  </span>
+                </div>
+              </div>
+              <div v-else>
+                <div class="flex items-center leading-snug">
+                  <a class="text-yellow-400 hover:underline focus:text-yellow-500" :href="`/cromatografia-gases/${cromatografiaGas.id}/descargar`">
+                    {{ cromatografiaGas.documento.usrName }}
+                  </a>
+                  <span class="text-xs ml-2"> {{ filesize(cromatografiaGas.documento.size) }} </span>
+                  <span v-if="cromatografiaGas.deleted_at" title="Esta documento ha sido eliminado.">
+                    <Icon class="flex-shrink-0 ml-2 w-3 h-3 fill-yellow-400" name="trash" />
+                  </span>
+                </div>
               </div>
             </td>
             <td class="px-6 py-4 border-solid border border-gray-200">

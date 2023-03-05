@@ -183,6 +183,46 @@ class CromatografiaLiquidaController extends Controller
         }
     }
 
+    public function downloadMultiple($id, $index)
+    {
+        try {
+            $documento = CromatografiaLiquida::withTrashed()->findOrFail($id);
+
+            if ($documento->trashed()) {
+                return back()->with('error', 'Error al descargar el archivo: el archivo no existe.');
+            }
+
+            $documentoData = json_decode($documento->documento, true);
+
+            // Extract the file path
+            if (is_array($documentoData)) {
+                foreach ($documentoData as $fileIndex => $file) {
+                    if ($index == $fileIndex) {
+                        $filePath = $file['name'];
+                        $fileName = $file['usrName'];
+    
+                        $fullPath = public_path($filePath);
+
+                        if (!file_exists($fullPath)) {
+                            return back()->with('error', 'Error al descargar el archivo: el archivo no existe.');
+                        }   
+    
+                        // Set the response headers
+                        $headers = [
+                            'Content-Type' => $file['type'],
+                            'Content-Disposition' => 'attachment; filename="'.$fileName.'"',
+                        ];
+    
+                        return response()->download($fullPath, $fileName, $headers);
+                    }                             
+                }
+            }  
+            return back()->with('error', 'Error al descargar el archivo: el archivo no existe.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error al descargar el archivo: ' . $e->getMessage());
+        }
+    }
+
     /**
      * Delete temporary an specific well cromatography.
      */

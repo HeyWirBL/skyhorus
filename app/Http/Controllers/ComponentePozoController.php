@@ -4,12 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Imports\ComponentePozosImportCollection;
 use App\Models\ComponentePozo;
-use App\Models\ComponentePozoView;
 use App\Models\Pozo;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -97,6 +97,9 @@ class ComponentePozoController extends Controller
                 'fecha_muestreo' =>$cp->fecha_muestreo,
                 'deleted_at' => $cp->deleted_at,
                 'pozo' => optional($cp->pozo)->only('nombre_pozo', 'deleted_at'),
+                'quimicosData' => DB::table('graf_lineas_mo')
+                    ->where('idComPozo', $cp->id)
+                    ->get(),
             ]); 
 
         $pozos = $pozo->select('id', 'nombre_pozo')->orderByDesc('id')->get();
@@ -172,89 +175,6 @@ class ComponentePozoController extends Controller
         
         ComponentePozo::create($validatedData);        
         return Redirect::back()->with('success', 'Componentes de pozo creados.');
-    }
-
-    /**
-     * Display the information for specific component well.
-     */
-    public function show(ComponentePozoView $view, ComponentePozo $componentePozo, Pozo $pozo): Response
-    {
-        $user = Auth::user();
-        $can = [
-            'editComponentePozo' => $user->can('update', ComponentePozo::class),
-            'restoreComponentePozo' => $user->can('restore', ComponentePozo::class),
-            'deleteComponentePozo' => $user->can('delete', ComponentePozo::class),
-        ];
-
-        $quimicosData = $view->query()->where('idComPozo', $componentePozo->id)->get();
-
-        return Inertia::render('ComponentePozos/Show', [
-            'can' => $can,
-            'componentePozo' => [
-                'id' => $componentePozo->id,
-                'dioxido_carbono' => $componentePozo->dioxido_carbono,
-                'pe_dioxido_carbono' => $componentePozo->pe_dioxido_carbono,
-                'mo_dioxido_carbono' => $componentePozo->mo_dioxido_carbono,
-                'den_dioxido_carbono' => $componentePozo->den_dioxido_carbono,
-                'acido_sulfidrico' => $componentePozo->acido_sulfidrico,
-                'pe_acido_sulfidrico' => $componentePozo->pe_acido_sulfidrico,
-                'mo_acido_sulfidrico' => $componentePozo->mo_acido_sulfidrico,
-                'den_acido_sulfidrico' => $componentePozo->den_acido_sulfidrico,
-                'nitrogeno' => $componentePozo->nitrogeno,
-                'pe_nitrogeno' => $componentePozo->pe_nitrogeno,
-                'mo_nitrogeno' => $componentePozo->mo_nitrogeno,
-                'den_nitrogeno' => $componentePozo->den_nitrogeno,
-                'metano' => $componentePozo->metano,
-                'pe_metano' => $componentePozo->pe_metano,
-                'mo_metano' => $componentePozo->mo_metano,
-                'den_metano' => $componentePozo->den_metano,
-                'etano' => $componentePozo->etano,
-                'pe_etano' => $componentePozo->pe_etano,
-                'mo_etano' => $componentePozo->mo_etano,
-                'den_etano' => $componentePozo->den_etano,
-                'propano' => $componentePozo->propano,
-                'pe_propano' => $componentePozo->pe_propano,
-                'mo_propano' => $componentePozo->mo_propano,
-                'den_propano' => $componentePozo->den_propano,
-                'iso_butano' => $componentePozo->iso_butano,
-                'pe_iso_butano' => $componentePozo->pe_iso_butano,
-                'mo_iso_butano' => $componentePozo->mo_iso_butano,
-                'den_iso_butano' => $componentePozo->den_iso_butano,
-                'n_butano' => $componentePozo->n_butano,
-                'pe_n_butano' => $componentePozo->pe_n_butano,
-                'mo_n_butano' => $componentePozo->mo_n_butano,
-                'den_n_butano' => $componentePozo->den_n_butano,
-                'iso_pentano' => $componentePozo->iso_pentano,
-                'pe_iso_pentano' => $componentePozo->pe_iso_pentano,
-                'mo_iso_pentano' => $componentePozo->mo_iso_pentano,
-                'den_iso_pentano' => $componentePozo->den_iso_pentano,
-                'n_pentano' => $componentePozo->n_pentano,
-                'pe_n_pentano' => $componentePozo->pe_n_pentano,
-                'mo_n_pentano' => $componentePozo->mo_n_pentano,
-                'den_n_pentano' => $componentePozo->den_n_pentano,
-                'n_exano' => $componentePozo->n_exano,
-                'pe_n_exano' => $componentePozo->pe_n_exano,
-                'mo_n_exano' => $componentePozo->mo_n_exano,
-                'den_n_exano' => $componentePozo->den_n_exano,                
-                'fecha_recep' => $componentePozo->fecha_recep,
-                'pozo_id' => $componentePozo->pozo_id,
-                'fecha_analisis' => $componentePozo->fecha_analisis,
-                'no_determinacion' => $componentePozo->no_determinacion,
-                'equipo_utilizado' => $componentePozo->equipo_utilizado,
-                'met_laboratorio' => $componentePozo->met_laboratorio,
-                'observaciones' => $componentePozo->observaciones,
-                'nombre_componente' => $componentePozo->nombre_componente,
-                'fecha_muestreo' => $componentePozo->fecha_muestreo,
-                'deleted_at' => $componentePozo->deleted_at,
-                'pozo' => $componentePozo->pozo ? $componentePozo->pozo->only('id', 'nombre_pozo', 'deleted_at') : null,
-            ],
-            'pozos' => $pozo->query()
-                ->orderByDesc('id')
-                ->get()
-                ->map
-                ->only('id', 'nombre_pozo'),
-            'quimicosData' => $quimicosData,
-        ]);
     }
 
     /**

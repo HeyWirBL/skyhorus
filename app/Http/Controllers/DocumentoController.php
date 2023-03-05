@@ -112,7 +112,7 @@ class DocumentoController extends Controller
 
             if ($hasFiles) {
                 $request->validate([
-                    'documento.*' => ['required', 'max:8000'], // MAX 8 MB per file
+                    'documento.*' => ['required', 'max:8050'], // MAX 8 MB per file
                 ]);
 
                 $files = $request->file('documento');
@@ -207,9 +207,8 @@ class DocumentoController extends Controller
                     if ($index == $fileIndex) {
                         $filePath = $file['name'];
                         $fileName = $file['usrName'];
-    
-                        //$fullPath = public_path($filePath);
-                        $fullPath = Storage::get($filePath);
+
+                        $fullPath = public_path($filePath);
 
                         if (!file_exists($fullPath)) {
                             return back()->with('error', 'Error al descargar el archivo: el archivo no existe.');

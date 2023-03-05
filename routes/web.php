@@ -307,9 +307,6 @@ Route::middleware('auth')->group(function () {
     Route::get('componente-pozos', [ComponentePozoController::class, 'index'])
         ->name('componente-pozos');
 
-    Route::get('componente-pozos/{componentePozo}', [ComponentePozoController::class, 'show'])
-        ->name('componente-pozos.show');
-
     Route::post('componente-pozos', [ComponentePozoController::class, 'store'])
         ->name('componente-pozos.store')
         ->middleware('can:create,App\Models\ComponentePozo');
@@ -337,7 +334,6 @@ Route::middleware('auth')->group(function () {
         ->name('componente-pozos.destroyAll')
         ->middleware('can:delete,App\Models\ComponentePozo');
     
-
     /*
     |--------------------------------------------------------------------------
     | Catalogue of Well Chromatography Documents
@@ -351,6 +347,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('cromatografia-gases/{id}/descargar', [CromatografiaGasController::class, 'download'])
         ->name('cromatografia-gases.download');
+
+    Route::get('cromatografia-gases/{id}/descargar/{index}', [CromatografiaGasController::class, 'downloadMultiple'])
+        ->name('cromatografia-gases.downloadMultiple');
     
     Route::post('cromatografia-gases', [CromatografiaGasController::class, 'store'])
         ->name('cromatografia-gases.store')
@@ -389,6 +388,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('cromatografia-liquidas/{documento}/descargar', [CromatografiaLiquidaController::class, 'download'])
         ->name('cromatografia-liquidas.download');
+
+    Route::get('cromatografia-liquidas/{id}/descargar/{index}', [CromatografiaLiquidaController::class, 'downloadMultiple'])
+        ->name('cromatografia-liquidas.downloadMultiple');
 
     Route::post('cromatografia-liquidas', [CromatografiaLiquidaController::class, 'store'])
         ->name('cromatografia-liquidas.store')
