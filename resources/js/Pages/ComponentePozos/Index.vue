@@ -23,10 +23,13 @@ const props = defineProps({
 const swal = inject('$swal')
 
 const editComPozo = ref(false)
+const importComPozo = ref(false)
 
 const selected = ref([])
 const selectAllComPozos = ref(false)
 const editInputRef = ref(null)
+const fileInput = ref(null)
+const fileUpload = ref([])
 
 const form = ref({
   search: props.filters.search,
@@ -34,6 +37,14 @@ const form = ref({
 })
 
 const componentePozoForm = useForm({})
+
+const importComPozoForm = useForm({
+  file: [],
+  pozoId: '',
+  fechaRecep: '',
+  fechaAnalisis: '',
+  fechaMuest: '',
+})
 
 const editComPozoForm = useForm({
   _method: 'put',
@@ -96,6 +107,29 @@ const editComPozoForm = useForm({
 const isTrashed = computed(() => usePage().url.includes('trashed=only'))
 
 /**
+ * Converts a file size in bytes to the nearest unit of measurement (B, kB, MB, GB, etc.).
+ * @param {number} size - The file size in bytes.
+ * @param {number} [precision=2] - The number of decimal places to include in the output. Default is 2.
+ * @returns {string} The formatted file size with the appropriate unit of measurement.
+ */
+const filesize = (size, precision = 2) => {
+  const units = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB', 'BB']
+  if (size < 0) {
+    return 'Tipo de archivo inválido'
+  } else if (size === 0) {
+    return `0 ${units[0]}`
+  } else if (size < 1) {
+    return `${(size * 1024).toFixed(precision)} ${units[1]}`
+  } else if (size >= Math.pow(1024, units.length - 1)) {
+    return `${(size / Math.pow(1024, units.length - 1)).toFixed(precision)} ${units[units.length - 1]}`
+  } else {
+    const i = Math.floor(Math.log(size) / Math.log(1024))
+    const val = (size / Math.pow(1024, i)).toFixed(precision)
+    return `${val} ${units[i]}`
+  }
+}
+
+/**
  * Helper Function that that checks whether the `selectAllRef` flag is set
  * to false.
  *
@@ -136,6 +170,23 @@ const changeToggleAllComPozos = () => {
 
 const reset = () => {
   form.value = mapValues(form.value, () => null)
+}
+
+const onFileChange = (e) => {
+  fileUpload.value = e.target.files
+}
+
+const browseFiles = () => {
+  fileInput.value.click()
+}
+
+const removeFile = () => {
+  fileUpload.value = []
+  fileInput.value = null
+}
+
+const openModalImportForm = () => {
+  importComPozo.value = true
 }
 
 const openModalEditForm = (componentePozo) => {
@@ -202,6 +253,26 @@ const openModalEditForm = (componentePozo) => {
 const closeModalEditComPozoForm = () => {
   editComPozo.value = false
   editComPozoForm.reset()
+}
+
+const closeModalImportForm = () => {
+  importComPozo.value = false
+}
+
+const importExcel = () => {
+  for (let i = 0; i < fileUpload.value.length; i++) {
+    importComPozoForm.file[i] = fileUpload.value[i]
+  }
+
+  importComPozoForm.post('/componente-pozos/import', {
+    preserveScroll: true,
+    onSuccess: () => (importComPozo.value = false),
+    onFinish: () => {
+      if (importComPozoForm.hasErrors) {
+        console.error('No se pudo importar los componentes.')
+      }
+    },
+  })
 }
 
 const update = () => {
@@ -320,10 +391,10 @@ watch(
       </SearchFilter>
     </div>
     <div class="flex items-center mb-6">
-      <Link v-if="can.createComponentePozo" class="btn-yellow mr-2" href="/componente-pozos/crear">
+      <button v-if="can.createComponentePozo" class="btn-yellow mr-2" type="button" @click="openModalImportForm">
         <span>Importar</span>
         <span class="hidden md:inline">&nbsp;Excel</span>
-      </Link>
+      </button>
       <button v-if="componentePozos.data.length !== 0 && can.deleteComponentePozo && !isTrashed" class="btn-secondary" type="button" :disabled="!selectAllComPozos && !selected.length" @click="removeSelectedItems">
         <span>Borrar</span>
         <span class="hidden md:inline">&nbsp;Elementos Seleccionados</span>
@@ -333,6 +404,60 @@ watch(
         <span class="hidden md:inline">&nbsp;Elementos Seleccionados</span>
       </button>
     </div>
+
+    <!-- Import Com Pozo Form Modal -->
+    <Modal :show="importComPozo">
+      <!-- Modal content -->
+      <div class="relative">
+        <!-- Modal header -->
+        <div class="flex items-start justify-between p-4 border-b rounded-t">
+          <h2 class="text-xl font-semibold">Importar Componentes de Pozo</h2>
+          <button class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" type="button" @click="closeModalImportForm">
+            <Icon class="w-4 h-4" name="close" aria-hidden="true" />
+            <span class="sr-only">Cerrar modal</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal body -->
+      <form @submit.prevent="importExcel">
+        <div class="relative flex flex-wrap p-4">
+          <div class="mb-4">
+            <p class="text-sm text-gray-900">
+              <span class="font-semibold mr-1">Sugerencia:</span>
+              <span class="mr-2">Descargue el formato para importar componentes.</span>
+              <a class="text-yellow-400 hover:underline" href="/formato">Descargar archivo</a>
+            </p>
+          </div>
+          <div class="pb-4 w-full">
+            <label class="form-label">Elige un archivo:</label>
+            <div class="form-input p-0">
+              <input ref="fileInput" type="file" accept=".xlsx,.xls,.csv" class="hidden" @change="onFileChange" />
+              <div v-if="!fileUpload.length" class="p-2">
+                <button type="button" class="px-4 py-1 text-white text-xs font-medium bg-gray-500 hover:bg-gray-700 rounded" @click="browseFiles">Elegir...</button>
+              </div>
+              <div v-else class="flex items-center justify-between p-2">
+                <div class="flex-1 pr-1">
+                  {{ fileUpload[0].name }} <span class="text-gray-500 text-xs">({{ filesize(fileUpload[0].size) }})</span>
+                </div>
+                <button type="button" class="px-4 py-1 text-white text-xs font-medium bg-gray-500 hover:bg-gray-700 rounded" @click.prevent="removeFile">Remover</button>
+              </div>
+            </div>
+          </div>
+          <SelectInput v-model="importComPozoForm.pozoId" :error="importComPozoForm.errors.pozoId" class="pb-8 pr-6 w-full" label="Pozo/Instalación">
+            <option value="">Por favor seleccione</option>
+            <option v-for="pozo in pozos" :key="pozo.id" :value="pozo.id">{{ pozo.nombre_pozo }}</option>
+          </SelectInput>
+          <TextInput v-model="importComPozoForm.fechaRecep" :error="importComPozoForm.errors.fechaRecep" class="pb-4 pr-6 w-full lg:w-1/2" type="date" label="Fecha de recepción" />
+          <TextInput v-model="importComPozoForm.fechaAnalisis" :error="importComPozoForm.errors.fechaAnalisis" class="pb-4 pr-6 w-full lg:w-1/2" type="date" label="Fecha de análisis" />
+          <TextInput v-model="importComPozoForm.fechaMuest" :error="importComPozoForm.errors.fechaMuest" class="pb-4 pr-6 w-full lg:w-1/2" type="date" label="Fecha de muestreo" />
+        </div>
+        <div class="flex flex-shrink-0 flex-wrap items-center justify-end p-4 space-x-2 border-t border-gray-200">
+          <LoadingButton :loading="importComPozoForm.processing" class="btn-yellow mr-2" type="submit">Importar</LoadingButton>
+          <button class="btn-secondary" @click="closeModalImportForm">Cancelar</button>
+        </div>
+      </form>
+    </Modal>
 
     <!-- Edit Com Pozo Form Modal -->
     <Modal :show="editComPozo" style="max-width: 1015px">

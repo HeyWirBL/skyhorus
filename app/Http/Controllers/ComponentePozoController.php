@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Exports\ComponentePozosExport;
-use App\Imports\ComponentePozosImport;
 use App\Imports\ComponentePozosImportCollection;
 use App\Models\ComponentePozo;
 use App\Models\ComponentePozoView;
@@ -17,7 +15,6 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use Illuminate\Support\Facades\Storage;
 
 class ComponentePozoController extends Controller
 {
@@ -34,10 +31,10 @@ class ComponentePozoController extends Controller
             'deleteComponentePozo' => $user->can('delete', ComponentePozo::class),
         ];
 
-        $filters = $request->all('search', 'trashed');
-        $dateFilter = $request->all('year', 'month');
+        $filters = $request->only('search', 'trashed');
+        $dateFilter = $request->only('year', 'month');        
 
-        $componentePozos = $componentePozo->query()->filter($filters)->datefilter($dateFilter)
+        $componentePozos = $componentePozo->filter($filters)->datefilter($dateFilter)
             ->orderByDesc('id')
             ->with('pozo')
             ->paginate(10)
@@ -102,27 +99,9 @@ class ComponentePozoController extends Controller
                 'pozo' => optional($cp->pozo)->only('nombre_pozo', 'deleted_at'),
             ]); 
 
-        $pozos = $pozo->query()->orderByDesc('id')->get()->map->only('id', 'nombre_pozo');
+        $pozos = $pozo->select('id', 'nombre_pozo')->orderByDesc('id')->get();
 
         return Inertia::render('ComponentePozos/Index', compact('can', 'filters', 'componentePozos', 'pozos'));
-    }
-
-    /**
-     * Render the create view for a new Pozo component.
-     */
-    public function create(Pozo $pozo): Response
-    {
-        // Retrieve a list of Pozos, selecting only the necessary columns
-        $pozos = $pozo->select('id', 'nombre_pozo')
-                      ->orderBy('id', 'desc') 
-                      ->get()
-                      ->map
-                      ->only('id', 'nombre_pozo');
-
-        // Render the create view, passing in the paginated list of Pozos.
-        return Inertia::render('ComponentePozos/Create', [
-            'pozos' => $pozos,
-        ]);
     }
 
     /**
@@ -276,14 +255,6 @@ class ComponentePozoController extends Controller
                 ->only('id', 'nombre_pozo'),
             'quimicosData' => $quimicosData,
         ]);
-    }
-
-    /**
-     * Show the form for editing an specific components well.
-     */
-    public function edit(ComponentePozo $componentePozo, Pozo $pozo)
-    {
-        //
     }
 
     /**
@@ -447,10 +418,10 @@ class ComponentePozoController extends Controller
     {       
         $validated = $request->validate([
             'file' => ['required'],
-            'pozoId' => ['required'],
-            'fechaRecep' => ['required'],
-            'fechaAnalisis' => ['required'],
-            'fechaMuest' => ['required'],
+            'pozoId' => ['required', Rule::exists('pozos', 'id')],
+            'fechaRecep' => ['required', 'date'],
+            'fechaAnalisis' => ['required', 'date'],
+            'fechaMuest' => ['nullable', 'date'],
         ]);
         
         foreach($request->file('file') as $file){
@@ -460,17 +431,10 @@ class ComponentePozoController extends Controller
             $fechaMuest = $request->fechaMuest;
 
             if(!empty($file) && $validated){
-            Excel::import(new ComponentePozosImportCollection($pozoId, $fechaRecep, $fechaAnalisis, $fechaMuest), $file );
+                Excel::import(new ComponentePozosImportCollection($pozoId, $fechaRecep, $fechaAnalisis, $fechaMuest), $file );
             }
 
         }
         return redirect(route('componente-pozos'))->with('succes', 'archvos importados correctamente');
-    }
-    /**
-     * Export data for component well as xlsx.
-     */
-    public function export(Request $request)
-    {
-        return Excel::download(new ComponentePozosExport($request->id), 'componentes_pozo.pdf', \Maatwebsite\Excel\Excel::MPDF);
     }
 }

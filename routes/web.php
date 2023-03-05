@@ -303,10 +303,6 @@ Route::middleware('auth')->group(function () {
     Route::get('componente-pozos/{componentePozo}', [ComponentePozoController::class, 'show'])
         ->name('componente-pozos.show');
 
-    Route::get('componente-pozos/crear', [ComponentePozoController::class, 'create'])
-        ->name('componente-pozos.create')
-        ->middleware('can:create,App\Models\ComponentePozo');
-
     Route::post('componente-pozos', [ComponentePozoController::class, 'store'])
         ->name('componente-pozos.store')
         ->middleware('can:create,App\Models\ComponentePozo');
