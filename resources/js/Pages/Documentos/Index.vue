@@ -30,9 +30,9 @@ const selectAllDocs = ref(false)
 
 const form = ref({
   search: props.filters.search,
+  trashed: props.filters.trashed,
   year: props.filters.year,
   month: props.filters.month,
-  trashed: props.filters.trashed,
 })
 
 const docForm = useForm({})

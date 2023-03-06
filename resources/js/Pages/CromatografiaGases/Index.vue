@@ -35,8 +35,8 @@ const selectAllCromGas = ref(false)
 const form = ref({
   search: props.filters.search,
   trashed: props.filters.trashed,
-  year: null,
-  month: null,
+  year: props.filters.year,
+  month: props.filters.month,
 })
 
 const cromatografiaGasForm = useForm({})
@@ -264,11 +264,6 @@ watch(
     <h1 class="mb-8 text-3xl font-bold">Cromatografía de Gas</h1>
     <div class="flex items-center mb-6">
       <SearchFilter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
-        <label class="block mt-4 text-gray-700">Eliminado:</label>
-        <select v-model="form.trashed" class="form-select mt-1 w-full">
-          <option :value="null" />
-          <option value="only">Solo Eliminado</option>
-        </select>
         <div class="mt-4">
           <label class="block text-gray-700">Año:</label>
           <input v-model="form.year" class="form-input mt-4" type="number" placeholder="YYYY" />
@@ -276,18 +271,23 @@ watch(
         <label class="block mt-4 text-gray-700">Mes:</label>
         <select v-model="form.month" class="form-select mt-1 w-full">
           <option :value="null" />
-          <option value="1">Enero</option>          
-          <option value="2">Febrero</option>          
-          <option value="3">Marzo</option>          
-          <option value="4">Abril</option>          
-          <option value="5">Mayo</option>          
-          <option value="6">Junio</option>          
-          <option value="7">Julio</option>          
-          <option value="8">Agosto</option>          
-          <option value="9">Septiembre</option>          
-          <option value="10">Octubre</option>          
-          <option value="11">Noviembre</option>          
-          <option value="12">Diciembre</option>          
+          <option value="1">Enero</option>
+          <option value="2">Febrero</option>
+          <option value="3">Marzo</option>
+          <option value="4">Abril</option>
+          <option value="5">Mayo</option>
+          <option value="6">Junio</option>
+          <option value="7">Julio</option>
+          <option value="8">Agosto</option>
+          <option value="9">Septiembre</option>
+          <option value="10">Octubre</option>
+          <option value="11">Noviembre</option>
+          <option value="12">Diciembre</option>
+        </select>
+        <label class="block mt-4 text-gray-700">Eliminado:</label>
+        <select v-model="form.trashed" class="form-select mt-1 w-full">
+          <option :value="null" />
+          <option value="only">Solo Eliminado</option>
         </select>
       </SearchFilter>
     </div>

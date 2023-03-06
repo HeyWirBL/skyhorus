@@ -35,8 +35,8 @@ const selectAllCromLiq = ref(false)
 const form = ref({
   search: props.filters.search,
   trashed: props.filters.trashed,
-  year: null,
-  month: null,
+  year: props.filters.year,
+  month: props.filters.month,
 })
 
 const cromatografiaLiquidaForm = useForm({})
@@ -264,11 +264,6 @@ watch(
     <h1 class="mb-8 text-3xl font-bold">Cromatografías Líquidas</h1>
     <div class="flex items-center mb-6">
       <SearchFilter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
-        <label class="block mt-4 text-gray-700">Eliminado:</label>
-        <select v-model="form.trashed" class="form-select mt-1 w-full">
-          <option :value="null" />
-          <option value="only">Solo Eliminado</option>
-        </select>
         <div class="mt-4">
           <label class="block text-gray-700">Año:</label>
           <input v-model="form.year" class="form-input mt-4" type="number" placeholder="YYYY" />
@@ -288,6 +283,11 @@ watch(
           <option value="10">Octubre</option>
           <option value="11">Noviembre</option>
           <option value="12">Diciembre</option>
+        </select>
+        <label class="block mt-4 text-gray-700">Eliminado:</label>
+        <select v-model="form.trashed" class="form-select mt-1 w-full">
+          <option :value="null" />
+          <option value="only">Solo Eliminado</option>
         </select>
       </SearchFilter>
     </div>

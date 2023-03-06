@@ -65,7 +65,7 @@ class CromatografiaGasController extends Controller
     {
         try {            
             $request->validate([
-                'documento.*' => ['required', 'max:8048', 'mimes:pdf'], // MAX 8 MB per file
+                'documento.*' => ['required', 'mimes:pdf'],
                 'pozo_id' => ['required', Rule::exists('pozos', 'id')],
                 'fecha_hora' => ['required', 'date'],
             ]);
@@ -118,7 +118,7 @@ class CromatografiaGasController extends Controller
 
             if ($hasFiles) {
                 $request->validate([
-                    'documento.*' => ['required', 'max:8048', 'mimes:pdf'], // MAX 8 MB per file
+                    'documento.*' => ['required', 'mimes:pdf'],
                 ]);
 
                 $files = $request->file('documento');

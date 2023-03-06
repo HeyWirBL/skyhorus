@@ -869,10 +869,10 @@ const removeSelectedItems = () => {
                 <span class="block">{{ compozo.dioxido_carbono }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">43</span>
+                <span class="block">{{ compozo.pe_dioxido_carbono }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">54</span>
+                <span class="block">{{ compozo.mo_dioxido_carbono }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
                 <span class="block">{{ compozo.den_dioxido_carbono }}</span>
@@ -889,10 +889,10 @@ const removeSelectedItems = () => {
                 <span class="block">{{ compozo.acido_sulfidrico }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">43</span>
+                <span class="block">{{ compozo.pe_acido_sulfidrico }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">54</span>
+                <span class="block">{{ compozo.mo_acido_sulfidrico }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
                 <span class="block">{{ compozo.den_acido_sulfidrico }}</span>
@@ -909,10 +909,10 @@ const removeSelectedItems = () => {
                 <span class="block">{{ compozo.nitrogeno }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">43</span>
+                <span class="block">{{ compozo.pe_nitrogeno }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">54</span>
+                <span class="block">{{ compozo.mo_nitrogeno }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
                 <span class="block">{{ compozo.den_nitrogeno }}</span>
@@ -929,10 +929,10 @@ const removeSelectedItems = () => {
                 <span class="block">{{ compozo.metano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">43</span>
+                <span class="block">{{ compozo.pe_metano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">54</span>
+                <span class="block">{{ compozo.mo_etano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
                 <span class="block">{{ compozo.den_metano }}</span>
@@ -949,10 +949,10 @@ const removeSelectedItems = () => {
                 <span class="block">{{ compozo.etano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">43</span>
+                <span class="block">{{ compozo.pe_etano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">54</span>
+                <span class="block">{{ compozo.mo_etano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
                 <span class="block">{{ compozo.den_etano }}</span>
@@ -969,10 +969,10 @@ const removeSelectedItems = () => {
                 <span class="block">{{ compozo.propano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">43</span>
+                <span class="block">{{ compozo.pe_propano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">54</span>
+                <span class="block">{{ compozo.mo_propano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
                 <span class="block">{{ compozo.den_propano }}</span>
@@ -989,10 +989,10 @@ const removeSelectedItems = () => {
                 <span class="block">{{ compozo.iso_butano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">43</span>
+                <span class="block">{{ compozo.pe_iso_butano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">54</span>
+                <span class="block">{{ compozo.mo_iso_butano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
                 <span class="block">{{ compozo.den_iso_butano }}</span>
@@ -1009,10 +1009,10 @@ const removeSelectedItems = () => {
                 <span class="block">{{ compozo.n_butano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">43</span>
+                <span class="block">{{ compozo.pe_n_butano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">54</span>
+                <span class="block">{{ compozo.mo_n_butano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
                 <span class="block">{{ compozo.den_n_butano }}</span>
@@ -1029,10 +1029,10 @@ const removeSelectedItems = () => {
                 <span class="block">{{ compozo.iso_pentano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">43</span>
+                <span class="block">{{ compozo.pe_iso_pentano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">54</span>
+                <span class="block">{{ compozo.mo_iso_pentano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
                 <span class="block">{{ compozo.den_iso_pentano }}</span>
@@ -1049,10 +1049,10 @@ const removeSelectedItems = () => {
                 <span class="block">{{ compozo.n_pentano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">43</span>
+                <span class="block">{{ compozo.pe_n_pentano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">54</span>
+                <span class="block">{{ compozo.mo_n_pentano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
                 <span class="block">{{ compozo.den_n_pentano }}</span>
@@ -1069,10 +1069,10 @@ const removeSelectedItems = () => {
                 <span class="block">{{ compozo.n_exano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">43</span>
+                <span class="block">{{ compozo.pe_n_exano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block">54</span>
+                <span class="block">{{ compozo.mo_n_exano }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
                 <span class="block">{{ compozo.den_n_exano }}</span>

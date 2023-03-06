@@ -41,27 +41,23 @@ class Documento extends Model
     {
         return $this->belongsTo(MesDetalle::class)->withTrashed();
     }
-
+    
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {
             $query->where(function ($query) use ($search) {
-                $query->where('documento', 'like', '%'.$search.'%')                      
+                $query->where('documento', 'like', '%'.$search.'%')
                       ->orWhereHas('directorio', function ($query) use ($search) {
                         $query->where('nombre_dir', 'like', '%'.$search.'%');
-                      })->orWhereHas('ano', function ($query) use ($search) {
-                        $query->where('ano', 'like', '%'.$search.'%');
-                      })->orWhereHas('mesDetalle', function ($query) use ($search) {
-                        $query->where('nombre', 'like', '%'.$search.'%');
                       });
             });
         })->when($filters['year'] ?? null, function ($query, $year) {
-            $query->where(function ($query) use ($year) {
-                $query->where('ano_id', $year);
+            $query->whereHas('ano', function ($query) use ($year) {
+                $query->where('id', $year);
             });
         })->when($filters['month'] ?? null, function ($query, $month) {
-            $query->where(function ($query) use ($month) {
-                $query->where('mes_detalle_id', $month);
+            $query->whereHas('mesDetalle', function ($query) use ($month) {
+                $query->where('id', $month);
             });
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {
             $trashed === 'only' ? $query->onlyTrashed() : '';

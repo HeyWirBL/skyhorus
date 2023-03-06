@@ -21,7 +21,17 @@ class DocumentoController extends Controller
      */
     public function index(Request $request, Documento $documento, Directorio $directorio, Ano $ano, MesDetalle $mes): Response
     {
-        $filters = $request->only('search', 'year',' month', 'trashed');
+        $filters = $request->only('search', 'trashed');
+
+        // Filter for year and month
+        if ($request->has('year') || $request->has('month')) {
+            $year = $request->input('year');
+            $month = $request->input('month');
+
+            $filters['year'] = $year;
+            $filters['month'] = $month;
+        }
+
         $documentos = $documento->with('directorio', 'ano', 'mesDetalle')
             ->filter($filters)
             ->latest()

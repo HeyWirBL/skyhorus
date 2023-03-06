@@ -70,7 +70,16 @@ class DirectorioController extends Controller
             'deleteDirectorio' => Auth::user()->can('delete', Directorio::class),
         ];
 
-        $filters = $request->only('search', 'year', 'month', 'trashed');
+        $filters = $request->only('search', 'trashed');
+
+        // Filter for year and month
+        if ($request->has('year') || $request->has('month')) {
+            $year = $request->input('year');
+            $month = $request->input('month');
+
+            $filters['year'] = $year;
+            $filters['month'] = $month;
+        }
 
         $directorioData = [
             'id' => $directorio->id,
