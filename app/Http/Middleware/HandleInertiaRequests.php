@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Ano;
+use App\Models\MesDetalle;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -36,8 +38,32 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-        return array_merge(parent::share($request), [
-            //
+        return array_merge(parent::share($request), [ 
+            'auth' => function () use ($request) {
+                return [
+                    'user' => $request->user() ? [
+                        'id' => $request->user()->id,
+                        'nombre' => $request->user()->nombre,
+                        'apellidos' => $request->user()->apellidos,
+                        'usuario' => $request->user()->usuario,
+                        'email' => $request->user()->email,
+                        'telefono' => $request->user()->telefono,
+                        'direccion' => $request->user()->direccion,
+                        'rol' => $request->user()->rol,                        
+                    ] : null,
+                    'can' => $request->user() ? [
+                        'viewAnyUser' => $request->user()->can('viewAny', User::class),
+                    ] : null,                    
+                ];
+            },            
+            'flash' => function () use ($request) {
+                return [
+                    'success' => $request->session()->get('success'),
+                    'error' => $request->session()->get('error'),
+                ];
+            },
+            'anos' => Ano::all(),
+            'meses' => MesDetalle::all(),
         ]);
     }
 }
