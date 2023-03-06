@@ -4,12 +4,16 @@ import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3'
 import debounce from 'lodash/debounce'
 import mapValues from 'lodash/mapValues'
 import pickBy from 'lodash/pickBy'
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
 import Icon from '@/Components/Icon.vue'
 import LoadingButton from '@/Components/LoadingButton.vue'
 import Modal from '@/Components/Modal.vue'
 import Pagination from '@/Components/Pagination.vue'
 import SearchFilter from '@/Components/SearchFilter.vue'
 import TextInput from '@/Components/TextInput.vue'
+
+dayjs.extend(relativeTime)
 
 const props = defineProps({
   can: Object,
@@ -339,7 +343,10 @@ watch(
             </td>
             <td class="px-6 py-4 border-solid border border-gray-200">
               <span class="inline-block whitespace-nowrap">
-                <Link class="text-yellow-500 hover:underline" :href="`/directorios/${dir.id}`"> Archivos ({{ dir.documentos.length }}) </Link>
+                <Link class="text-yellow-500 hover:underline" :href="`/directorios/${dir.id}`">
+                  Archivos
+                  <span class="font-bold">({{ dir.documentos.length }})</span>
+                </Link>
               </span>
             </td>
             <td class="px-6 py-4 border-solid border border-gray-200">
@@ -351,7 +358,7 @@ watch(
               </div>
             </td>
             <td class="px-6 py-4 border-solid border border-gray-200">
-              <span>{{ dir.fecha_dir }}</span>
+              <span>{{ dayjs(dir.fecha_dir).format('DD/MM/YYYY') }}</span>
             </td>
           </tr>
           <tr v-if="directorios.data.length === 0">

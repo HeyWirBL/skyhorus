@@ -29,7 +29,6 @@ use Inertia\Inertia;
 */
 
 Route::middleware('auth')->group(function () {
-
     /* Main Dashboard */
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 

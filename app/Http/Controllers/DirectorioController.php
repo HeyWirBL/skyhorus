@@ -28,9 +28,8 @@ class DirectorioController extends Controller
         ];
 
         $filters = $request->all('search', 'trashed');
-        $directorios = $directorio->query()
-            ->latest()
-            ->filter($filters)
+        $directorios = $directorio->filter($filters)
+            ->orderByDesc('id')
             ->paginate(10)
             ->withQueryString()
             ->through(fn ($dir) => [
@@ -42,14 +41,6 @@ class DirectorioController extends Controller
             ]);
 
         return Inertia::render('Directorios/Index', compact('can', 'filters', 'directorios'));
-    }
-
-    /**
-     * Show the form for creating a new folder.
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -111,14 +102,6 @@ class DirectorioController extends Controller
             ->get(['id', 'nombre']);
 
         return Inertia::render('Directorios/Show', compact('can', 'filters', 'directorioData', 'anos', 'meses'));
-    }
-
-    /**
-     * Show the form for editing an specific folder.
-     */
-    public function edit(Directorio $directorio)
-    {
-        //
     }
 
     /**
