@@ -6,6 +6,10 @@ import MainMenu from '../Shared/MainMenu.vue'
 import FlashMessages from '../Shared/FlashMessages.vue'
 
 /* defineProps({auth: Object}); */
+
+const showMenu = () => {
+  document.getElementById('sidebar').style.display="";
+}
 </script>
 
 <template>
@@ -27,7 +31,11 @@ import FlashMessages from '../Shared/FlashMessages.vue'
           </Dropdown>
         </div>
         <div class="md:text-md flex items-center justify-between p-4 w-full text-sm bg-yellow-500 border-b md:px-12 md:py-0">
-          <div class="text-white mr-4">Petro Horus</div>
+          <div class="flex">
+            <Icon name="bars-3" class="fill-white w-3 h-3 mt-1 mr-1"/>
+            <button class="text-white" @click="showMenu">Mostrar menú</button>
+          </div>
+          <div class="text-white mr-4">Sky Horus</div>
           <Dropdown placement="bottom-end">
             <template #default>
               <div class="group flex items-center cursor-pointer select-none">
@@ -50,7 +58,7 @@ import FlashMessages from '../Shared/FlashMessages.vue'
         </div>
       </div>
       <div class="md:flex md:flex-grow md:overflow-hidden">
-        <MainMenu class="hidden flex-shrink-0 py-12 px-3 w-56 bg-zinc-800 overflow-y-auto md:block" />
+        <MainMenu class="hidden flex-shrink-0 py-4 px-3 w-56 bg-zinc-800 overflow-y-auto md:block" />
         <div class="px-4 py-8 md:flex-1 md:p-12 md:overflow-y-auto" scroll-region>
           <FlashMessages />
           <slot />

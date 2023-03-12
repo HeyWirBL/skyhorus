@@ -27,6 +27,10 @@ const isUrl = (...urls) => {
 watch(df.value, () => {
   router.get('/componente-pozos', df.value, { preserveState: true, replace: true, preserveScroll: true })
 })
+
+const hideSidebar = () => {
+  document.getElementById('sidebar').style.display='none';
+}
 </script>
 
 <script>
@@ -49,7 +53,13 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div id="sidebar">
+    <!--close sidebar button-->
+    <div class="flex mb-5 justify-end">
+      <button @click="hideSidebar">
+        <Icon name="x-mark" class="text-white"/>
+      </button>
+    </div>
     <!-- Dashboard Link -->
     <div class="mb-4">
       <Link class="group flex text-base items-center p-2 rounded-md" :class="isUrl('') ? 'bg-yellow-500' : 'hover:bg-zinc-700'" href="/">
