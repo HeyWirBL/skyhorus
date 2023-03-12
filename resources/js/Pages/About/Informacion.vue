@@ -1,11 +1,6 @@
 <script setup>
 import { Head } from '@inertiajs/vue3'
 import Icon from '@/Components/Icon.vue'
-
-defineProps({
-  laravelVersion: String,
-  phpVersion: String,
-})
 </script>
 
 <template>
@@ -21,11 +16,11 @@ defineProps({
         <dl>
           <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt class="text-sm font-medium text-gray-500">Laravel</dt>
-            <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">v{{ laravelVersion }}</dd>
+            <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">v9.51.0</dd>
           </div>
           <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt class="text-sm font-medium text-gray-500">PHP</dt>
-            <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">v{{ phpVersion }}</dd>
+            <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">v8.1.0</dd>
           </div>
           <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt class="text-sm font-medium text-gray-500">Software</dt>

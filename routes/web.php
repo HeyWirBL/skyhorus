@@ -40,10 +40,8 @@ Route::middleware('auth')->group(function () {
 
     /* Technical Information on the Application */
     Route::get('/informacion', function () {
-        return Inertia::render('About/Informacion', [
-            'laravelVersion' => Application::VERSION,
-            'phpVersion' => PHP_VERSION,
-        ]);
+        
+        return Inertia::render('About/Informacion');
     });
 
     /* Download Excel File Format */
