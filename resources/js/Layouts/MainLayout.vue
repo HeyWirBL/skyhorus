@@ -31,8 +31,8 @@ const showMenu = () => {
           </Dropdown>
         </div>
         <div class="md:text-md flex items-center justify-between p-4 w-full text-sm bg-yellow-500 border-b md:px-12 md:py-0">
-          <div class="flex">
-            <Icon name="bars-3" class="fill-white w-3 h-3 mt-1 mr-1"/>
+            <div class="flex max-[768px]:hidden">
+            <Icon name="bars-3" class="fill-white w-3 h-3 mt-1 mr-2"/>
             <button class="text-white" @click="showMenu">Mostrar menú</button>
           </div>
           <div class="text-white mr-4">Sky Horus</div>
