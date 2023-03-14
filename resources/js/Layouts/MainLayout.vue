@@ -5,10 +5,10 @@ import Icon from '@/Components/Icon.vue'
 import MainMenu from '../Shared/MainMenu.vue'
 import FlashMessages from '../Shared/FlashMessages.vue'
 
-/* defineProps({auth: Object}); */
+const currentYear = new Date().getFullYear()
 
 const showMenu = () => {
-  document.getElementById('sidebar').style.display="";
+  document.getElementById('sidebar').style.display = ''
 }
 </script>
 
@@ -18,7 +18,7 @@ const showMenu = () => {
     <div class="md:flex md:flex-col md:h-screen">
       <div class="md:flex md:flex-shrink-0">
         <div class="flex items-center justify-between px-6 py-4 bg-zinc-900 md:flex-shrink-0 md:justify-center md:w-56">
-          <Link class="text-white" href="/"> GestionDocumental </Link>
+          <Link class="text-white" href="/"> SkyHorus </Link>
           <Dropdown :auto-close="false" class="md:hidden" placement="bottom-end">
             <template #default>
               <Icon class="w-6 h-6 fill-gray-200 group-hover:fill-white focus:fill-white" name="bars-3" />
@@ -31,11 +31,14 @@ const showMenu = () => {
           </Dropdown>
         </div>
         <div class="md:text-md flex items-center justify-between p-4 w-full text-sm bg-yellow-500 border-b md:px-12 md:py-0">
-            <div class="flex max-[768px]:hidden">
-            <Icon name="bars-3" class="fill-white w-3 h-3 mt-1 mr-2"/>
+          <div class="flex max-[768px]:hidden">
+            <Icon name="bars-3" class="fill-white w-3 h-3 mt-1 mr-2" />
             <button class="text-white" @click="showMenu">Mostrar menú</button>
           </div>
-          <div class="text-white mr-4">Sky Horus</div>
+          <div class="text-white mr-4">
+            <span class="hidden md:inline">&copy; {{ currentYear }}</span>
+            <span>&nbsp;PetroHorus International S.A. de C.V.</span>
+          </div>
           <Dropdown placement="bottom-end">
             <template #default>
               <div class="group flex items-center cursor-pointer select-none">

@@ -40,7 +40,7 @@ const login = () => {
 
           <label class="flex items-center mt-6 select-none" for="remember">
             <Checkbox id="remember" v-model:checked="form.remember" name="remember" />
-            <span class="ml-2 text-sm text-gray-600">Recuerdáme</span>
+            <span class="ml-2 text-sm text-gray-600">Recuérdame</span>
           </label>
         </div>
         <div class="flex px-10 py-4 bg-gray-100 border-t border-gray-100">

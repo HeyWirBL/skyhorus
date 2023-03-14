@@ -29,7 +29,7 @@ watch(df.value, () => {
 })
 
 const hideSidebar = () => {
-  document.getElementById('sidebar').style.display='none';
+  document.getElementById('sidebar').style.display = 'none'
 }
 </script>
 
@@ -57,7 +57,7 @@ export default {
     <!--close sidebar button-->
     <div class="flex mb-5 justify-end">
       <button @click="hideSidebar">
-        <Icon name="x-mark" class="text-white"/>
+        <Icon name="x-mark" class="text-white" />
       </button>
     </div>
     <!-- Dashboard Link -->
