@@ -63,7 +63,7 @@ class DocumentoController extends Controller
     {
         try {            
             $request->validate([
-                'documento.*' => ['required'],
+                'documento.*' => ['required', 'max:10000'], // MAX 10MB per file
                 'directorio_id' => ['required', Rule::exists('directorios', 'id')],
                 'ano_id' => ['required', Rule::exists('anos', 'id')],
                 'mes_detalle_id' => ['required', Rule::exists('mes_detalles', 'id')],
@@ -76,14 +76,16 @@ class DocumentoController extends Controller
 
                 foreach ($files as $file) {
                     $filename = time() . '_' . $file->getClientOriginalName();
-                    // store the file in the "files" directory inside the "storage/app/public" disk
+                    // Store the file in the "files" directory inside the "storage/app/public" disk
                     $path = Storage::disk('public')->putFileAs('files', $file, $filename);
+
+                    // Create a new record in the "documentos" table with the file details
                     $documento = $documento->create([
                         'directorio_id' => $request->input('directorio_id'),
                         'ano_id' => $request->input('ano_id'),
                         'mes_detalle_id' => $request->input('mes_detalle_id'),
                         'documento' => json_encode([
-                            'name' => 'storage/' . $path, // generate a public URL for the file
+                            'name' => Storage::url($path), // generate a public URL for the file
                             'usrName' => $filename,
                             'size' => $file->getSize(),
                             'type' => $file->getMimeType(),
@@ -122,7 +124,7 @@ class DocumentoController extends Controller
 
             if ($hasFiles) {
                 $request->validate([
-                    'documento.*' => ['required'],
+                    'documento.*' => ['required', 'max:10000'],
                 ]);
 
                 $files = $request->file('documento');
@@ -133,7 +135,7 @@ class DocumentoController extends Controller
                     $path = Storage::disk('public')->putFileAs('files', $file, $filename);
                     $documento->update([                        
                         'documento' => json_encode([
-                            'name' => 'storage/' . $path, // generate a public URL for the file
+                            'name' => Storage::url($path), // generate a public URL for the file
                             'usrName' => $filename,
                             'size' => $file->getSize(),
                             'type' => $file->getMimeType(),
@@ -195,46 +197,6 @@ class DocumentoController extends Controller
             return response()->download($fullPath, $fileName, $headers);
                        
             return back()->with('error', 'Error al descargar el archivo: el archivo no existe.');       
-        } catch (\Exception $e) {
-            return back()->with('error', 'Error al descargar el archivo: ' . $e->getMessage());
-        }
-    }
-
-    public function downloadMultiple($id, $index)
-    {
-        try {
-            $documento = Documento::withTrashed()->findOrFail($id);
-
-            if ($documento->trashed()) {
-                return back()->with('error', 'Error al descargar el archivo: el archivo no existe.');
-            }
-
-            $documentoData = json_decode($documento->documento, true);
-
-            // Extract the file path
-            if (is_array($documentoData)) {
-                foreach ($documentoData as $fileIndex => $file) {
-                    if ($index == $fileIndex) {
-                        $filePath = $file['name'];
-                        $fileName = $file['usrName'];
-
-                        $fullPath = public_path($filePath);
-
-                        if (!file_exists($fullPath)) {
-                            return back()->with('error', 'Error al descargar el archivo: el archivo no existe.');
-                        }   
-    
-                        // Set the response headers
-                        $headers = [
-                            'Content-Type' => $file['type'],
-                            'Content-Disposition' => 'attachment; filename="'.$fileName.'"',
-                        ];
-    
-                        return response()->download($fullPath, $fileName, $headers);
-                    }                             
-                }
-            }  
-            return back()->with('error', 'Error al descargar el archivo: el archivo no existe.');
         } catch (\Exception $e) {
             return back()->with('error', 'Error al descargar el archivo: ' . $e->getMessage());
         }

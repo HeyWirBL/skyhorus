@@ -9,6 +9,7 @@ import FlashMessages from '../Shared/FlashMessages.vue'
 const currentYear = new Date().getFullYear()
 
 const collapsed = ref(false)
+
 const toggleSidebar = () => (collapsed.value = !collapsed.value)
 
 const sidebarDisplay = computed(() => ({
@@ -36,7 +37,7 @@ const sidebarDisplay = computed(() => ({
         </div>
         <div class="md:text-md flex items-center p-4 bg-yellow-500 border-b">
           <button class="cursor-pointer" type="button" @click="toggleSidebar">
-            <Icon :class="{'rotate-180': collapsed}" class="w-5 h-5 fill-gray-200 group-hover:fill-white focus:fill-white transition-transform duration-300" name="cheveron-double-left" />
+            <Icon :class="{'rotate-180': collapsed}" class="w-5 h-5 fill-gray-200 group-hover:fill-white focus:fill-white transition-transform duration-500" name="cheveron-double-left" />
           </button>
         </div>
         <div class="md:text-md flex items-center justify-between p-4 w-full text-sm bg-yellow-500 border-b md:px-12 md:py-0">

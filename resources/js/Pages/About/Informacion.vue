@@ -33,28 +33,28 @@ import Icon from '@/Components/Icon.vue'
                 <li class="flex items-center justify-between py-3 pl-3 pr-4 text-sm">
                   <div class="flex w-0 flex-1 items-center">
                     <Icon class="h-5 w-5 flex-shrink-0 fill-gray-400" name="at-symbol" aria-hidden="true" />
-                    <span class="ml-2 w-0 flex-1 truncate">samd.hernandezc24@gmail.com</span>
+                    <span class="ml-2 w-0 flex-1 truncate">jesus.mendez@labsolutionsit.com.mx</span>
                   </div>
                   <div class="ml-4 flex-shrink-0">
-                    <a href="mailto:samd.hernandezc24@gmail.com" class="font-medium text-yellow-600 hover:text-yellow-500">Contactar</a>
+                    <a href="mailto:jesus.mendez@labsolutionsit.com.mx" class="font-medium text-yellow-600 hover:text-yellow-500">Contactar</a>
                   </div>
                 </li>
                 <li class="flex items-center justify-between py-3 pl-3 pr-4 text-sm">
                   <div class="flex w-0 flex-1 items-center">
                     <Icon class="h-5 w-5 flex-shrink-0 fill-gray-400" name="at-symbol" aria-hidden="true" />
-                    <span class="ml-2 w-0 flex-1 truncate">samd.hernandezc24@gmail.com</span>
+                    <span class="ml-2 w-0 flex-1 truncate">sam.hernandezc@labsolutionsit.com.mx</span>
                   </div>
                   <div class="ml-4 flex-shrink-0">
-                    <a href="mailto:samd.hernandezc24@gmail.com" class="font-medium text-yellow-600 hover:text-yellow-500">Contactar</a>
+                    <a href="mailto:sam.hernandezc@labsolutionsit.com.mx" class="font-medium text-yellow-600 hover:text-yellow-500">Contactar</a>
                   </div>
                 </li>
                 <li class="flex items-center justify-between py-3 pl-3 pr-4 text-sm">
                   <div class="flex w-0 flex-1 items-center">
                     <Icon class="h-5 w-5 flex-shrink-0 fill-gray-400" name="at-symbol" aria-hidden="true" />
-                    <span class="ml-2 w-0 flex-1 truncate">miguelayo128@gmail.com</span>
+                    <span class="ml-2 w-0 flex-1 truncate">miguel.martinez@labsolutionsit.com.mx</span>
                   </div>
                   <div class="ml-4 flex-shrink-0">
-                    <a href="mailto:miguelayo128@gmail.com" class="font-medium text-yellow-600 hover:text-yellow-500">Contactar</a>
+                    <a href="mailto:miguel.martinez@labsolutionsit.com.mx" class="font-medium text-yellow-600 hover:text-yellow-500">Contactar</a>
                   </div>
                 </li>
               </ul>

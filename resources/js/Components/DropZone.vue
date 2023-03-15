@@ -51,7 +51,7 @@ const addFiles = (e, maxFiles = 10) => {
   try {
     e.preventDefault()
 
-    const selectedFiles = e.dataTransfer ? [...e.dataTransfer.files] : [...e.target.files]
+    const selectedFiles = e.dataTransfer ? Array.from(e.dataTransfer.files) : Array.from(e.target.files)
 
     if (selectedFiles.length === 0) {
       errorMessage.value = 'Por favor use la función de arrastrar y soltar para subir archivos.'
@@ -74,11 +74,19 @@ const addFiles = (e, maxFiles = 10) => {
       return
     }
 
+    const maxSize = 10 * 1024 * 1024 // 10MB in bytes
+    const oversizedFiles = selectedFiles.filter((file) => file.size > maxSize)
+    if (oversizedFiles.length > 0) {
+      const fileNames = oversizedFiles.map((file) => file.name).join(',')
+      errorMessage.value = `Los siguientes archivos exceden el límite de tamaño de archivo (10 MB): ${fileNames}`
+      return
+    }
+
     if (typeof emit !== 'function') {
       throw new Error('La función Emit no está definida')
     }
 
-    files.value = [...files.value, ...selectedFiles]
+    files.value.push(...selectedFiles)
     emit('update:modelValue', files.value)
   } catch (err) {
     console.error(err)
@@ -126,6 +134,14 @@ const handleDropFiles = (e, maxFiles = 10) => {
       return
     }
 
+    const maxSize = 10 * 1024 * 1024 // 10MB in bytes
+    const oversizedFiles = droppedFiles.filter((file) => file.size > maxSize)
+    if (oversizedFiles.length > 0) {
+      const fileNames = oversizedFiles.map((file) => file.name).join(',')
+      errorMessage.value = `Los siguientes archivos exceden el límite de tamaño de archivo (10 MB): ${fileNames}`
+      return
+    }
+
     const newFiles = [...files.value, ...droppedFiles]
 
     if (typeof emit !== 'function') {
@@ -148,6 +164,14 @@ watch(
     }
   },
 )
+
+watch(errorMessage, (newValue) => {
+  if (newValue) {
+    setTimeout(() => {
+      errorMessage.value = ''
+    }, 5000)
+  }
+})
 </script>
 
 <template>

@@ -280,6 +280,7 @@ watch(
         </select>
       </SearchFilter>
     </div>
+
     <div class="flex items-center mb-6">
       <button class="btn-yellow mr-2" type="button" @click="openModalUploadForm">
         <span>Subir</span>
@@ -458,6 +459,7 @@ watch(
         </tbody>
       </table>
     </div>
+
     <!-- Paginator -->
     <Pagination class="mt-4" :links="documentos.links" :total="documentos.total" />
   </div>
