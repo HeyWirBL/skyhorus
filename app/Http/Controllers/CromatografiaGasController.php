@@ -65,7 +65,7 @@ class CromatografiaGasController extends Controller
     {
         try {            
             $request->validate([
-                'documento.*' => ['required', 'mimes:pdf'],
+                'documento.*' => ['required', 'max:10000', 'mimes:pdf'],
                 'pozo_id' => ['required', Rule::exists('pozos', 'id')],
                 'fecha_hora' => ['required', 'date'],
             ]);
@@ -83,7 +83,7 @@ class CromatografiaGasController extends Controller
                         'pozo_id' => $request->input('pozo_id'),
                         'fecha_hora' => $request->input('fecha_hora'),
                         'documento' => json_encode([
-                            'name' => 'storage/' . $path, // generate a public URL for the file
+                            'name' => Storage::url($path), // generate a public URL for the file
                             'usrName' => $filename,
                             'size' => $file->getSize(),
                             'type' => $file->getMimeType(),
@@ -118,7 +118,7 @@ class CromatografiaGasController extends Controller
 
             if ($hasFiles) {
                 $request->validate([
-                    'documento.*' => ['required', 'mimes:pdf'],
+                    'documento.*' => ['required', 'max:10000', 'mimes:pdf'],
                 ]);
 
                 $files = $request->file('documento');
@@ -129,7 +129,7 @@ class CromatografiaGasController extends Controller
                     $path = Storage::disk('public')->putFileAs('files', $file, $filename);
                     $cromatografiaGas->update([                        
                         'documento' => json_encode([
-                            'name' => 'storage/' . $path, // generate a public URL for the file
+                            'name' => Storage::url($path), // generate a public URL for the file
                             'usrName' => $filename,
                             'size' => $file->getSize(),
                             'type' => $file->getMimeType(),
@@ -188,46 +188,6 @@ class CromatografiaGasController extends Controller
             ];
 
             return response()->download($fullPath, $fileName, $headers);
-        } catch (\Exception $e) {
-            return back()->with('error', 'Error al descargar el archivo: ' . $e->getMessage());
-        }
-    }
-
-    public function downloadMultiple($id, $index)
-    {
-        try {
-            $documento = CromatografiaGas::withTrashed()->findOrFail($id);
-
-            if ($documento->trashed()) {
-                return back()->with('error', 'Error al descargar el archivo: el archivo no existe.');
-            }
-
-            $documentoData = json_decode($documento->documento, true);
-
-            // Extract the file path
-            if (is_array($documentoData)) {
-                foreach ($documentoData as $fileIndex => $file) {
-                    if ($index == $fileIndex) {
-                        $filePath = $file['name'];
-                        $fileName = $file['usrName'];
-    
-                        $fullPath = public_path($filePath);
-
-                        if (!file_exists($fullPath)) {
-                            return back()->with('error', 'Error al descargar el archivo: el archivo no existe.');
-                        }   
-    
-                        // Set the response headers
-                        $headers = [
-                            'Content-Type' => $file['type'],
-                            'Content-Disposition' => 'attachment; filename="'.$fileName.'"',
-                        ];
-    
-                        return response()->download($fullPath, $fileName, $headers);
-                    }                             
-                }
-            }  
-            return back()->with('error', 'Error al descargar el archivo: el archivo no existe.');
         } catch (\Exception $e) {
             return back()->with('error', 'Error al descargar el archivo: ' . $e->getMessage());
         }

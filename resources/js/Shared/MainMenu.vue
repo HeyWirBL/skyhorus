@@ -49,7 +49,7 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div id="sidebar">
     <!-- Dashboard Link -->
     <div class="mb-4">
       <Link class="group flex text-base items-center p-2 rounded-md" :class="isUrl('') ? 'bg-yellow-500' : 'hover:bg-zinc-700'" href="/">
