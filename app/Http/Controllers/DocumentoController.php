@@ -33,8 +33,9 @@ class DocumentoController extends Controller
         }
 
         $documentos = $documento->with('directorio', 'ano', 'mesDetalle')
+            ->join('mes_detalles', 'documentos.mes_detalle_id', '=', 'mes_detalles.id')
+            ->orderByRaw('mes_detalles.id ASC')
             ->filter($filters)
-            ->latest()
             ->paginate(10)
             ->withQueryString()
             ->through(fn ($doc) => [
@@ -49,7 +50,7 @@ class DocumentoController extends Controller
                 'mes' => optional($doc->mesDetalle)->only('nombre'),
             ]);
 
-        $directorios = $directorio->orderByDesc('id')->get()->map->only('id', 'nombre_dir');
+        $directorios = $directorio->orderBy('id', 'desc')->get()->map->only('id', 'nombre_dir');
         $anos = $ano->latest()->get()->map->only('id', 'ano');
         $meses = $mes->orderBy('id')->get()->map->only('id', 'nombre');
 

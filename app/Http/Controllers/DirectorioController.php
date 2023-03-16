@@ -87,6 +87,9 @@ class DirectorioController extends Controller
             'fecha_dir' => $directorio->fecha_dir,
             'deleted_at' => $directorio->deleted_at,
             'documentos' => $directorio->documentos()
+                ->with('ano', 'mesDetalle')
+                ->join('mes_detalles', 'documentos.mes_detalle_id', '=', 'mes_detalles.id')
+                ->orderByRaw('mes_detalles.id ASC')       
                 ->filter($filters)
                 ->paginate(10)
                 ->withQueryString()
@@ -107,7 +110,7 @@ class DirectorioController extends Controller
             ->get(['id', 'ano']);
 
         $meses = $mes->query()
-            ->latest()
+            ->orderBy('id')
             ->get(['id', 'nombre']);
 
         return Inertia::render('Directorios/Show', compact('can', 'filters', 'directorioData', 'anos', 'meses'));
