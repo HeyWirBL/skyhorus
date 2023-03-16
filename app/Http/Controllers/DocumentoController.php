@@ -51,7 +51,7 @@ class DocumentoController extends Controller
 
         $directorios = $directorio->orderByDesc('id')->get()->map->only('id', 'nombre_dir');
         $anos = $ano->latest()->get()->map->only('id', 'ano');
-        $meses = $mes->latest()->get()->map->only('id', 'nombre');
+        $meses = $mes->orderBy('id')->get()->map->only('id', 'nombre');
 
         return Inertia::render('Documentos/Index', compact('filters', 'documentos', 'directorios', 'anos', 'meses'));
     }
