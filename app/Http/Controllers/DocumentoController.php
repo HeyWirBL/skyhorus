@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -33,25 +32,23 @@ class DocumentoController extends Controller
             $filters['month'] = $month;
         }
 
-        $documentos = Cache::remember('documentos', 3600, function () use ($documento, $filters) {
-            return $documento->with('directorio', 'ano', 'mesDetalle')
-                ->join('mes_detalles', 'documentos.mes_detalle_id', '=', 'mes_detalles.id')
-                ->orderByRaw('mes_detalles.id ASC')
-                ->filter($filters)
-                ->paginate(10)
-                ->withQueryString()
-                ->through(fn ($doc) => [
-                    'id' => $doc->id,
-                    'documento' => json_decode($doc->documento),
-                    'directorio_id' => $doc->directorio_id,
-                    'ano_id' => $doc->ano_id,
-                    'mes_detalle_id' => $doc->mes_detalle_id,
-                    'deleted_at' => $doc->deleted_at,
-                    'directorio' => optional($doc->directorio)->only('nombre_dir', 'deleted_at'),
-                    'ano' => optional($doc->ano)->only('ano', 'deleted_at'),
-                    'mes' => optional($doc->mesDetalle)->only('nombre'),
-                ]);
-        });
+        $documentos = $documento->with('directorio', 'ano', 'mesDetalle')
+            ->join('mes_detalles', 'documentos.mes_detalle_id', '=', 'mes_detalles.id')
+            ->orderByRaw('mes_detalles.id ASC')
+            ->filter($filters)
+            ->paginate(10)
+            ->withQueryString()
+            ->through(fn ($doc) => [
+                'id' => $doc->id,
+                'documento' => json_decode($doc->documento),
+                'directorio_id' => $doc->directorio_id,
+                'ano_id' => $doc->ano_id,
+                'mes_detalle_id' => $doc->mes_detalle_id,
+                'deleted_at' => $doc->deleted_at,
+                'directorio' => optional($doc->directorio)->only('nombre_dir', 'deleted_at'),
+                'ano' => optional($doc->ano)->only('ano', 'deleted_at'),
+                'mes' => optional($doc->mesDetalle)->only('nombre'),
+            ]);
 
         $directorios = $directorio->orderBy('id', 'desc')->get()->map->only('id', 'nombre_dir');
         $anos = $ano->latest()->get()->map->only('id', 'ano');
