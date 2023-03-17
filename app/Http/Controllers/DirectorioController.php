@@ -32,20 +32,22 @@ class DirectorioController extends Controller
 
         $filters = $request->only('search', 'trashed');
 
-        $directorios = $directorio->with('documentos')
-            ->filter($filters)
-            ->orderByDesc('id')
-            ->paginate(10)
-            ->withQueryString()
-            ->through(fn ($dir) => [
-                'id' => $dir->id,
-                'nombre_dir' => $dir->nombre_dir,
-                'fecha_dir' => $dir->fecha_dir,
-                'deleted_at' => $dir->deleted_at,
-                'documentos' => $dir->documentos->map(function ($doc) {
-                    return $doc->only(['id', 'documento', 'deleted_at']);
-                }),
+        $directorios = Cache::remember('directorios', 3600, function () use ($filters) {
+            return Directorio::with('documentos')
+                ->filter($filters)
+                ->orderBy('id', 'desc')
+                ->paginate(10)
+                ->withQueryString()
+                ->through(fn ($dir) => [
+                    'id' => $dir->id,
+                    'nombre_dir' => $dir->nombre_dir,
+                    'fecha_dir' => $dir->fecha_dir,
+                    'deleted_at' => $dir->deleted_at,
+                    'documentos' => $dir->documentos->map(function ($doc) {
+                        return $doc->only(['id', 'documento', 'deleted_at']);
+                    }),
             ]);
+        });
 
         return Inertia::render('Directorios/Index', compact('can', 'filters', 'directorios'));
     }
