@@ -4,6 +4,8 @@ namespace App\Imports;
 
 use App\Models\ComponentePozo;
 use App\Models\Pozo;
+use Carbon\Carbon;
+use DateTime;
 use Illuminate\Support\Collection;
 use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Concerns\ToCollection;
@@ -28,10 +30,10 @@ class ComponentePozosImportCollection implements ToCollection, WithHeadingRow
 
             $pozoId = $this->pozos->get($validatedData['nombre_pozo']);
 
-            $fechaAnalisis = Date::excelToDateTimeObject($row['fecha_analisis']);
-            $fechaRecep = Date::excelToDateTimeObject($row['fecha_recep']);
-            $fechaMuestreo = Date::excelToDateTimeObject($row['fecha_muestreo']);
-
+            $fechaRecep = DateTime::createFromFormat('d/m/Y', $row['fecha_recep'])->format('Y-m-d');
+            $fechaAnalisis = DateTime::createFromFormat('d/m/Y', $row['fecha_analisis'])->format('Y-m-d');
+            $fechaMuestreo = DateTime::createFromFormat('d/m/Y', $row['fecha_muestreo'])->format('Y-m-d');
+            
             ComponentePozo::create([
                 'dioxido_carbono' => $row['dioxido_carbono'],
                 'pe_dioxido_carbono' => $row['pe_dioxido_carbono'],

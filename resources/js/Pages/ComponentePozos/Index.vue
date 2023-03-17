@@ -839,6 +839,23 @@ watch(
               <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
               <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
             </tr>
+            <tr class="bg-white">
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block bg-yellow-400 text-white">Equipo utilizado</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200" colspan="2">
+                <span class="block bg-yellow-400 text-white">Método de laboratorio</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block bg-yellow-400 text-white">Fecha de muestreo</span>
+              </td>
+              <td class="p-1 text-center leading-6 border-solid border border-gray-200">
+                <span class="block">{{ componentePozo.fecha_muestreo }}</span>
+              </td>
+            </tr>
             <tr class="bg-gray-50">
               <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
               <td class="p-1 whitespace-nowrap border-solid border border-gray-200" />
