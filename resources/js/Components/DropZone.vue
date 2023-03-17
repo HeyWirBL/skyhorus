@@ -74,7 +74,7 @@ const addFiles = (e, maxFiles = 10) => {
       return
     }
 
-    const maxSize = 10 * 1024 * 1024 // 10MB in bytes
+    const maxSize = 20 * 1024 * 1024 // 20MB in bytes
     const oversizedFiles = selectedFiles.filter((file) => file.size > maxSize)
     if (oversizedFiles.length > 0) {
       const fileNames = oversizedFiles.map((file) => file.name).join(',')
@@ -134,7 +134,7 @@ const handleDropFiles = (e, maxFiles = 10) => {
       return
     }
 
-    const maxSize = 10 * 1024 * 1024 // 10MB in bytes
+    const maxSize = 20 * 1024 * 1024 // 20MB in bytes
     const oversizedFiles = droppedFiles.filter((file) => file.size > maxSize)
     if (oversizedFiles.length > 0) {
       const fileNames = oversizedFiles.map((file) => file.name).join(',')

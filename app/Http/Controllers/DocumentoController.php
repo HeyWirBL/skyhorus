@@ -64,7 +64,7 @@ class DocumentoController extends Controller
     {
         try {            
             $request->validate([
-                'documento.*' => ['required', 'max:10000'], // MAX 10MB per file
+                'documento.*' => ['required', 'max:20000'], // MAX 20MB per file
                 'directorio_id' => ['required', Rule::exists('directorios', 'id')],
                 'ano_id' => ['required', Rule::exists('anos', 'id')],
                 'mes_detalle_id' => ['required', Rule::exists('mes_detalles', 'id')],
@@ -125,7 +125,7 @@ class DocumentoController extends Controller
 
             if ($hasFiles) {
                 $request->validate([
-                    'documento.*' => ['required', 'max:10000'],
+                    'documento.*' => ['required', 'max:20000'],
                 ]);
 
                 $files = $request->file('documento');
