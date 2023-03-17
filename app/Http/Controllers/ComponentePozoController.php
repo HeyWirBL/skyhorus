@@ -338,20 +338,20 @@ class ComponentePozoController extends Controller
     {       
         $validated = $request->validate([
             'file' => ['required'],
-            'pozoId' => ['required', Rule::exists('pozos', 'id')],
+            /* 'pozoId' => ['required', Rule::exists('pozos', 'id')], */
             'fechaRecep' => ['required', 'date'],
             'fechaAnalisis' => ['required', 'date'],
             'fechaMuest' => ['nullable', 'date'],
         ]);
         
         foreach($request->file('file') as $file){
-            $pozoId = $request->pozoId;
+            /* $pozoId = $request->pozoId; */
             $fechaRecep = $request->fechaRecep;
             $fechaAnalisis = $request->fechaAnalisis;
             $fechaMuest = $request->fechaMuest;
 
             if(!empty($file) && $validated){
-                Excel::import(new ComponentePozosImportCollection($pozoId, $fechaRecep, $fechaAnalisis, $fechaMuest), $file );
+                Excel::import(new ComponentePozosImportCollection(/* $pozoId, */ $fechaRecep, $fechaAnalisis, $fechaMuest), $file );
             }
 
         }

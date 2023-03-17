@@ -3,6 +3,7 @@
 namespace App\Imports;
 
 use App\Models\ComponentePozo;
+use App\Models\Pozo;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
@@ -15,14 +16,14 @@ class ComponentePozosImportCollection implements ToCollection, WithHeadingRow
     * @return \Illuminate\Database\Eloquent\Model|null
     */
 
-    public $pozoId;
+    public $pozo;
     public $fechaRecep;
     public $fechaAnalisis;
     public $fechaMuest;
 
-    public function __construct($pozoId, $fechaRecep, $fechaAnalisis, $fechaMuest)
+    public function __construct($fechaRecep, $fechaAnalisis, $fechaMuest)
     {
-        $this->pozoId = $pozoId;
+        $this->pozo = Pozo::select('id', 'nombre_pozo')->get();
         $this->fechaRecep = $fechaRecep;
         $this->fechaAnalisis = $fechaAnalisis;
         $this->fechaMuest = $fechaMuest;
@@ -32,6 +33,7 @@ class ComponentePozosImportCollection implements ToCollection, WithHeadingRow
     {
         foreach($rows as $row)
         {
+            $pozo = $this->pozo->where('nombre_pozo', $row['nombre_pozo'])->first();
             ComponentePozo::create([
                 'dioxido_carbono' => $row['dioxido_carbono'],
                 'pe_dioxido_carbono' => $row['pe_dioxido_carbono'],
@@ -77,7 +79,7 @@ class ComponentePozosImportCollection implements ToCollection, WithHeadingRow
                 'pe_n_exano' => $row['pe_n_exano'],
                 'mo_n_exano' => $row['mo_n_exano'],
                 'den_n_exano' => $row['den_n_exano'], 
-                'pozo_id' => $this->pozoId,
+                'pozo_id' => $pozo->id,
                 'fecha_recep' => $this->fechaRecep,
                 'fecha_analisis' => $this->fechaAnalisis,
                 'no_determinacion' => $row['no_determinacion'],
