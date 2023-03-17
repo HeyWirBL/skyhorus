@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -20,15 +21,19 @@ class DirectorioController extends Controller
      */
     public function index(Request $request, Directorio $directorio): Response
     {
-        $can = [
-            'createDirectorio' => Auth::user()->can('create', Directorio::class),
-            'editDirectorio' => Auth::user()->can('update', Directorio::class),
-            'restoreDirectorio' => Auth::user()->can('restore', Directorio::class),
-            'deleteDirectorio' => Auth::user()->can('delete', Directorio::class),
-        ];
+        $can = Cache::remember('can', 3600, function () use ($directorio) {
+            return [
+                'createDirectorio' => Auth::user()->can('create', $directorio),
+                'editDirectorio' => Auth::user()->can('update', $directorio),
+                'restoreDirectorio' => Auth::user()->can('restore', $directorio),
+                'deleteDirectorio' => Auth::user()->can('delete', $directorio),
+            ];
+        });
 
-        $filters = $request->all('search', 'trashed');
-        $directorios = $directorio->filter($filters)
+        $filters = $request->only('search', 'trashed');
+
+        $directorios = $directorio->with('documentos')
+            ->filter($filters)
             ->orderByDesc('id')
             ->paginate(10)
             ->withQueryString()
@@ -37,7 +42,9 @@ class DirectorioController extends Controller
                 'nombre_dir' => $dir->nombre_dir,
                 'fecha_dir' => $dir->fecha_dir,
                 'deleted_at' => $dir->deleted_at,
-                'documentos' => $dir->documentos()->get()->map->only('id', 'documento', 'deleted_at'),
+                'documentos' => $dir->documentos->map(function ($doc) {
+                    return $doc->only(['id', 'documento', 'deleted_at']);
+                }),
             ]);
 
         return Inertia::render('Directorios/Index', compact('can', 'filters', 'directorios'));
@@ -65,10 +72,12 @@ class DirectorioController extends Controller
      */
     public function show(Request $request, Directorio $directorio, Ano $ano, MesDetalle $mes)
     {
-        $can = [
-            'restoreDirectorio' => Auth::user()->can('restore', Directorio::class),
-            'deleteDirectorio' => Auth::user()->can('delete', Directorio::class),
-        ];
+        $can = Cache::remember('can', 3600, function () use ($directorio) {
+            return [
+                'restoreDirectorio' => Auth::user()->can('restore', $directorio),
+                'deleteDirectorio' => Auth::user()->can('delete', $directorio),
+            ];
+        });
 
         $filters = $request->only('search', 'trashed');
 
