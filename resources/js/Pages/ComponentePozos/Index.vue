@@ -571,13 +571,6 @@ watch(
               </div>
             </div>
           </div>
-          <SelectInput v-model="importComPozoForm.pozoId" :error="importComPozoForm.errors.pozoId" class="pb-4 pr-6 w-full" label="Pozo/Instalación">
-            <option value="">Por favor seleccione</option>
-            <option v-for="pozo in pozos" :key="pozo.id" :value="pozo.id">{{ pozo.nombre_pozo }}</option>
-          </SelectInput>
-          <TextInput v-model="importComPozoForm.fechaRecep" :error="importComPozoForm.errors.fechaRecep" class="pb-4 pr-6 w-full lg:w-1/2" type="date" label="Fecha de recepción" />
-          <TextInput v-model="importComPozoForm.fechaAnalisis" :error="importComPozoForm.errors.fechaAnalisis" class="pb-4 pr-6 w-full lg:w-1/2" type="date" label="Fecha de análisis" />
-          <TextInput v-model="importComPozoForm.fechaMuest" :error="importComPozoForm.errors.fechaMuest" class="pb-4 pr-6 w-full lg:w-1/2" type="date" label="Fecha de muestreo" />
         </div>
         <div class="flex flex-shrink-0 flex-wrap items-center justify-end p-4 space-x-2 border-t border-gray-200">
           <LoadingButton :loading="importComPozoForm.processing" class="btn-yellow mr-2" type="submit">Importar</LoadingButton>
