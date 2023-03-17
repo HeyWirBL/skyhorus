@@ -1108,16 +1108,16 @@ watch(
                 <span class="block bg-gray-400 text-white font-normal">Total</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block bg-yellow-400 text-white font-bold">540.86</span>
+                <span class="block bg-yellow-400 text-white font-bold">{{ componentePozo.totalData[0].Total_PM }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block bg-yellow-400 text-white font-bold">100.00</span>
+                <span class="block bg-yellow-400 text-white font-bold">{{ componentePozo.totalData[0].Total_Peso }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block bg-yellow-400 text-white font-bold">100</span>
+                <span class="block bg-yellow-400 text-white font-bold">{{ componentePozo.totalData[0].Total_MOL }}</span>
               </td>
               <td class="p-1 text-center leading-6 border-solid border border-gray-200">
-                <span class="block bg-yellow-400 text-white font-bold">0</span>
+                <span class="block bg-yellow-400 text-white font-bold">{{ componentePozo.totalData[0].Total_Densidad }}</span>
               </td>
             </tr>
             <tr class="bg-white">
