@@ -7,6 +7,7 @@ use App\Models\Pozo;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class ComponentePozosImportCollection implements ToCollection, WithHeadingRow
 {
@@ -17,16 +18,10 @@ class ComponentePozosImportCollection implements ToCollection, WithHeadingRow
     */
 
     public $pozo;
-    public $fechaRecep;
-    public $fechaAnalisis;
-    public $fechaMuest;
 
-    public function __construct($fechaRecep, $fechaAnalisis, $fechaMuest)
+    public function __construct()
     {
         $this->pozo = Pozo::select('id', 'nombre_pozo')->get();
-        $this->fechaRecep = $fechaRecep;
-        $this->fechaAnalisis = $fechaAnalisis;
-        $this->fechaMuest = $fechaMuest;
     }
 
     public function collection(Collection $rows)
@@ -34,6 +29,10 @@ class ComponentePozosImportCollection implements ToCollection, WithHeadingRow
         foreach($rows as $row)
         {
             $pozo = $this->pozo->where('nombre_pozo', $row['nombre_pozo'])->first();
+            $fechaAnalisis = Date::excelToDateTimeObject($row['fecha_analisis']);
+            $fechaRecep = Date::excelToDateTimeObject($row['fecha_recep']);
+            $fechaMuestreo = Date::excelToDateTimeObject($row['fecha_muestreo']);
+
             ComponentePozo::create([
                 'dioxido_carbono' => $row['dioxido_carbono'],
                 'pe_dioxido_carbono' => $row['pe_dioxido_carbono'],
@@ -80,14 +79,14 @@ class ComponentePozosImportCollection implements ToCollection, WithHeadingRow
                 'mo_n_exano' => $row['mo_n_exano'],
                 'den_n_exano' => $row['den_n_exano'], 
                 'pozo_id' => $pozo->id,
-                'fecha_recep' => $this->fechaRecep,
-                'fecha_analisis' => $this->fechaAnalisis,
+                'fecha_recep' => $fechaRecep,
+                'fecha_analisis' => $fechaAnalisis,
                 'no_determinacion' => $row['no_determinacion'],
                 'equipo_utilizado' => $row['equipo_utilizado'],
                 'met_laboratorio' => $row['met_laboratorio'],
                 'observaciones' => $row['observaciones'],
                 'nombre_componente' => $row['nombre_componente'],
-                'fecha_muestreo' => $this->fechaMuest,
+                'fecha_muestreo' => $fechaMuestreo,
             ]);
         }
     }
