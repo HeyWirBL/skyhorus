@@ -5,12 +5,10 @@ namespace App\Imports;
 use App\Models\ComponentePozo;
 use App\Models\Pozo;
 use Carbon\Carbon;
-use DateTime;
 use Illuminate\Support\Collection;
 use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class ComponentePozosImportCollection implements ToCollection, WithHeadingRow
 {
@@ -30,9 +28,9 @@ class ComponentePozosImportCollection implements ToCollection, WithHeadingRow
 
             $pozoId = $this->pozos->get($validatedData['nombre_pozo']);
 
-            $fechaRecep = DateTime::createFromFormat('d/m/Y', $row['fecha_recep'])->format('Y-m-d');
-            $fechaAnalisis = DateTime::createFromFormat('d/m/Y', $row['fecha_analisis'])->format('Y-m-d');
-            $fechaMuestreo = DateTime::createFromFormat('d/m/Y', $row['fecha_muestreo'])->format('Y-m-d');
+            $fechaRecep = Carbon::createFromFormat('d/m/Y', $row['fecha_recep'])->format('Y-m-d');
+            $fechaAnalisis = Carbon::createFromFormat('d/m/Y', $row['fecha_analisis'])->format('Y-m-d');
+            $fechaMuestreo = Carbon::createFromFormat('d/m/Y', $row['fecha_muestreo'])->format('Y-m-d');
             
             ComponentePozo::create([
                 'dioxido_carbono' => $row['dioxido_carbono'],
