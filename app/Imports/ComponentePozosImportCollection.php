@@ -5,30 +5,29 @@ namespace App\Imports;
 use App\Models\ComponentePozo;
 use App\Models\Pozo;
 use Illuminate\Support\Collection;
+use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class ComponentePozosImportCollection implements ToCollection, WithHeadingRow
 {
-    /**
-    * @param array $row
-    *
-    * @return \Illuminate\Database\Eloquent\Model|null
-    */
-
-    public $pozo;
+    private $pozos;
 
     public function __construct()
     {
-        $this->pozo = Pozo::select('id', 'nombre_pozo')->get();
+        $this->pozos = Pozo::pluck('id', 'nombre_pozo');
     }
 
     public function collection(Collection $rows)
     {
-        foreach($rows as $row)
-        {
-            $pozo = $this->pozo->where('nombre_pozo', $row['nombre_pozo'])->first();
+        foreach($rows as $row) {
+            $validatedData = validator($row->toArray(), [
+                'nombre_pozo' => ['required', Rule::exists('pozos', 'nombre_pozo')],
+            ])->validate();
+
+            $pozoId = $this->pozos->get($validatedData['nombre_pozo']);
+
             $fechaAnalisis = Date::excelToDateTimeObject($row['fecha_analisis']);
             $fechaRecep = Date::excelToDateTimeObject($row['fecha_recep']);
             $fechaMuestreo = Date::excelToDateTimeObject($row['fecha_muestreo']);
@@ -78,7 +77,7 @@ class ComponentePozosImportCollection implements ToCollection, WithHeadingRow
                 'pe_n_exano' => $row['pe_n_exano'],
                 'mo_n_exano' => $row['mo_n_exano'],
                 'den_n_exano' => $row['den_n_exano'], 
-                'pozo_id' => $pozo->id,
+                'pozo_id' => $pozoId,
                 'fecha_recep' => $fechaRecep,
                 'fecha_analisis' => $fechaAnalisis,
                 'no_determinacion' => $row['no_determinacion'],
@@ -87,7 +86,7 @@ class ComponentePozosImportCollection implements ToCollection, WithHeadingRow
                 'observaciones' => $row['observaciones'],
                 'nombre_componente' => $row['nombre_componente'],
                 'fecha_muestreo' => $fechaMuestreo,
-            ]);
+            ]);              
         }
     }
 }

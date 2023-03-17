@@ -23,6 +23,7 @@ const props = defineProps({
   filters: Object,
   componentePozos: Object,
   pozos: Array,
+  errors: Object,
 })
 
 const swal = inject('$swal')
@@ -372,6 +373,7 @@ const closeModalEditComPozoForm = () => {
 
 const closeModalImportForm = () => {
   importComPozo.value = false
+  editComPozoForm.reset()
 }
 
 const closeModalMessageMetLab = () => {
@@ -393,10 +395,13 @@ const importExcel = () => {
 
   importComPozoForm.post('/componente-pozos/import', {
     preserveScroll: true,
-    onSuccess: () => (importComPozo.value = false),
+    onSuccess: () => {
+      closeModalImportForm()
+      fileUpload.value = []
+    },
     onFinish: () => {
       if (importComPozoForm.hasErrors) {
-        console.error('No se pudo importar los componentes.')
+        props.errors
       }
     },
   })
@@ -405,7 +410,10 @@ const importExcel = () => {
 const update = () => {
   editComPozoForm.post(`/componente-pozos/${editComPozoForm.id}`, {
     preserveScroll: true,
-    onSuccess: () => (editComPozo.value = false),
+    onSuccess: () => {
+      closeModalEditComPozoForm()
+      fileUpload.value = []
+    },
     onError: () => editInputRef.value.focus(),
     onFinish: () => {
       if (!editComPozoForm.hasErrors) {
@@ -569,6 +577,13 @@ watch(
                 </div>
                 <button type="button" class="px-4 py-1 text-white text-xs font-medium bg-gray-500 hover:bg-gray-700 rounded" @click.prevent="removeFile">Remover</button>
               </div>
+            </div>
+            <div v-if="errors" class="form-error">
+              <ul>
+                <li v-for="(error, index) in errors" :key="index">
+                  {{ error }}
+                </li>
+              </ul>
             </div>
           </div>
         </div>

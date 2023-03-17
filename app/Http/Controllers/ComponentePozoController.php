@@ -11,10 +11,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
+use Maatwebsite\Excel\Facades\Excel;
 use Inertia\Inertia;
 use Inertia\Response;
-use Maatwebsite\Excel\Facades\Excel;
-use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class ComponentePozoController extends Controller
 {
@@ -314,65 +314,18 @@ class ComponentePozoController extends Controller
         return Redirect::back()->with('success', 'Componentes de pozos restablecidos.');
     }
 
-    /**
-     * Read data for component wells.
-     */
-    public function read(Request $request)
-    {
-        $request->validate([
-            'file' => 'required|mimes:xlsx,xls,csv',
-        ]);
-
-        $file = $request->file('file')->getRealPath();
-        $spreadsheet = IOFactory::load($file);
-        $worksheet = $spreadsheet->getActiveSheet();
-
-        $data = [];
-
-        foreach ($worksheet->getRowIterator() as $row) {
-            $rowData = [];
-
-            foreach ($row->getCellIterator() as $cell) {
-                $rowData[] = $cell->getValue();
-            }
-
-            $data[] = $rowData;
-        }
-
-        return response()->json($data);
-    }
-
-    /**
-     * Import data for componente wells.
-     */
-    /* public function import(Request $request): RedirectResponse
-    {
-        $path = $request->file('file');
-
-        if(!empty($path)){
-            return Redirect::back()->with('succes', $path);
-        }else{
-            return Redirect::back()->with('succes', 'la importacion ha fallado'); 
-        }
-
-        $import = new ComponentePozosImport();
-        Excel::import($import, $path); 
-
-        return Redirect::back()->with('success', 'Datos importados correctamente.');
-    }
- */ 
     public function import(Request $request)
     {       
-        $validated = $request->validate([
+        $request->validate([
             'file' => ['required'],
         ]);
-        
-        foreach($request->file('file') as $file){
-            if(!empty($file) && $validated){
-                Excel::import(new ComponentePozosImportCollection(), $file );
-            }
 
+        $files = $request->file('file');
+        
+        foreach($files as $file){
+            Excel::import(new ComponentePozosImportCollection(), $file);
         }
-        return redirect(route('componente-pozos'))->with('succes', 'archvos importados correctamente');
+
+        return Redirect::back()->with('success', 'Componentes importados.');            
     }
 }
