@@ -17,6 +17,24 @@ use Inertia\Response;
 class PozoController extends Controller
 {
     /**
+     * Method that formats a numeric value to a string with a maximum of 4
+     * decimal places.
+     */
+    private function formatValue($value)
+    {
+        if (is_numeric($value)) {
+            if (strpos($value, '.') !== false) {
+                $rounded_value = round($value, 4);
+                return number_format($rounded_value, 4, '.', '');
+            } else {
+                return number_format($value, 4);
+            }
+        } else {
+            return $value;
+        }
+    }
+
+    /**
      * Display a listing of wells.
      */
     public function index(Request $request, Pozo $pozo): Response
@@ -137,48 +155,48 @@ class PozoController extends Controller
             ->through(fn ($cp) => [
                 'id' => $cp->id,
                 'dioxido_carbono' => $cp->dioxido_carbono,
-                'pe_dioxido_carbono' => $cp->pe_dioxido_carbono,
-                'mo_dioxido_carbono' => $cp->mo_dioxido_carbono,
+                'pe_dioxido_carbono' => $this->formatValue($cp->pe_dioxido_carbono),
+                'mo_dioxido_carbono' => $this->formatValue($cp->mo_dioxido_carbono),
                 'den_dioxido_carbono' => $cp->den_dioxido_carbono,
                 'acido_sulfidrico' => $cp->acido_sulfidrico,
-                'pe_acido_sulfidrico' => $cp->pe_acido_sulfidrico,
-                'mo_acido_sulfidrico' => $cp->mo_acido_sulfidrico,
+                'pe_acido_sulfidrico' => $this->formatValue($cp->pe_acido_sulfidrico),
+                'mo_acido_sulfidrico' => $this->formatValue($cp->mo_acido_sulfidrico),
                 'den_acido_sulfidrico' => $cp->den_acido_sulfidrico,
                 'nitrogeno' => $cp->nitrogeno,
-                'pe_nitrogeno' => $cp->pe_nitrogeno,
-                'mo_nitrogeno' => $cp->mo_nitrogeno,
+                'pe_nitrogeno' => $this->formatValue($cp->pe_nitrogeno),
+                'mo_nitrogeno' => $this->formatValue($cp->mo_nitrogeno),
                 'den_nitrogeno' => $cp->den_nitrogeno,
                 'metano' => $cp->metano,
-                'pe_metano' => $cp->pe_metano,
-                'mo_metano' => $cp->mo_metano,
+                'pe_metano' => $this->formatValue($cp->pe_metano),
+                'mo_metano' => $this->formatValue($cp->mo_metano),
                 'den_metano' => $cp->den_metano,
                 'etano' => $cp->etano,
-                'pe_etano' => $cp->pe_etano,
-                'mo_etano' => $cp->mo_etano,
+                'pe_etano' => $this->formatValue($cp->pe_etano),
+                'mo_etano' => $this->formatValue($cp->mo_etano),
                 'den_etano' => $cp->den_etano,
                 'propano' => $cp->propano,
-                'pe_propano' => $cp->pe_propano,
-                'mo_propano' => $cp->mo_propano,
+                'pe_propano' => $this->formatValue($cp->pe_propano),
+                'mo_propano' => $this->formatValue($cp->mo_propano),
                 'den_propano' => $cp->den_propano,
                 'iso_butano' => $cp->iso_butano,
-                'pe_iso_butano' => $cp->pe_iso_butano,
-                'mo_iso_butano' => $cp->mo_iso_butano,
+                'pe_iso_butano' => $this->formatValue($cp->pe_iso_butano),
+                'mo_iso_butano' => $this->formatValue($cp->mo_iso_butano),
                 'den_iso_butano' => $cp->den_iso_butano,
                 'n_butano' => $cp->n_butano,
-                'pe_n_butano' => $cp->pe_n_butano,
-                'mo_n_butano' => $cp->mo_n_butano,
+                'pe_n_butano' => $this->formatValue($cp->pe_n_butano),
+                'mo_n_butano' => $this->formatValue($cp->mo_n_butano),
                 'den_n_butano' => $cp->den_n_butano,
                 'iso_pentano' => $cp->iso_pentano,
-                'pe_iso_pentano' => $cp->pe_iso_pentano,
-                'mo_iso_pentano' => $cp->mo_iso_pentano,
+                'pe_iso_pentano' => $this->formatValue($cp->pe_iso_pentano),
+                'mo_iso_pentano' => $this->formatValue($cp->mo_iso_pentano),
                 'den_iso_pentano' => $cp->den_iso_pentano,
                 'n_pentano' => $cp->n_pentano,
-                'pe_n_pentano' => $cp->pe_n_pentano,
-                'mo_n_pentano' => $cp->mo_n_pentano,
+                'pe_n_pentano' => $this->formatValue($cp->pe_n_pentano),
+                'mo_n_pentano' => $this->formatValue($cp->mo_n_pentano),
                 'den_n_pentano' => $cp->den_n_pentano,
                 'n_exano' => $cp->n_exano,
-                'pe_n_exano' => $cp->pe_n_exano,
-                'mo_n_exano' => $cp->mo_n_exano,
+                'pe_n_exano' => $this->formatValue($cp->pe_n_exano),
+                'mo_n_exano' => $this->formatValue($cp->mo_n_exano),
                 'den_n_exano' => $cp->den_n_exano,
                 'pozo_id' => $cp->pozo_id,                
                 'fecha_recep' => $cp->fecha_recep,
@@ -190,6 +208,15 @@ class PozoController extends Controller
                 'nombre_componente' => $cp->nombre_componente,
                 'fecha_muestreo' => $cp->fecha_muestreo,
                 'deleted_at' => $cp->deleted_at,
+                'totalData' => DB::table('total_componentes')
+                    ->where('idComPozo', $cp->id)
+                    ->get()
+                    ->map(fn ($t) => [
+                        'Total_PM' => round($t->Total_PM, 2),
+                        'Total_Peso' => number_format($t->Total_Peso, 2),
+                        'Total_MOL' => round($t->Total_MOL, 2),
+                        'Total_Densidad' => round($t->Total_Densidad),
+                    ]),
                 'quimicosData' => DB::table('graf_lineas_mo')
                     ->where('idComPozo', $cp->id)
                     ->get(),
