@@ -60,6 +60,7 @@ const sidebarDisplay = computed(() => ({
                 <Link class="block px-6 py-2 hover:text-white hover:bg-yellow-500" href="/perfil">Perfil del Usuario</Link>
                 <Link class="block px-6 py-2 hover:text-white hover:bg-yellow-500" href="/menu">Ver Menú</Link>
                 <Link class="block px-6 py-2 hover:text-white hover:bg-yellow-500" href="/informacion">Información del Sistema</Link>
+                <a class="block px-6 py-2 hover:text-white hover:bg-yellow-500" href="https://youtu.be/4jxWM37X6mM" target="_blank">Ayuda</a>
                 <Link class="block px-6 py-2 w-full text-left hover:text-white hover:bg-yellow-500" href="/logout" method="post" as="button">Desconectarse</Link>
               </div>
             </template>
