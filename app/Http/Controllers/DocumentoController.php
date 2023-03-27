@@ -34,7 +34,8 @@ class DocumentoController extends Controller
 
         $documentos = $documento->with('directorio', 'ano', 'mesDetalle')
             ->join('mes_detalles', 'documentos.mes_detalle_id', '=', 'mes_detalles.id')
-            ->orderByRaw('mes_detalles.id ASC')
+            ->select('documentos.*', 'mes_detalles.id as mes_id')
+            ->orderBy('mes_id', 'ASC')          
             ->filter($filters)
             ->paginate(10)
             ->withQueryString()
