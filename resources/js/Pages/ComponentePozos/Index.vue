@@ -81,7 +81,7 @@ const chartOptions = {
       display: true,
       title: {
         display: true,
-        text: 'Total Mo',
+        text: 'Total % Mol',
         color: '#555555',
         font: {
           size: 15,
@@ -204,7 +204,7 @@ const chartDataFormatted = computed(() => {
       labels: quimicosData.map((q) => q.Quimico),
       datasets: [
         {
-          label: 'Total Mo',
+          label: 'Total % Mol',
           data: quimicosData.map((q) => q.Total_mo),
           backgroundColor: 'rgba(100, 181, 246, 1)',
           borderColor: 'rgba(105, 183, 246, 1)',
