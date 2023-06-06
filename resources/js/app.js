@@ -1,4 +1,5 @@
 import '../css/app.css'
+import { filesize } from './utils'
 
 import { createApp, h } from 'vue'
 import { createInertiaApp } from '@inertiajs/vue3'
@@ -21,9 +22,10 @@ createInertiaApp({
     return pages
   },
   setup({ el, App, props, plugin }) {
-    createApp({ render: () => h(App, props) })
-      .use(plugin)
-      .use(VueSweetalert2)
-      .mount(el)
+    const app = createApp({ render: () => h(App, props) })
+
+    app.config.globalProperties.$filesize = filesize
+
+    app.use(plugin).use(VueSweetalert2).mount(el)
   },
 })

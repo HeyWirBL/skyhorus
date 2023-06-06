@@ -170,29 +170,6 @@ const selectedComponentePozo = computed(() => {
 const isTrashed = computed(() => usePage().url.includes('trashed=only'))
 
 /**
- * Converts a file size in bytes to the nearest unit of measurement (B, kB, MB, GB, etc.).
- * @param {number} size - The file size in bytes.
- * @param {number} [precision=2] - The number of decimal places to include in the output. Default is 2.
- * @returns {string} The formatted file size with the appropriate unit of measurement.
- */
-const filesize = (size, precision = 2) => {
-  const units = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB', 'BB']
-  if (size < 0) {
-    return 'Tipo de archivo inválido'
-  } else if (size === 0) {
-    return `0 ${units[0]}`
-  } else if (size < 1) {
-    return `${(size * 1024).toFixed(precision)} ${units[1]}`
-  } else if (size >= Math.pow(1024, units.length - 1)) {
-    return `${(size / Math.pow(1024, units.length - 1)).toFixed(precision)} ${units[units.length - 1]}`
-  } else {
-    const i = Math.floor(Math.log(size) / Math.log(1024))
-    const val = (size / Math.pow(1024, i)).toFixed(precision)
-    return `${val} ${units[i]}`
-  }
-}
-
-/**
  * Computed Property: Formats the data received from the props in a format
  * that can be used by the chart. This includes mapping the `quimicosData`
  * array to generate the chart labels and data.
@@ -573,7 +550,7 @@ watch(
               </div>
               <div v-else class="flex items-center justify-between p-2">
                 <div class="flex-1 pr-1">
-                  {{ fileUpload[0].name }} <span class="text-gray-500 text-xs">({{ filesize(fileUpload[0].size) }})</span>
+                  {{ fileUpload[0].name }} <span class="text-gray-500 text-xs">({{ $filesize(fileUpload[0].size) }})</span>
                 </div>
                 <button type="button" class="px-4 py-1 text-white text-xs font-medium bg-gray-500 hover:bg-gray-700 rounded" @click.prevent="removeFile">Remover</button>
               </div>

@@ -5,8 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Searchable\Searchable;
+use Spatie\Searchable\SearchResult;
 
-class Documento extends Model
+class Documento extends Model implements Searchable
 {
     use HasFactory, SoftDeletes;
 
@@ -21,6 +23,32 @@ class Documento extends Model
         'ano_id',
         'mes_detalle_id',
     ];
+
+    public function getSearchResult(): SearchResult
+    {
+        $url = route('documentos');
+
+        $fileName = $this->extractFileNameFromDocumento();
+
+        return new SearchResult(
+            $this,
+            $fileName,
+            $url,
+        );
+    }
+
+    public function extractFileNameFromDocumento(): string
+    {
+        $documento = json_decode($this->documento);
+
+        $fileName = '';
+
+        if ($documento && isset($documento->name)) {
+            $fileName = $documento->name;
+        }
+
+        return $fileName;
+    }
 
     public function resolveRouteBinding($value, $field = null)
     {

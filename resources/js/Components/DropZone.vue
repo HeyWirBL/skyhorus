@@ -20,29 +20,6 @@ const fileInput = ref(null)
 const files = ref(props.modelValue)
 const errorMessage = ref('')
 
-/**
- * Converts a file size in bytes to the nearest unit of measurement (B, kB, MB, GB, etc.).
- * @param {number} size - The file size in bytes.
- * @param {number} [precision=2] - The number of decimal places to include in the output. Default is 2.
- * @returns {string} The formatted file size with the appropriate unit of measurement.
- */
-const filesize = (size, precision = 2) => {
-  const units = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB', 'BB']
-  if (size < 0) {
-    return 'Tipo de archivo inválido'
-  } else if (size === 0) {
-    return `0 ${units[0]}`
-  } else if (size < 1) {
-    return `${(size * 1024).toFixed(precision)} ${units[1]}`
-  } else if (size >= Math.pow(1024, units.length - 1)) {
-    return `${(size / Math.pow(1024, units.length - 1)).toFixed(precision)} ${units[units.length - 1]}`
-  } else {
-    const i = Math.floor(Math.log(size) / Math.log(1024))
-    const val = (size / Math.pow(1024, i)).toFixed(precision)
-    return `${val} ${units[i]}`
-  }
-}
-
 const browseFiles = () => {
   fileInput.value.click()
 }
@@ -194,7 +171,7 @@ watch(errorMessage, (newValue) => {
             <span v-else class="w-0 flex-1 text-yellow-400 truncate" :title="file.name">
               {{ file.name }}
             </span>
-            <span class="mr-4">{{ filesize(file.size) }}</span>
+            <span class="mr-4">{{ $filesize(file.size) }}</span>
             <progress :value="file.progress" max="100" />
           </div>
           <div class="ml-4 flex-shrink-0">

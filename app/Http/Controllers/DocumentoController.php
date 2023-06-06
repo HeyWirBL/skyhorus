@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
+use Spatie\Searchable\Search;
 
 class DocumentoController extends Controller
 {
@@ -34,7 +35,17 @@ class DocumentoController extends Controller
 
         $documentos = $documento->with('directorio', 'ano', 'mesDetalle')
             ->join('mes_detalles', 'documentos.mes_detalle_id', '=', 'mes_detalles.id')
-            ->select('documentos.*', 'mes_detalles.id as mes_id')
+            ->select('documentos.*', 'mes_detalles.id as mes_id');
+
+        if (isset($filters['search']) && $filters['search']) {
+            $searchResults = (new Search())                
+                ->registerModel(Documento::class, 'documento')
+                ->perform($filters['search']);        
+
+            $documentos->whereIn('documentos.id', $searchResults->pluck('searchable.id')->all());
+        }
+
+        $documentos = $documentos
             ->orderBy('mes_id', 'ASC')          
             ->filter($filters)
             ->paginate(10)
