@@ -15,6 +15,10 @@ const props = defineProps({
 
 const swal = inject('$swal')
 
+const viewPdfModal    = ref(false)
+let   docName         = ref('')
+const originPath      = window.location.origin
+
 const uploadNewDoc = ref(false)
 const editUploadedDoc = ref(false)
 
@@ -197,6 +201,16 @@ const removeSelectedItems = () => {
       </button>
     </div>
 
+    <!-- view pdf modal -->
+    <Modal :show="viewPdfModal">
+      <vue-pdf-app style="height: 85vh;" :pdf="originPath+'/storage/files/'+docName" :theme="'light'">
+      </vue-pdf-app>
+
+      <div class="flex items-center justify-end p-4 space-x-2 border-t border-gray-200">
+        <button class="btn-yellow" @click="viewPdfModal = false">Cerrar</button>
+      </div>
+    </Modal>
+
     <!-- Upload Documento Form Modal -->
     <Modal :show="uploadNewDoc">
       <!-- Modal content -->
@@ -318,7 +332,7 @@ const removeSelectedItems = () => {
             </td>
             <td class="px-6 py-4 border-solid border border-gray-200">
               <div class="flex items-center leading-snug">
-                <a class="text-yellow-400 hover:underline focus:text-yellow-500" :href="`/doc-pozos/${docPozo.id}/descargar`">
+                <a class="text-yellow-400 hover:underline focus:text-yellow-500" @click="[docName = cromatografiaLiquida.documento.usrName ,viewPdfModal = true]">
                   {{ docPozo.documento.usrName }}
                 </a>
                 <span class="text-xs ml-2"> {{ filesize(docPozo.documento.size) }} </span>

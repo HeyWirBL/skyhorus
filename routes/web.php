@@ -348,6 +348,11 @@ Route::middleware('auth')->group(function () {
     Route::get('cromatografia-gases/{id}/descargar/{index}', [CromatografiaGasController::class, 'downloadMultiple'])
         ->name('cromatografia-gases.downloadMultiple');
     
+    Route::get('cromatografia-gases/{id}/view', [CromatografiaGasController::class, 'view'])
+        ->name('cromatografia-gases.view');
+    
+    Route::get('/view-file/{id}', 'YourController@viewFile')->name('view-file');
+
     Route::post('cromatografia-gases', [CromatografiaGasController::class, 'store'])
         ->name('cromatografia-gases.store')
         ->middleware('can:create,App\Models\CromatografiaGas');  

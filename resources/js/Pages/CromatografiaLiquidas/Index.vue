@@ -14,6 +14,8 @@ import DropZone from '@/Components/DropZone.vue'
 import SelectInput from '@/Components/SelectInput.vue'
 import TextInput from '@/Components/TextInput.vue'
 import LoadingButton from '@/Components/LoadingButton.vue'
+import VuePdfApp from 'vue3-pdf-app'
+import "vue3-pdf-app/dist/icons/main.css";
 
 dayjs.extend(relativeTime)
 
@@ -26,8 +28,12 @@ const props = defineProps({
 
 const swal = inject('$swal')
 
-const uploadNewDoc = ref(false)
+const uploadNewDoc    = ref(false)
 const editUploadedDoc = ref(false)
+
+const viewPdfModal    = ref(false)
+let   docName         = ref('')
+const originPath      = window.location.origin
 
 const selected = ref([])
 const selectAllCromLiq = ref(false)
@@ -306,6 +312,16 @@ watch(
       </button>
     </div>
 
+    <!-- view pdf modal -->
+    <Modal :show="viewPdfModal">
+      <vue-pdf-app style="height: 85vh;" :pdf="originPath+'/storage/files/'+docName" :theme="'light'">
+      </vue-pdf-app>
+
+      <div class="flex items-center justify-end p-4 space-x-2 border-t border-gray-200">
+        <button class="btn-yellow" @click="viewPdfModal = false">Cerrar</button>
+      </div>
+    </Modal>
+
     <!-- Upload Documento Form Modal -->
     <Modal :show="uploadNewDoc">
       <!-- Modal content -->
@@ -425,7 +441,7 @@ watch(
               </div>
               <div v-else>
                 <div class="flex items-center leading-snug">
-                  <a class="text-yellow-400 hover:underline focus:text-yellow-500" :href="`/cromatografia-liquidas/${cromatografiaLiquida.id}/descargar`">
+                  <a class="text-yellow-400 hover:underline focus:text-yellow-500 cursor-pointer" @click="[docName = cromatografiaLiquida.documento.usrName ,viewPdfModal = true]">
                     {{ cromatografiaLiquida.documento.usrName }}
                   </a>
                   <span class="text-xs ml-2"> {{ filesize(cromatografiaLiquida.documento.size) }} </span>

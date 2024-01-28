@@ -193,6 +193,28 @@ class CromatografiaGasController extends Controller
         }
     }
 
+    /* 
+     * Get a temporary URL for the chromatography file
+     */
+    public function view($id)
+    {
+        try {
+            $documento = CromatografiaGas::withTrashed()->findOrFail($id);
+
+            if ($documento->trashed()) {
+                return back()->with('error', 'Error al visualizar el archivo: el archivo ha sido eliminado.');
+            }
+
+            $documentoData = json_decode($documento->documento, true);
+
+            // Aquí puedes redirigir a una ruta que maneje la visualización del archivo
+            return $documentoData;
+            
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error al visualizar el archivo: ' . $e->getMessage());
+        }
+    }
+
     /**
      * Delete temporary an specific well cromatography.
      */

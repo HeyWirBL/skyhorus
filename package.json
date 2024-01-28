@@ -30,6 +30,7 @@
     "uuid": "^9.0.0",
     "vue-chartjs": "^5.2.0",
     "vue-sweetalert2": "^5.0.5",
+    "vue3-pdf-app": "^1.0.3",
     "xlsx": "^0.18.5"
   }
 }
